@@ -7,7 +7,7 @@ import { Toaster } from '@/components/ui/toaster';
 import AppHeader from '@/components/layout/app-header';
 import AppFooter from '@/components/layout/app-footer';
 import ThreeCanvas from '@/components/three-canvas';
-// ScrollSectionProvider removed
+import CustomCursor from '@/components/ui/custom-cursor';
 
 export default function RootLayout({
   children,
@@ -17,7 +17,6 @@ export default function RootLayout({
   const [theme, setTheme] = useState('light'); 
 
   useEffect(() => {
-    // This effect runs only on the client
     const storedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     
@@ -26,8 +25,7 @@ export default function RootLayout({
     } else if (prefersDark) {
       setTheme('dark');
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Empty dependency array ensures this runs once on mount after initial render
+  }, []); 
 
   useEffect(() => {
     if (theme === 'dark') {
@@ -35,7 +33,6 @@ export default function RootLayout({
     } else {
       document.documentElement.classList.remove('dark');
     }
-    // Only set localStorage on the client
     if (typeof window !== 'undefined') {
       localStorage.setItem('theme', theme);
     }
@@ -56,7 +53,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased bg-background text-foreground min-h-screen flex flex-col">
-        {/* ScrollSectionProvider removed */}
+        <CustomCursor />
         <ThreeCanvas />
         <AppHeader currentTheme={theme} toggleTheme={toggleTheme} />
         <main className="flex-grow container mx-auto px-4 py-8 relative z-10">

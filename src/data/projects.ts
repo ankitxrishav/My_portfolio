@@ -34,7 +34,6 @@ export interface Project {
   sourceCodeUrl: string;
   liveDemoUrl?: string;
   year: number;
-  imageAiHint?: string;
 }
 
 export const projectsData: Project[] = [
@@ -43,10 +42,9 @@ export const projectsData: Project[] = [
     name: 'Personal Portfolio Website',
     description: 'The interactive portfolio website you are currently viewing. Designed to showcase my skills, projects, and journey as an ML Engineer and Creative Technologist. Built with Next.js, React, Tailwind CSS, and Three.js for dynamic 3D visuals.',
     technologies: ['Next.js', 'React', 'TypeScript', 'TailwindCSS', 'Three.js'],
-    imageUrl: 'https://placehold.co/600x400.png', 
+    imageUrl: '/images/port.png', 
     sourceCodeUrl: 'https://github.com/ankitxrishav/', 
     year: new Date().getFullYear(),
-    imageAiHint: 'web design portfolio',
   },
   {
     id: 'proj-1',
