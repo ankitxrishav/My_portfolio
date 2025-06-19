@@ -4,7 +4,11 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
-const NUM_SPHERES = 30; // Number of small spheres
+const NUM_SPHERES = 3; // Reduced number of spheres
+const SPHERE_RADIUS_MIN = 0.3; // Increased min radius for larger spheres
+const SPHERE_RADIUS_MAX = 0.6; // Increased max radius for larger spheres
+const SPHERE_SPEED_MIN = 0.03; // Increased min speed
+const SPHERE_SPEED_MAX = 0.05; // Increased max speed
 
 const ThreeCanvas: React.FC = () => {
   const mountRef = useRef<HTMLDivElement>(null);
@@ -19,13 +23,13 @@ const ThreeCanvas: React.FC = () => {
   const material2Ref = useRef<THREE.MeshStandardMaterial | null>(null);
 
   const sphereRefs = useRef<THREE.Mesh[]>([]);
-  const sphereData = useRef<{direction: number, speed: number, initialY: number}[]>([]);
+  const sphereData = useRef<{speed: number, initialY: number, initialZ: number}[]>([]); // Removed direction
 
   const lastScrollYRef = useRef(0);
   const clockRef = useRef<THREE.Clock | null>(null);
 
   const spheresActiveRef = useRef(false);
-  const heroSectionHeightThresholdRef = useRef(0);
+  const scrollActivationThresholdRef = useRef(0); // Renamed for clarity
 
 
   useEffect(() => {
@@ -81,10 +85,11 @@ const ThreeCanvas: React.FC = () => {
     cube2Ref.current = cube2;
 
     // Spheres
-    const sphereColors = [0xD8BFD8, 0xB0C4DE, 0xBF00FF, 0x8A2BE2, 0xADD8E6]; 
+    const sphereColors = [0xBF00FF, 0x8A2BE2, 0xADD8E6, 0xD8BFD8, 0xB0C4DE]; 
+    const xBounds = 7; // For positioning and wrapping
     for (let i = 0; i < NUM_SPHERES; i++) {
-      const radius = Math.random() * 0.1 + 0.05; 
-      const geometry = new THREE.SphereGeometry(radius, 16, 16);
+      const radius = Math.random() * (SPHERE_RADIUS_MAX - SPHERE_RADIUS_MIN) + SPHERE_RADIUS_MIN;
+      const geometry = new THREE.SphereGeometry(radius, 24, 24); // Increased segments for smoother large spheres
       const material = new THREE.MeshStandardMaterial({
         color: sphereColors[Math.floor(Math.random() * sphereColors.length)],
         metalness: 0.1,
@@ -94,30 +99,31 @@ const ThreeCanvas: React.FC = () => {
       });
       const sphere = new THREE.Mesh(geometry, material);
       
-      const initialY = (Math.random() - 0.5) * 12; 
+      const initialY = (Math.random() - 0.5) * 8; 
+      const initialZ = (Math.random() * -3) - 2; // Position them a bit further back
       sphere.position.set(
-        (Math.random() - 0.5) * 12, 
+        -xBounds - Math.random() * 5, // Start off-screen to the left
         initialY,
-        (Math.random() * -4) - 1.5 
+        initialZ 
       );
       sphere.visible = false; // Initially invisible
       
       scene.add(sphere);
       sphereRefs.current.push(sphere);
       sphereData.current.push({
-        direction: Math.random() < 0.5 ? 1 : -1,
-        speed: Math.random() * 0.015 + 0.005, 
-        initialY: initialY
+        speed: Math.random() * (SPHERE_SPEED_MAX - SPHERE_SPEED_MIN) + SPHERE_SPEED_MIN,
+        initialY: initialY,
+        initialZ: initialZ
       });
     }
     
     lastScrollYRef.current = window.scrollY;
 
-    // Scroll handling for spheres
-    heroSectionHeightThresholdRef.current = window.innerHeight * 0.8; // Activate spheres after 80% of viewport height scrolled
+    // Scroll handling for spheres activation
+    scrollActivationThresholdRef.current = window.innerHeight * 1.5; // Activate spheres after 1.5x viewport height scrolled
 
     const handleScrollForSpheres = () => {
-      if (window.scrollY > heroSectionHeightThresholdRef.current) {
+      if (window.scrollY > scrollActivationThresholdRef.current) {
         spheresActiveRef.current = true;
       } else {
         spheresActiveRef.current = false;
@@ -129,7 +135,6 @@ const ThreeCanvas: React.FC = () => {
     const animate = () => {
       animationFrameIdRef.current = requestAnimationFrame(animate);
       const delta = clockRef.current?.getDelta() || 0;
-      // const elapsedTime = clockRef.current?.getElapsedTime() || 0; // Keep if needed for other time-based effects
 
       // Cube Animations
       if (cube1Ref.current && cube2Ref.current && material1Ref.current && material2Ref.current) {
@@ -138,13 +143,11 @@ const ThreeCanvas: React.FC = () => {
         const maxScroll = Math.max(0, document.body.scrollHeight - window.innerHeight);
         const scrollProgress = maxScroll > 0 ? Math.min(currentScrollY / maxScroll, 1) : 0;
 
-        // Continuous micro-animation
         cube1Ref.current.rotation.x += 0.03 * delta;
         cube1Ref.current.rotation.y += 0.05 * delta;
         cube2Ref.current.rotation.x -= 0.02 * delta;
         cube2Ref.current.rotation.y -= 0.04 * delta;
 
-        // Scroll-based animation
         const scrollRotationAmount = scrollDelta * 0.0025; 
         cube1Ref.current.rotation.y += scrollRotationAmount;
         cube1Ref.current.rotation.x += scrollRotationAmount * 0.5;
@@ -173,24 +176,27 @@ const ThreeCanvas: React.FC = () => {
       }
 
       // Sphere Animations
-      const xBounds = 7; 
       if (spheresActiveRef.current) {
         sphereRefs.current.forEach((sphere, i) => {
           sphere.visible = true;
           const data = sphereData.current[i];
-          sphere.position.x += data.speed * data.direction * delta * 60; // Horizontal movement
-          sphere.position.y = data.initialY; // Keep Y position fixed
+          sphere.position.x += data.speed * delta * 60; // Move left to right
+          sphere.position.y = data.initialY; 
+          sphere.position.z = data.initialZ;
 
-          // Horizontal wrapping
-          if (data.direction === 1 && sphere.position.x > xBounds) {
-            sphere.position.x = -xBounds; 
-          } else if (data.direction === -1 && sphere.position.x < -xBounds) {
-            sphere.position.x = xBounds; 
+          // Horizontal wrapping (left to right)
+          if (sphere.position.x > xBounds + SPHERE_RADIUS_MAX * 2) { // Give some buffer before reset
+            sphere.position.x = -xBounds - SPHERE_RADIUS_MAX * 2 - Math.random() * 3; // Reset off-screen left
+            // Optionally, could randomize Y and Z again here if desired for more variation on re-entry
+            // sphere.position.y = (Math.random() - 0.5) * 8;
+            // data.initialY = sphere.position.y;
           }
         });
       } else {
-        sphereRefs.current.forEach(sphere => {
+        sphereRefs.current.forEach((sphere, i) => {
           sphere.visible = false; // Hide spheres if not active
+          // Optional: Reset their X position when they become inactive so they always "emerge" from left
+          // sphere.position.x = -xBounds - SPHERE_RADIUS_MAX * 2 - Math.random() * 3;
         });
       }
 
@@ -208,6 +214,8 @@ const ThreeCanvas: React.FC = () => {
         cameraRef.current.aspect = width / height;
         cameraRef.current.updateProjectionMatrix();
         rendererRef.current.setSize(width, height);
+        // Update threshold on resize as well, as viewport height might change
+        scrollActivationThresholdRef.current = window.innerHeight * 1.5;
       }
     };
     window.addEventListener('resize', handleResize);
@@ -258,3 +266,5 @@ const ThreeCanvas: React.FC = () => {
 };
 
 export default ThreeCanvas;
+
+    
