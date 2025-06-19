@@ -52,7 +52,7 @@ export default function RootLayout({
       <head>
         <title>Ankit Kumar - ML Engineer Portfolio</title>
         <meta name="description" content="Portfolio of Ankit Kumar, a Machine Learning Engineer." />
-        <link rel="icon" href="/logo-a.svg" type="image/svg+xml" />
+        <link rel="icon" href="/images/favicon.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/apple-touch-icon-a.png" />
         <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
         <meta name="theme-color" content="#222222" media="(prefers-color-scheme: dark)" />
