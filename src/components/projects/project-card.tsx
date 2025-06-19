@@ -40,7 +40,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
       </CardContent>
       <CardFooter className="mt-auto pt-4 border-t border-border/40">
         <div className="flex w-full justify-between items-center gap-2">
-          <Button variant="outline" size="sm" asChild className="hover:border-accent hover:text-accent transition-colors">
+          <Button variant="outline" size="sm" asChild className="hover:border-accent transition-colors">
             <Link href={project.sourceCodeUrl} target="_blank" rel="noopener noreferrer">
               <Github className="mr-2 h-4 w-4" /> Source
             </Link>

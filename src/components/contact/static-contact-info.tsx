@@ -19,7 +19,7 @@ export default function StaticContactInfo() {
         </p>
         
         <div className="space-y-3">
-          <Button variant="outline" asChild className="w-full sm:w-auto sm:mr-2 hover:border-accent hover:text-accent">
+          <Button variant="outline" asChild className="w-full sm:w-auto sm:mr-2 hover:border-accent">
             <a href="mailto:ankitkrpt@gmail.com">
               <Mail className="mr-2 h-5 w-5" /> Email Me
             </a>
@@ -32,12 +32,12 @@ export default function StaticContactInfo() {
         </div>
 
         <div className="flex justify-center space-x-4 pt-4">
-          <Button variant="outline" size="icon" asChild className="hover:border-accent hover:text-accent">
+          <Button variant="outline" size="icon" asChild className="hover:border-accent">
             <a href="https://www.linkedin.com/in/ankitkx" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn Profile">
               <Linkedin className="h-6 w-6" />
             </a>
           </Button>
-          <Button variant="outline" size="icon" asChild className="hover:border-accent hover:text-accent">
+          <Button variant="outline" size="icon" asChild className="hover:border-accent">
             <a href="https://github.com/ankitxrishav" target="_blank" rel="noopener noreferrer" aria-label="GitHub Profile">
               <Github className="h-6 w-6" />
             </a>

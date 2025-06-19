@@ -33,12 +33,12 @@ export default function AboutContent() {
             Crafting the future with data and algorithms. Based in Gwalior, India.
           </p>
           <div className="mt-4 flex justify-center space-x-3">
-            <Button variant="outline" size="icon" asChild className="hover:border-accent hover:text-accent">
+            <Button variant="outline" size="icon" asChild className="hover:border-accent">
               <a href="https://www.linkedin.com/in/ankitkx" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn Profile">
                 <Linkedin className="h-5 w-5" />
               </a>
             </Button>
-            <Button variant="outline" size="icon" asChild className="hover:border-accent hover:text-accent">
+            <Button variant="outline" size="icon" asChild className="hover:border-accent">
               <a href="https://github.com/ankitxrishav" target="_blank" rel="noopener noreferrer" aria-label="GitHub Profile">
                 <Github className="h-5 w-5" />
               </a>
