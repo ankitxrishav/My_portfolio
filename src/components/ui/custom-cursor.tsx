@@ -1,118 +1,123 @@
 
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 
+interface Particle {
+  id: number;
+  x: number;
+  y: number;
+  size: number;
+  opacity: number;
+  createdAt: number;
+}
+
+const MAX_PARTICLES = 25;
+const PARTICLE_LIFESPAN = 700; // milliseconds
+const PARTICLE_INITIAL_SIZE = 8; // px
+
 export default function CustomCursor() {
-  const cursorOuterRef = useRef<HTMLDivElement>(null);
-  const cursorInnerRef = useRef<HTMLDivElement>(null);
-  const [isPointer, setIsPointer] = useState(false);
-  const [isPressed, setIsPressed] = useState(false);
-  const [isVisible, setIsVisible] = useState(false); 
-  const requestRef = useRef<number>();
-  const previousTimeRef = useRef<number>();
-
+  const [particles, setParticles] = useState<Particle[]>([]);
   const [mousePosition, setMousePosition] = useState({ x: -100, y: -100 });
-  const [cursorOuterPosition, setCursorOuterPosition] = useState({ x: -100, y: -100 });
+  const [isVisible, setIsVisible] = useState(false);
+  const requestRef = useRef<number>();
+  const lastParticleTimeRef = useRef<number>(0);
+  const particleIdCounterRef = useRef<number>(0);
 
-  const lerp = (start: number, end: number, amount: number) => {
-    return (1 - amount) * start + amount * end;
-  };
+  const createParticle = useCallback((x: number, y: number) => {
+    const newParticle: Particle = {
+      id: particleIdCounterRef.current++,
+      x: x - PARTICLE_INITIAL_SIZE / 2, // Adjust to center particle on cursor
+      y: y - PARTICLE_INITIAL_SIZE / 2, // Adjust to center particle on cursor
+      size: PARTICLE_INITIAL_SIZE,
+      opacity: 1,
+      createdAt: performance.now(),
+    };
+
+    setParticles(prev => {
+      const updatedParticles = [newParticle, ...prev];
+      if (updatedParticles.length > MAX_PARTICLES) {
+        return updatedParticles.slice(0, MAX_PARTICLES);
+      }
+      return updatedParticles;
+    });
+  }, []);
 
   useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {
+      const now = performance.now();
       setMousePosition({ x: event.clientX, y: event.clientY });
-      if (!isVisible) setIsVisible(true); 
-    };
+      if (!isVisible) setIsVisible(true);
 
-    const handleMouseDown = () => setIsPressed(true);
-    const handleMouseUp = () => setIsPressed(false);
-
-    const handleMouseOverInteractive = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
-      if (target.closest('a, button, [data-cursor-interactive="true"]')) {
-        setIsPointer(true);
+      // Throttle particle creation
+      if (now - lastParticleTimeRef.current > 30) { 
+        createParticle(event.clientX, event.clientY);
+        lastParticleTimeRef.current = now;
       }
     };
 
-    const handleMouseOutInteractive = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
-       if (target.closest('a, button, [data-cursor-interactive="true"]')) {
-        setIsPointer(false);
-      }
-    };
-    
     document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mousedown', handleMouseDown);
-    document.addEventListener('mouseup', handleMouseUp);
-    document.addEventListener('mouseover', handleMouseOverInteractive);
-    document.addEventListener('mouseout', handleMouseOutInteractive);
-    
-    // Hide default cursor
     document.body.style.cursor = 'none';
     const interactiveElements = document.querySelectorAll('a, button, [data-cursor-interactive="true"]');
     interactiveElements.forEach(el => (el as HTMLElement).style.cursor = 'none');
 
-
-    const animate = (time: number) => {
-      if (previousTimeRef.current !== undefined) {
-        setCursorOuterPosition(prevPos => ({
-          x: lerp(prevPos.x, mousePosition.x, 0.15),
-          y: lerp(prevPos.y, mousePosition.y, 0.15),
-        }));
-      }
-      previousTimeRef.current = time;
-      requestRef.current = requestAnimationFrame(animate);
+    const animateParticles = () => {
+      setParticles(prevParticles =>
+        prevParticles
+          .map(p => {
+            const age = performance.now() - p.createdAt;
+            if (age > PARTICLE_LIFESPAN) {
+              return null; 
+            }
+            const progress = age / PARTICLE_LIFESPAN;
+            return {
+              ...p,
+              opacity: 1 - progress,
+              size: PARTICLE_INITIAL_SIZE * (1 - progress * 0.75), // Shrinks, but not to zero for better visual
+            };
+          })
+          .filter(p => p !== null) as Particle[]
+      );
+      requestRef.current = requestAnimationFrame(animateParticles);
     };
 
-    requestRef.current = requestAnimationFrame(animate);
+    requestRef.current = requestAnimationFrame(animateParticles);
 
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mousedown', handleMouseDown);
-      document.removeEventListener('mouseup', handleMouseUp);
-      document.removeEventListener('mouseover', handleMouseOverInteractive);
-      document.removeEventListener('mouseout', handleMouseOutInteractive);
       if (requestRef.current) {
         cancelAnimationFrame(requestRef.current);
       }
-      document.body.style.cursor = ''; // Restore default cursor
+      document.body.style.cursor = '';
       interactiveElements.forEach(el => (el as HTMLElement).style.cursor = '');
     };
-  }, [mousePosition.x, mousePosition.y, isVisible]);
-
+  }, [isVisible, createParticle]);
 
   if (!isVisible) {
-    return null; // Don't render if mouse hasn't moved yet
+    return null;
   }
 
   return (
     <>
+      {particles.map(particle => (
+        <div
+          key={particle.id}
+          className="fixed rounded-full bg-primary pointer-events-none z-[9999]"
+          style={{
+            left: `${particle.x}px`,
+            top: `${particle.y}px`,
+            width: `${Math.max(0, particle.size)}px`,
+            height: `${Math.max(0, particle.size)}px`,
+            opacity: particle.opacity,
+            transform: `translate(-50%, -50%) scale(${Math.max(0, particle.size / PARTICLE_INITIAL_SIZE)})`,
+            transition: 'opacity 0.05s ease-out, transform 0.05s ease-out', // Smooth out discrete updates
+          }}
+        />
+      ))}
+      {/* Small dot directly at cursor for immediate feedback */}
       <div
-        ref={cursorOuterRef}
-        className={cn(
-          'custom-cursor-outer fixed w-8 h-8 rounded-full border-2 border-primary pointer-events-none -translate-x-1/2 -translate-y-1/2 transition-transform duration-100 ease-out z-[9999]',
-          {
-            'scale-150 border-accent': isPointer,
-            'scale-125 opacity-50': isPressed && isPointer,
-            'opacity-75': isPressed && !isPointer,
-          }
-        )}
-        style={{
-          left: `${cursorOuterPosition.x}px`,
-          top: `${cursorOuterPosition.y}px`,
-        }}
-      />
-      <div
-        ref={cursorInnerRef}
-        className={cn(
-          'custom-cursor-inner fixed w-2 h-2 rounded-full bg-primary pointer-events-none -translate-x-1/2 -translate-y-1/2 z-[9999]',
-           {
-            'bg-accent': isPointer,
-            'scale-150': isPressed,
-          }
-        )}
+        className="fixed w-1.5 h-1.5 rounded-full bg-accent pointer-events-none -translate-x-1/2 -translate-y-1/2 z-[9999]"
         style={{
           left: `${mousePosition.x}px`,
           top: `${mousePosition.y}px`,

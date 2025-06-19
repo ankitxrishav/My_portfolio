@@ -44,7 +44,7 @@ export default function HomePage() {
             </span>
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground mb-10 max-w-3xl mx-auto">
-            Hi, I’m Ankit Kumar — a passionate Machine Learning engineer, creative technologist, and builder at heart.
+            A passionate Machine Learning engineer, creative technologist, and builder at heart.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
@@ -109,7 +109,7 @@ export default function HomePage() {
           title="Contact Me"
           subtitle="I'm always open to discussing new projects, creative ideas, or opportunities to be part of your visions."
           aria-labelledby="contact-heading"
-          className="relative z-10 md:col-span-1"
+          className="relative z-10 md:col-span-1 flex flex-col justify-center"
         >
           <StaticContactInfo />
         </SectionWrapper>

@@ -109,51 +109,9 @@
   }
   body {
     @apply bg-background text-foreground;
-    /* Ensure custom cursor is prioritized; JS will set to 'none' as well */
   }
   /* Hide system cursor for elements that will use custom cursor */
   body, a, button, [data-cursor-interactive="true"] {
     cursor: none !important; /* Important to override browser defaults */
   }
 }
-
-/* Custom Cursor Styles - can be enhanced further */
-/* Note: Tailwind JIT might not pick up these if not used in components explicitly, */
-/* but since CustomCursor applies them directly, it's fine. */
-/* You might want to move these to a separate CSS module if they grow. */
-
-/* Base styles for the outer cursor (trailing element) */
-.custom-cursor-outer {
-  /* Default state is handled by Tailwind classes in the component */
-  /* transition-property: transform, width, height, opacity, border-color; */
-  /* transition-duration: 0.1s; */ /* Fast trail */
-  /* transition-timing-function: ease-out; */
-}
-
-/* Base styles for the inner cursor (dot) */
-.custom-cursor-inner {
-   /* transition-property: transform, background-color; */
-   /* transition-duration: 0.05s; */ /* Very fast, almost instant */
-   /* transition-timing-function: ease-out; */
-}
-
-/* Example: Styling for when hovering interactive elements */
-/* .custom-cursor-outer.pointer { */
-  /* transform: translate(-50%, -50%) scale(1.5); */
-  /* border-color: hsl(var(--accent)); */
-/* } */
-
-/* .custom-cursor-inner.pointer { */
-  /* background-color: hsl(var(--accent)); */
-/* } */
-
-/* Example: Styling for when mouse is pressed */
-/* .custom-cursor-outer.pressed { */
-  /* transform: translate(-50%, -50%) scale(1.2); */
-  /* opacity: 0.5; */
-/* } */
-
-/* .custom-cursor-inner.pressed { */
-  /* transform: translate(-50%, -50%) scale(1.5); */
-/* } */
-
