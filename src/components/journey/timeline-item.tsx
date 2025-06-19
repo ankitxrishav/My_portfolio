@@ -28,7 +28,8 @@ export default function TimelineItem({ event, isLast }: TimelineItemProps) {
         {IconComponent && <IconComponent className="absolute -top-[1px] -left-[1px] w-4 h-4 p-0.5 text-background" />}
       </div>
 
-      <Card className="bg-card/80 backdrop-blur-sm shadow-md hover:shadow-accent/20 transition-all duration-300 transform group-hover:scale-[1.01]">
+      <Card className="transition-all duration-300 transform group-hover:scale-[1.01] hover:shadow-accent/20">
+        {/* Removed bg-card/80 backdrop-blur-sm shadow-md. Base card now handles glassmorphism and shadow. Kept hover effects. */}
         <CardHeader>
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-1">
             <CardTitle className="font-headline text-lg sm:text-xl text-primary-foreground">{event.title}</CardTitle>

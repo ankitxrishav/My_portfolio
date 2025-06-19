@@ -30,7 +30,7 @@ export default function HomePage() {
                 View My Work <Eye className="ml-2 h-5 w-5" />
               </Link>
             </Button>
-            <Button variant="outline" size="lg" asChild className="text-accent-foreground border-accent hover:bg-accent/10 shadow-lg transform hover:scale-105 transition-transform duration-200">
+            <Button variant="outline" size="lg" asChild className="border-accent hover:bg-accent/10 shadow-lg transform hover:scale-105 transition-transform duration-200">
               <Link href="/#contact">
                 Get In Touch <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
