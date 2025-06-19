@@ -46,7 +46,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
             </Link>
           </Button>
           {project.liveDemoUrl && (
-            <Button variant="default" size="sm" asChild className="bg-accent hover:bg-accent/90 text-accent-foreground transition-colors">
+            <Button variant="default" size="sm" asChild className="bg-accent text-accent-foreground hover:bg-accent/90 hover:text-foreground transition-colors">
               <Link href={project.liveDemoUrl} target="_blank" rel="noopener noreferrer">
                 <ExternalLink className="mr-2 h-4 w-4" /> Demo
               </Link>

@@ -11,32 +11,22 @@ import AboutContent from '@/components/about/about-content';
 import ProjectList from '@/components/projects/project-list';
 import TimelineDisplay from '@/components/journey/timeline-display';
 import StaticContactInfo from '@/components/contact/static-contact-info';
-// Removed useScrollSection and ActiveSection type
 
-// const SECTION_IDS: ActiveSection[] = ['home', 'about', 'projects', 'journey', 'contact']; // Removed
 
 export default function HomePage() {
   const [heroScrollY, setHeroScrollY] = useState(0);
-  // const { setActiveSection } = useScrollSection(); // Removed
   
-  // const sectionRefs = useRef<(HTMLElement | null)[]>([]); // Removed
-
-  // useEffect(() => { // Removed section detection logic
-  //   sectionRefs.current = SECTION_IDS.map(id => document.getElementById(id as string));
-  // }, []);
-
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       setHeroScrollY(currentScrollY);
-      // Section detection logic removed
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll(); // Initial check
+    handleScroll(); 
 
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []); // Dependency on setActiveSection removed
+  }, []); 
 
   return (
     <div className="flex flex-col">
@@ -44,7 +34,7 @@ export default function HomePage() {
       <section id="home" className="min-h-screen flex flex-col items-center justify-center text-center py-16 relative z-10 overflow-hidden">
         <div 
           className="relative z-10"
-          style={{ transform: `translateY(${heroScrollY * 0.2}px)` }} // Simple parallax maintained
+          style={{ transform: `translateY(${heroScrollY * 0.2}px)` }} 
         >
           <h1 className="font-headline text-5xl md:text-7xl font-bold mb-6 text-foreground">
             <span className="block">Hi, I&apos;m Ankit Kumar</span>
@@ -57,7 +47,7 @@ export default function HomePage() {
             <Button 
               size="lg" 
               asChild 
-              className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-lg transform hover:scale-105 transition-transform duration-200"
+              className="bg-accent text-accent-foreground hover:bg-accent/90 hover:text-foreground shadow-lg transform hover:scale-105 transition-transform duration-200"
             >
               <Link href="/#projects">
                 View My Work <Eye className="ml-2 h-5 w-5" />
@@ -67,7 +57,7 @@ export default function HomePage() {
               variant="outline" 
               size="lg" 
               asChild 
-              className="border-accent hover:bg-accent/10 text-foreground shadow-lg transform hover:scale-105 transition-transform duration-200"
+              className="border-accent text-foreground hover:bg-accent/10 hover:text-foreground shadow-lg transform hover:scale-105 transition-transform duration-200"
             >
               <Link href="/#contact">
                 Get In Touch <ArrowRight className="ml-2 h-5 w-5" />
