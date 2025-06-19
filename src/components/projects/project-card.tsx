@@ -14,12 +14,12 @@ interface ProjectCardProps {
 export default function ProjectCard({ project }: ProjectCardProps) {
   return (
     <Card className="group flex flex-col h-full overflow-hidden bg-card shadow-lg hover:shadow-accent/20 transition-all duration-300 transform hover:scale-[1.01] rounded-lg">
-      <div className="relative w-full h-48">
+      <div className="relative w-full h-56"> {/* Changed h-48 to h-56 */}
         <Image
           src={project.imageUrl}
           alt={project.name}
           layout="fill"
-          objectFit="cover" // Changed back from "contain" to "cover"
+          objectFit="cover"
           className="transition-transform duration-300 group-hover:scale-105"
         />
       </div>
