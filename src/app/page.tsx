@@ -11,47 +11,32 @@ import AboutContent from '@/components/about/about-content';
 import ProjectList from '@/components/projects/project-list';
 import TimelineDisplay from '@/components/journey/timeline-display';
 import StaticContactInfo from '@/components/contact/static-contact-info';
-import { useScrollSection, type ActiveSection } from '@/context/ScrollSectionContext';
+// Removed useScrollSection and ActiveSection type
 
-const SECTION_IDS: ActiveSection[] = ['home', 'about', 'projects', 'journey', 'contact'];
+// const SECTION_IDS: ActiveSection[] = ['home', 'about', 'projects', 'journey', 'contact']; // Removed
 
 export default function HomePage() {
   const [heroScrollY, setHeroScrollY] = useState(0);
-  const { setActiveSection } = useScrollSection();
+  // const { setActiveSection } = useScrollSection(); // Removed
   
-  const sectionRefs = useRef<(HTMLElement | null)[]>([]);
+  // const sectionRefs = useRef<(HTMLElement | null)[]>([]); // Removed
 
-  useEffect(() => {
-    sectionRefs.current = SECTION_IDS.map(id => document.getElementById(id as string));
-  }, []);
+  // useEffect(() => { // Removed section detection logic
+  //   sectionRefs.current = SECTION_IDS.map(id => document.getElementById(id as string));
+  // }, []);
 
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       setHeroScrollY(currentScrollY);
-
-      let currentSection: ActiveSection = 'home';
-      const windowHeight = window.innerHeight;
-      const offset = windowHeight * 0.4; // Trigger when section is 40% in view
-
-      for (let i = sectionRefs.current.length - 1; i >= 0; i--) {
-        const section = sectionRefs.current[i];
-        if (section) {
-          const rect = section.getBoundingClientRect();
-          if (rect.top < windowHeight - offset) {
-            currentSection = SECTION_IDS[i];
-            break;
-          }
-        }
-      }
-      setActiveSection(currentSection);
+      // Section detection logic removed
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll(); // Initial check
 
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [setActiveSection]);
+  }, []); // Dependency on setActiveSection removed
 
   return (
     <div className="flex flex-col">
@@ -59,7 +44,7 @@ export default function HomePage() {
       <section id="home" className="min-h-screen flex flex-col items-center justify-center text-center py-16 relative z-10 overflow-hidden">
         <div 
           className="relative z-10"
-          style={{ transform: `translateY(${heroScrollY * 0.2}px)` }}
+          style={{ transform: `translateY(${heroScrollY * 0.2}px)` }} // Simple parallax maintained
         >
           <h1 className="font-headline text-5xl md:text-7xl font-bold mb-6 text-foreground">
             <span className="block">Hi, I&apos;m Ankit Kumar</span>
