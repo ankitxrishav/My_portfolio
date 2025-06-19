@@ -14,18 +14,19 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [theme, setTheme] = useState('dark'); // Default to dark theme initially
+  const [theme, setTheme] = useState('dark'); // Default to dark theme
 
   useEffect(() => {
-    // This effect runs once on mount to check if a light theme was explicitly set by user
+    // This effect runs once on mount
     const storedTheme = localStorage.getItem('theme');
     if (storedTheme === 'light') {
       setTheme('light');
     } else {
-      // For any other case (no stored theme, or stored theme is dark), ensure dark theme.
+      // Default to dark if no theme stored or if stored theme is 'dark'
       setTheme('dark'); 
-      // Optionally, you might want to clear or set localStorage to 'dark' here if consistency is desired
-      // localStorage.setItem('theme', 'dark'); 
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('theme', 'dark');
+      }
     }
   }, []); 
 
@@ -51,6 +52,10 @@ export default function RootLayout({
       <head>
         <title>Ankit Kumar - ML Engineer Portfolio</title>
         <meta name="description" content="Portfolio of Ankit Kumar, a Machine Learning Engineer." />
+        <link rel="icon" href="/logo-a.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon-a.png" />
+        <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+        <meta name="theme-color" content="#222222" media="(prefers-color-scheme: dark)" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
