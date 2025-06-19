@@ -28,7 +28,7 @@ export default function TimelineItem({ event, isLast }: TimelineItemProps) {
         {IconComponent && <IconComponent className="absolute -top-[1px] -left-[1px] w-4 h-4 p-0.5 text-background" />}
       </div>
 
-      <Card className="transition-all duration-300 transform group-hover:scale-[1.01] hover:shadow-accent/20 bg-card"> {/* Ensured bg-card for glassmorphism */}
+      <Card className="transition-all duration-300 transform group-hover:scale-[1.01] hover:shadow-accent/20 bg-card">
         <CardHeader>
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-1">
             <CardTitle className="font-headline text-lg sm:text-xl text-foreground">{event.title}</CardTitle>

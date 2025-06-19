@@ -21,7 +21,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           layout="fill"
           objectFit="cover"
           className="transition-transform duration-300 group-hover:scale-105"
-          data-ai-hint="technology abstract"
+          data-ai-hint={project.imageAiHint || "technology abstract"}
         />
       </div>
       <CardHeader>

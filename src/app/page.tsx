@@ -31,7 +31,7 @@ export default function HomePage() {
           className="relative z-10"
           style={{ transform: `translateY(${heroScrollY * 0.2}px)` }} // Parallax effect
         >
-          <h1 className="font-headline text-5xl md:text-7xl font-bold mb-6">
+          <h1 className="font-headline text-5xl md:text-7xl font-bold mb-6 text-foreground">
             <span className="block">Hi, I&apos;m Ankit Kumar</span>
             <span className="block text-accent">ML Engineer & Innovator</span>
           </h1>

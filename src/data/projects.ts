@@ -1,5 +1,5 @@
 
-export type Technology = 'Python' | 'TensorFlow' | 'PyTorch' | 'Scikit-learn' | 'Next.js' | 'React' | 'Node.js' | 'MongoDB' | 'SQL' | 'AWS' | 'Docker';
+export type Technology = 'Python' | 'TensorFlow' | 'PyTorch' | 'Scikit-learn' | 'Next.js' | 'React' | 'Node.js' | 'MongoDB' | 'SQL' | 'AWS' | 'Docker' | 'TypeScript' | 'TailwindCSS';
 
 export interface Project {
   id: string;
@@ -10,6 +10,7 @@ export interface Project {
   sourceCodeUrl: string;
   liveDemoUrl?: string;
   year: number;
+  imageAiHint?: string;
 }
 
 export const projectsData: Project[] = [
@@ -22,6 +23,7 @@ export const projectsData: Project[] = [
     sourceCodeUrl: 'https://github.com/ankitkumar/recommendation-system',
     liveDemoUrl: '#',
     year: 2023,
+    imageAiHint: 'data algorithm',
   },
   {
     id: '2',
@@ -31,6 +33,7 @@ export const projectsData: Project[] = [
     imageUrl: 'https://placehold.co/600x400.png',
     sourceCodeUrl: 'https://github.com/ankitkumar/nlq-database',
     year: 2022,
+    imageAiHint: 'database code',
   },
   {
     id: '3',
@@ -41,15 +44,17 @@ export const projectsData: Project[] = [
     sourceCodeUrl: 'https://github.com/ankitkumar/anomaly-detection',
     liveDemoUrl: '#',
     year: 2023,
+    imageAiHint: 'iot sensor',
   },
   {
     id: '4',
     name: 'Portfolio Website (This one!)',
     description: 'My personal portfolio website built with Next.js, Tailwind CSS, and integrated with GenAI for content generation and 3D animations.',
-    technologies: ['Next.js', 'React', 'TypeScript', 'TailwindCSS' as any], // Cast for now
+    technologies: ['Next.js', 'React', 'TypeScript', 'TailwindCSS'],
     imageUrl: 'https://placehold.co/600x400.png',
     sourceCodeUrl: 'https://github.com/ankitkumar/portfolio-nextjs',
     year: 2024,
+    imageAiHint: 'website design',
   },
 ];
 

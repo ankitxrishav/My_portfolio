@@ -7,7 +7,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 const ThreeCanvas: React.FC = () => {
   const mountRef = useRef<HTMLDivElement>(null);
-  const modelRefs = useRef<THREE.Group[]>([]); // Changed to store multiple models
+  const modelRefs = useRef<THREE.Group[]>([]);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
@@ -23,7 +23,7 @@ const ThreeCanvas: React.FC = () => {
     scene.background = null; 
 
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.z = 7; // Adjusted camera position for wider view of multiple models
+    camera.position.z = 7;
     cameraRef.current = camera;
 
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
@@ -32,41 +32,49 @@ const ThreeCanvas: React.FC = () => {
     currentMount.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.7); // Adjusted light
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
     scene.add(ambientLight);
 
-    const pointLight = new THREE.PointLight(0xffffff, 1.0); // Adjusted light
+    const pointLight = new THREE.PointLight(0xffffff, 1.0);
     pointLight.position.set(5, 5, 10);
     scene.add(pointLight);
     
-    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x888888, 0.7); // Adjusted light
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x888888, 0.7);
     hemiLight.position.set(0, 20, 0);
     scene.add(hemiLight);
 
     const createFallbackModels = () => {
       const numFallbackModels = 5;
       const localModels: THREE.Group[] = [];
+      const geometries = [
+        new THREE.BoxGeometry(0.3, 0.3, 0.3),
+        new THREE.SphereGeometry(0.2, 16, 16),
+        new THREE.ConeGeometry(0.2, 0.4, 16)
+      ];
       for (let i = 0; i < numFallbackModels; i++) {
-        const geometry = new THREE.BoxGeometry(0.3, 0.3, 0.3); // Smaller fallback cubes
+        const geometry = geometries[i % geometries.length];
         const material = new THREE.MeshStandardMaterial({
-          color: 0xBF00FF,
-          metalness: 0.5,
-          roughness: 0.5,
+          color: new THREE.Color(`hsl(${Math.random() * 360}, 70%, 60%)`), // Random vibrant color
+          metalness: 0.3 + Math.random() * 0.4,
+          roughness: 0.2 + Math.random() * 0.5,
         });
-        const fallbackCube = new THREE.Mesh(geometry, material) as unknown as THREE.Group; // Cast for simplicity
-        fallbackCube.position.set(
+        const fallbackShape = new THREE.Mesh(geometry, material) as unknown as THREE.Group;
+        fallbackShape.position.set(
           (Math.random() - 0.5) * 12,
           (Math.random() - 0.5) * 8,
-          (Math.random() - 0.5) * 8 - 3
+          (Math.random() - 0.5) * 8 - 3 
         );
-        fallbackCube.userData = {
+        fallbackShape.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
+        fallbackShape.userData = {
+          baseRotationX: fallbackShape.rotation.x,
+          basePositionY: fallbackShape.position.y,
           rotationSpeedY: 0.001 + Math.random() * 0.002,
           rotationSpeedX: 0.0005 + Math.random() * 0.001,
           bobSpeed: 0.0001 + Math.random() * 0.0002,
           bobOffset: Math.random() * Math.PI * 2,
         };
-        scene.add(fallbackCube);
-        localModels.push(fallbackCube);
+        scene.add(fallbackShape);
+        localModels.push(fallbackShape);
       }
       modelRefs.current = localModels;
     };
@@ -76,35 +84,41 @@ const ThreeCanvas: React.FC = () => {
       '/models/floating-model.glb',
       (gltf) => {
         const loadedModel = gltf.scene;
-        const numClones = 5; // Number of additional models
+        const numClones = 5; 
         const localModels: THREE.Group[] = [];
 
-        // Main model (can be slightly different or just the first clone)
+        // Main model - slightly larger or central
         const mainModel = loadedModel.clone();
-        mainModel.scale.set(1.2, 1.2, 1.2); // Original scale, or slightly larger central piece
-        mainModel.position.set(0, -0.5, 0); 
-         mainModel.userData = {
-          rotationSpeedY: 0.002,
-          rotationSpeedX: 0.001,
-          bobSpeed: 0.00015,
+        mainModel.scale.set(1, 1, 1); 
+        mainModel.position.set(0, 0, 0); 
+        mainModel.userData = {
+          baseRotationX: mainModel.rotation.x,
+          basePositionY: mainModel.position.y,
+          rotationSpeedY: 0.0015,
+          rotationSpeedX: 0.0008,
+          bobSpeed: 0.00012,
           bobOffset: Math.random() * Math.PI * 2,
         };
         scene.add(mainModel);
         localModels.push(mainModel);
 
-
+        // Cloned smaller models
         for (let i = 0; i < numClones; i++) {
           const clone = loadedModel.clone();
-          clone.scale.set(0.4 + Math.random() * 0.4, 0.4 + Math.random() * 0.4, 0.4 + Math.random() * 0.4); // Random small scales
+          const scale = 0.3 + Math.random() * 0.4;
+          clone.scale.set(scale, scale, scale);
           clone.position.set(
-            (Math.random() - 0.5) * 15, // Spread them out more
+            (Math.random() - 0.5) * 15, 
             (Math.random() - 0.5) * 10,
-            (Math.random() - 0.5) * 10 - 5 // Position them around Z-axis
+            (Math.random() - 0.5) * 10 - 4 
           );
-          clone.userData = { // Store custom data for animation
+          clone.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
+          clone.userData = {
+            baseRotationX: clone.rotation.x,
+            basePositionY: clone.position.y,
             rotationSpeedY: 0.0005 + Math.random() * 0.0015,
             rotationSpeedX: 0.0002 + Math.random() * 0.0008,
-            bobSpeed: 0.00005 + Math.random() * 0.0001, // Slower bobbing for background
+            bobSpeed: 0.00005 + Math.random() * 0.0001, 
             bobOffset: Math.random() * Math.PI * 2,
           };
           scene.add(clone);
@@ -114,8 +128,8 @@ const ThreeCanvas: React.FC = () => {
       },
       undefined,
       (error) => {
-        console.error('An error happened loading the GLB model:', error);
-        createFallbackModels(); // Create fallback cubes if GLB fails
+        console.error('An error happened loading the GLB model (using fallback):', error);
+        createFallbackModels();
       }
     );
 
@@ -136,8 +150,7 @@ const ThreeCanvas: React.FC = () => {
             const scrollFactor = scrollYRef.current * 0.0002;
             model.rotation.x = (model.userData.baseRotationX || 0) + scrollFactor + (model.userData.rotationSpeedX || 0.0005) * Math.sin(time * 0.0005 + index);
             
-            // Bobbing effect
-            model.position.y = (model.userData.basePositionY || model.position.y) + Math.sin(time * (model.userData.bobSpeed || 0.0001) + model.userData.bobOffset) * 0.2;
+            model.position.y = (model.userData.basePositionY || model.position.y) + Math.sin(time * (model.userData.bobSpeed || 0.0001) + model.userData.bobOffset) * 0.15;
           }
         });
       }
@@ -165,13 +178,9 @@ const ThreeCanvas: React.FC = () => {
       if (animationFrameIdRef.current) {
         cancelAnimationFrame(animationFrameIdRef.current);
       }
-      if (mountRef.current && rendererRef.current?.domElement?.parentNode === mountRef.current) {
-         mountRef.current.removeChild(rendererRef.current.domElement);
-      }
-      rendererRef.current?.dispose();
       
       modelRefs.current.forEach(model => {
-        scene.remove(model);
+        if (sceneRef.current) sceneRef.current.remove(model);
         model.traverse((object) => {
           if (object instanceof THREE.Mesh) {
               object.geometry?.dispose();
@@ -184,8 +193,14 @@ const ThreeCanvas: React.FC = () => {
         });
       });
       modelRefs.current = [];
+      
+      rendererRef.current?.dispose();
+      if (currentMount && rendererRef.current?.domElement?.parentNode === currentMount) {
+         currentMount.removeChild(rendererRef.current.domElement);
+      }
       sceneRef.current = null;
       cameraRef.current = null;
+      rendererRef.current = null;
     };
   }, []);
 
