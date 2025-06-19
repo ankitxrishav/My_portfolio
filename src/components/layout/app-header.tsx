@@ -2,9 +2,8 @@
 "use client";
 
 import Link from 'next/link';
-// import { usePathname } from 'next/navigation'; // No longer needed for active state
 import { Button } from '@/components/ui/button';
-import { Code2 } from 'lucide-react';
+import { Code2, Sun, Moon } from 'lucide-react'; // Added Sun and Moon icons
 import { cn } from '@/lib/utils';
 
 const navItems = [
@@ -15,9 +14,12 @@ const navItems = [
   { href: '/#contact', label: 'Contact' },
 ];
 
-export default function AppHeader() {
-  // const pathname = usePathname(); // Removed for simplicity with fragment links
+interface AppHeaderProps {
+  currentTheme: string;
+  toggleTheme: () => void;
+}
 
+export default function AppHeader({ currentTheme, toggleTheme }: AppHeaderProps) {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 max-w-screen-2xl items-center justify-between">
@@ -25,21 +27,27 @@ export default function AppHeader() {
           <Code2 className="h-6 w-6 text-accent" />
           <span>Ankit Kumar</span>
         </Link>
-        <nav className="hidden md:flex items-center space-x-2">
-          {navItems.map((item) => (
-            <Button key={item.href} variant="ghost" asChild
-              className="text-sm font-medium transition-colors hover:text-accent text-foreground/70"
-            >
-              <Link href={item.href}>{item.label}</Link>
-            </Button>
-          ))}
-        </nav>
-        {/* Mobile Menu Trigger (optional, can be added later) */}
-        {/* <div className="md:hidden">
-          <Button variant="ghost" size="icon">
-            <Menu className="h-6 w-6" />
+        <div className="flex items-center space-x-2">
+          <nav className="hidden md:flex items-center space-x-1">
+            {navItems.map((item) => (
+              <Button key={item.href} variant="ghost" asChild
+                className="text-sm font-medium transition-colors hover:text-accent text-foreground/70"
+              >
+                <Link href={item.href}>{item.label}</Link>
+              </Button>
+            ))}
+          </nav>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleTheme}
+            aria-label="Toggle theme"
+            className="text-foreground/70 hover:text-accent transition-colors"
+          >
+            {currentTheme === 'light' ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
           </Button>
-        </div> */}
+        </div>
+        {/* Mobile Menu Trigger (optional, can be added later if needed) */}
       </div>
     </header>
   );
