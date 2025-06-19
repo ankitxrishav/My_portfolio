@@ -38,7 +38,7 @@ export default function HomePage() {
         >
           <h1 className="font-headline text-5xl md:text-7xl font-bold mb-6 text-foreground animate-float">
             <span className="block">Hi, I&apos;m Ankit Kumar</span>
-            <span className="block text-foreground dark:text-foreground">
+            <span className="block text-accent dark:text-accent">
               ML Engineer <br />
               Creative Technologist, Builder
             </span>
