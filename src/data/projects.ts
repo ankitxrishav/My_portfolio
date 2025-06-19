@@ -56,7 +56,7 @@ export const projectsData: Project[] = [
     imageUrl: 'https://placehold.co/600x400.png',
     sourceCodeUrl: 'https://github.com/ankitxrishav/electricityDemandPrediction.git',
     year: 2023,
-    imageAiHint: 'energy graph',
+    imageAiHint: 'energy forecast',
   },
   {
     id: 'proj-2',
@@ -66,7 +66,7 @@ export const projectsData: Project[] = [
     imageUrl: 'https://placehold.co/600x400.png',
     sourceCodeUrl: 'https://github.com/ankitxrishav/Crimes-Against-Women-Analysis-and-prediction',
     year: 2023,
-    imageAiHint: 'data analysis chart',
+    imageAiHint: 'data analytics justice',
   },
   {
     id: 'proj-3',
@@ -76,7 +76,7 @@ export const projectsData: Project[] = [
     imageUrl: 'https://placehold.co/600x400.png',
     sourceCodeUrl: 'https://github.com/ankitxrishav/HandGesture_Music.git',
     year: 2022,
-    imageAiHint: 'hand gesture music',
+    imageAiHint: 'gesture music tech',
   },
   {
     id: 'proj-4',
@@ -86,9 +86,8 @@ export const projectsData: Project[] = [
     imageUrl: 'https://placehold.co/600x400.png',
     sourceCodeUrl: 'https://github.com/ankitxrishav/fenrirmessage.git',
     year: 2024,
-    imageAiHint: 'messaging app interface',
+    imageAiHint: 'secure chat app',
   },
 ];
 
 export const allTechnologies: Technology[] = Array.from(new Set(projectsData.flatMap(p => p.technologies))).sort() as Technology[];
-

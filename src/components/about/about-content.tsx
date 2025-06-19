@@ -18,11 +18,10 @@ export default function AboutContent() {
         <CardHeader className="items-center">
           <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-accent mb-4">
             <Image 
-              src="https://placehold.co/300x300.png" 
+              src="/images/ankit-kumar-profile.jpg" 
               alt="Ankit Kumar" 
               layout="fill" 
               objectFit="cover"
-              data-ai-hint="professional portrait"
             />
           </div>
           <CardTitle className="font-headline text-2xl text-foreground">Ankit Kumar</CardTitle>
@@ -33,12 +32,12 @@ export default function AboutContent() {
             Crafting the future with data and algorithms. Based in Gwalior, India.
           </p>
           <div className="mt-4 flex justify-center space-x-3">
-            <Button variant="outline" size="icon" asChild className="hover:border-accent">
+            <Button variant="outline" size="icon" asChild>
               <a href="https://www.linkedin.com/in/ankitkx" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn Profile">
                 <Linkedin className="h-5 w-5" />
               </a>
             </Button>
-            <Button variant="outline" size="icon" asChild className="hover:border-accent">
+            <Button variant="outline" size="icon" asChild>
               <a href="https://github.com/ankitxrishav" target="_blank" rel="noopener noreferrer" aria-label="GitHub Profile">
                 <Github className="h-5 w-5" />
               </a>
