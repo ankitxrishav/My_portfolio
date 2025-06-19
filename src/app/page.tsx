@@ -85,7 +85,7 @@ export default function HomePage() {
       <SectionWrapper
         id="projects"
         title="My Projects"
-        subtitle="Here’s a curated list of some of my best work, available on my GitHub: github.com/ankitxrishav"
+        subtitle={<>Here’s a curated list of some of my best work, available on my GitHub: <a href='https://github.com/ankitxrishav' target='_blank' rel='noopener noreferrer' className='text-accent hover:underline'>github.com/ankitxrishav</a></>}
         aria-labelledby="projects-heading"
         className="relative z-10"
       >
