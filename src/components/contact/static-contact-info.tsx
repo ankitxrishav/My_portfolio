@@ -7,9 +7,9 @@ import { Mail, Linkedin, Github, FileText } from 'lucide-react';
 
 export default function StaticContactInfo() {
   return (
-    <Card className="max-w-xl mx-auto bg-card"> {/* Removed shadow-xl, base card has shadow-lg */}
+    <Card className="max-w-xl mx-auto bg-card">
       <CardHeader>
-        <CardTitle className="font-headline text-2xl flex items-center text-primary-foreground">
+        <CardTitle className="font-headline text-2xl flex items-center text-foreground">
           <Mail className="mr-3 h-7 w-7 text-accent"/> Let&apos;s Connect
         </CardTitle>
       </CardHeader>

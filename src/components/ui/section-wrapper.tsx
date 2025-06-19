@@ -13,7 +13,7 @@ export default function SectionWrapper({ title, subtitle, children, className, .
     <section className={cn('py-12 md:py-16 lg:py-20', className)} {...props}>
       <div className="container mx-auto px-4">
         {title && (
-          <h2 className="font-headline text-3xl md:text-4xl font-bold text-center mb-4 text-primary-foreground">
+          <h2 className="font-headline text-3xl md:text-4xl font-bold text-center mb-4 text-foreground">
             {title}
           </h2>
         )}

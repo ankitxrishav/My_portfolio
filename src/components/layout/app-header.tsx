@@ -23,7 +23,7 @@ export default function AppHeader({ currentTheme, toggleTheme }: AppHeaderProps)
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 max-w-screen-2xl items-center justify-between">
-        <Link href="/#home" className="flex items-center space-x-2 font-headline text-xl font-bold text-primary-foreground hover:text-accent transition-colors">
+        <Link href="/#home" className="flex items-center space-x-2 font-headline text-xl font-bold text-foreground hover:text-accent transition-colors">
           <Code2 className="h-6 w-6 text-accent" />
           <span>Ankit Kumar</span>
         </Link>
@@ -31,7 +31,7 @@ export default function AppHeader({ currentTheme, toggleTheme }: AppHeaderProps)
           <nav className="hidden md:flex items-center space-x-1">
             {navItems.map((item) => (
               <Button key={item.href} variant="ghost" asChild
-                className="text-sm font-medium transition-colors text-foreground/70" // Removed hover:text-accent
+                className="text-sm font-medium transition-colors text-foreground/70"
               >
                 <Link href={item.href}>{item.label}</Link>
               </Button>
@@ -42,7 +42,7 @@ export default function AppHeader({ currentTheme, toggleTheme }: AppHeaderProps)
             size="icon"
             onClick={toggleTheme}
             aria-label="Toggle theme"
-            className="text-foreground/70 transition-colors" // Removed hover:text-accent, variant="ghost" handles hover state
+            className="text-foreground/70 transition-colors"
           >
             {currentTheme === 'light' ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
           </Button>

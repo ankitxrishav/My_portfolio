@@ -25,7 +25,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
         />
       </div>
       <CardHeader>
-        <CardTitle className="font-headline text-xl text-primary-foreground">{project.name}</CardTitle>
+        <CardTitle className="font-headline text-xl text-foreground">{project.name}</CardTitle>
         <CardDescription className="text-muted-foreground text-sm">{project.year}</CardDescription>
       </CardHeader>
       <CardContent className="flex-grow">

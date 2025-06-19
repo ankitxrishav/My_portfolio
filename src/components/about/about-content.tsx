@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { UserCircle, Linkedin, Github } from 'lucide-react';
 
 export default function AboutContent() {
-  const [aboutMeText] = useState( // Content is now static
+  const [aboutMeText] = useState( 
     "Ankit Kumar is a dedicated Machine Learning Engineer with a passion for creating intelligent systems that drive innovation. With a strong background in computer science and extensive experience in developing and deploying machine learning models, Ankit excels at transforming complex data into actionable insights. His expertise spans natural language processing, computer vision, and predictive analytics. Ankit is committed to continuous learning and applying cutting-edge technologies to solve real-world challenges."
   );
 
@@ -25,7 +25,7 @@ export default function AboutContent() {
               data-ai-hint="professional portrait"
             />
           </div>
-          <CardTitle className="font-headline text-2xl text-primary-foreground">Ankit Kumar</CardTitle>
+          <CardTitle className="font-headline text-2xl text-foreground">Ankit Kumar</CardTitle>
           <CardDescription className="text-accent">ML Engineer</CardDescription>
         </CardHeader>
         <CardContent>
@@ -51,7 +51,7 @@ export default function AboutContent() {
         <Card className="bg-card shadow-lg">
           <CardHeader className="flex flex-row items-center space-x-2">
             <UserCircle className="h-6 w-6 text-accent"/>
-            <CardTitle className="font-headline text-xl text-primary-foreground">About Me</CardTitle>
+            <CardTitle className="font-headline text-xl text-foreground">About Me</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-foreground/90 whitespace-pre-line leading-relaxed">{aboutMeText}</p>
