@@ -3,6 +3,7 @@
 
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+import { useScrollSection, type ActiveSection } from '@/context/ScrollSectionContext';
 
 const ThreeCanvas: React.FC = () => {
   const mountRef = useRef<HTMLDivElement>(null);
@@ -10,8 +11,12 @@ const ThreeCanvas: React.FC = () => {
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const animationFrameIdRef = useRef<number | null>(null);
-  const scrollYRef = useRef(0);
-  const cubesRef = useRef<THREE.Mesh[]>([]);
+  
+  const cube1Ref = useRef<THREE.Mesh | null>(null);
+  const cube2Ref = useRef<THREE.Mesh | null>(null);
+
+  const { activeSection } = useScrollSection();
+  const clockRef = useRef(new THREE.Clock());
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -19,7 +24,6 @@ const ThreeCanvas: React.FC = () => {
     const currentMount = mountRef.current;
     const scene = new THREE.Scene();
     sceneRef.current = scene;
-    scene.background = null; 
 
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.position.z = 5;
@@ -31,86 +35,120 @@ const ThreeCanvas: React.FC = () => {
     currentMount.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambientLight);
 
-    const pointLight = new THREE.PointLight(0xffffff, 1.2, 100);
-    pointLight.position.set(0, 0, 10); // Positioned to light the front of the cubes
-    scene.add(pointLight);
-    
-    cubesRef.current = []; 
-    const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    directionalLight.position.set(5, 5, 5);
+    scene.add(directionalLight);
 
-    // Cube 1: Scales up, drifts one way
+    const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+    
+    // Cube 1
     const material1 = new THREE.MeshStandardMaterial({ 
-      color: 0xBF00FF, // Electric purple (accent)
+      color: 0xBF00FF, // Accent color
       metalness: 0.3,
       roughness: 0.5,
+      emissive: 0x000000,
+      emissiveIntensity: 0,
     });
     const cube1 = new THREE.Mesh(cubeGeometry, material1);
     cube1.position.set(-1.5, 0.5, 0);
-    cube1.userData = {
-      baseScale: 0.8,
-      baseX: -1.5,
-      baseY: 0.5,
-      rotationSpeedY: 0.005,
-      scaleScrollFactor: 0.0003, // Scales up
-      driftXScrollFactor: 0.0002,
-      driftYScrollFactor: -0.00015,
-    };
     scene.add(cube1);
-    cubesRef.current.push(cube1);
+    cube1Ref.current = cube1;
 
-    // Cube 2: Scales down, drifts another way
+    // Cube 2
     const material2 = new THREE.MeshStandardMaterial({
-      color: 0x4B0082, // Deep Indigo (primary)
+      color: 0x4B0082, // Primary color
       metalness: 0.4,
       roughness: 0.6,
+      emissive: 0x000000,
+      emissiveIntensity: 0,
     });
     const cube2 = new THREE.Mesh(cubeGeometry, material2);
-    cube2.position.set(1.5, -0.5, -1); // Slightly further back
-    cube2.userData = {
-      baseScale: 1.0,
-      baseX: 1.5,
-      baseY: -0.5,
-      rotationSpeedX: 0.003,
-      rotationSpeedY: 0.002,
-      scaleScrollFactor: -0.00025, // Scales down
-      minScale: 0.2, // Minimum scale
-      driftXScrollFactor: -0.00015,
-      driftYScrollFactor: 0.0002,
-    };
+    cube2.position.set(1.5, -0.5, -1);
     scene.add(cube2);
-    cubesRef.current.push(cube2);
-
-    const handleScroll = () => {
-      scrollYRef.current = window.scrollY;
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
+    cube2Ref.current = cube2;
     
+    clockRef.current = new THREE.Clock();
+
     const animate = () => {
       animationFrameIdRef.current = requestAnimationFrame(animate);
-      const scrollEffect = scrollYRef.current;
-      
-      cubesRef.current.forEach((cube) => {
-        const { userData } = cube;
+      const elapsedTime = clockRef.current.getElapsedTime();
 
-        // Base rotation
-        if (userData.rotationSpeedX) cube.rotation.x += userData.rotationSpeedX;
-        if (userData.rotationSpeedY) cube.rotation.y += userData.rotationSpeedY;
-        
-        // Scroll-based scaling (Depth Parallax)
-        let newScale = userData.baseScale + scrollEffect * userData.scaleScrollFactor;
-        if (userData.minScale !== undefined) {
-          newScale = Math.max(userData.minScale, newScale);
+      if (cube1Ref.current && cube2Ref.current && material1 && material2) {
+        // Default state (can be used for 'journey', 'contact', or if no specific state)
+        let targetScale1 = 1.0;
+        let targetScale2 = 1.0;
+        let targetOpacity1 = 1.0;
+        let targetOpacity2 = 1.0;
+        let rotSpeedX1 = 0.002;
+        let rotSpeedY1 = 0.003;
+        let rotSpeedX2 = 0.003;
+        let rotSpeedY2 = 0.002;
+        let floatAmplitude1 = 0;
+        let floatAmplitude2 = 0;
+        let emissiveIntensity1 = 0;
+        let emissiveIntensity2 = 0;
+        const basePosY1 = 0.5;
+        const basePosY2 = -0.5;
+
+
+        switch (activeSection) {
+          case 'home': // Idle + Glow
+            rotSpeedX1 = 0.001;
+            rotSpeedY1 = 0.001;
+            rotSpeedX2 = 0.001;
+            rotSpeedY2 = 0.001;
+            emissiveIntensity1 = 0.5;
+            emissiveIntensity2 = 0.4;
+            material1.emissive.setHex(0xBF00FF);
+            material2.emissive.setHex(0x4B0082);
+            break;
+          case 'about': // Rotate and Float
+            rotSpeedX1 = 0.005;
+            rotSpeedY1 = 0.007;
+            rotSpeedX2 = 0.007;
+            rotSpeedY2 = 0.005;
+            floatAmplitude1 = 0.2;
+            floatAmplitude2 = 0.25;
+            break;
+          case 'projects': // Collapse / Morph (scale down, spin, fade)
+            targetScale1 = 0.1;
+            targetScale2 = 0.1;
+            targetOpacity1 = 0.1;
+            targetOpacity2 = 0.1;
+            rotSpeedX1 = 0.05; // Faster spin
+            rotSpeedY1 = 0.06;
+            rotSpeedX2 = 0.06;
+            rotSpeedY2 = 0.05;
+            break;
+          default: // Default state for journey, contact, or null
+            // Uses the initial default values
+            break;
         }
-        newScale = Math.max(0.01, newScale); // Ensure scale is always positive
-        cube.scale.set(newScale, newScale, newScale);
 
-        // Scroll-based axis drift
-        cube.position.x = userData.baseX + scrollEffect * userData.driftXScrollFactor;
-        cube.position.y = userData.baseY + scrollEffect * userData.driftYScrollFactor;
-      });
+        // Apply animations smoothly (Lerp)
+        cube1Ref.current.rotation.x += rotSpeedX1;
+        cube1Ref.current.rotation.y += rotSpeedY1;
+        cube1Ref.current.position.y = basePosY1 + Math.sin(elapsedTime * 2 + 1) * floatAmplitude1;
+        
+        cube2Ref.current.rotation.x += rotSpeedX2;
+        cube2Ref.current.rotation.y += rotSpeedY2;
+        cube2Ref.current.position.y = basePosY2 + Math.cos(elapsedTime * 2.5) * floatAmplitude2;
+
+        cube1Ref.current.scale.lerp(new THREE.Vector3(targetScale1, targetScale1, targetScale1), 0.05);
+        cube2Ref.current.scale.lerp(new THREE.Vector3(targetScale2, targetScale2, targetScale2), 0.05);
+        
+        material1.opacity = THREE.MathUtils.lerp(material1.opacity, targetOpacity1, 0.05);
+        material2.opacity = THREE.MathUtils.lerp(material2.opacity, targetOpacity2, 0.05);
+        material1.transparent = material1.opacity < 1.0;
+        material2.transparent = material2.opacity < 1.0;
+        
+        material1.emissiveIntensity = THREE.MathUtils.lerp(material1.emissiveIntensity, emissiveIntensity1, 0.1);
+        material2.emissiveIntensity = THREE.MathUtils.lerp(material2.emissiveIntensity, emissiveIntensity2, 0.1);
+
+      }
 
       if (rendererRef.current && sceneRef.current && cameraRef.current) {
         rendererRef.current.render(sceneRef.current, cameraRef.current);
@@ -128,27 +166,20 @@ const ThreeCanvas: React.FC = () => {
       }
     };
     window.addEventListener('resize', handleResize);
-    handleResize(); // Call once to set initial size
+    handleResize(); 
 
     return () => {
-      window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resize', handleResize);
       if (animationFrameIdRef.current) {
         cancelAnimationFrame(animationFrameIdRef.current);
       }
       
-      if (sceneRef.current) {
-        cubesRef.current.forEach(cube => {
-          sceneRef.current?.remove(cube);
-          cube.geometry?.dispose();
-          if (Array.isArray(cube.material)) {
-            cube.material.forEach(material => material.dispose());
-          } else {
-            cube.material?.dispose();
-          }
-        });
-      }
-      cubesRef.current = [];
+      scene.remove(cube1Ref.current!);
+      scene.remove(cube2Ref.current!);
+      cube1Ref.current?.geometry?.dispose();
+      (cube1Ref.current?.material as THREE.Material)?.dispose();
+      cube2Ref.current?.geometry?.dispose();
+      (cube2Ref.current?.material as THREE.Material)?.dispose();
       
       rendererRef.current?.dispose();
       if (currentMount && rendererRef.current?.domElement?.parentNode === currentMount) {
@@ -158,9 +189,18 @@ const ThreeCanvas: React.FC = () => {
       cameraRef.current = null;
       rendererRef.current = null;
     };
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // ActiveSection dependency removed to avoid re-creating scene, animation loop handles state changes.
 
-  return <div ref={mountRef} className="fixed inset-0 -z-10 opacity-60 pointer-events-none" />;
+  // Re-run animation logic when activeSection changes
+  useEffect(() => {
+    // This effect doesn't re-initialize the scene,
+    // but ensures the animation loop considers the new activeSection.
+    // The animation loop itself will pick up the new activeSection value.
+  }, [activeSection]);
+
+
+  return <div ref={mountRef} className="fixed inset-0 -z-10 opacity-70 pointer-events-none" />;
 };
 
 export default ThreeCanvas;

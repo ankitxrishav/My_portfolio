@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import SectionWrapper from '@/components/ui/section-wrapper';
 import Link from 'next/link';
@@ -11,17 +11,47 @@ import AboutContent from '@/components/about/about-content';
 import ProjectList from '@/components/projects/project-list';
 import TimelineDisplay from '@/components/journey/timeline-display';
 import StaticContactInfo from '@/components/contact/static-contact-info';
+import { useScrollSection, type ActiveSection } from '@/context/ScrollSectionContext';
+
+const SECTION_IDS: ActiveSection[] = ['home', 'about', 'projects', 'journey', 'contact'];
 
 export default function HomePage() {
   const [heroScrollY, setHeroScrollY] = useState(0);
+  const { setActiveSection } = useScrollSection();
+  
+  const sectionRefs = useRef<(HTMLElement | null)[]>([]);
+
+  useEffect(() => {
+    sectionRefs.current = SECTION_IDS.map(id => document.getElementById(id as string));
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
-      setHeroScrollY(window.scrollY);
+      const currentScrollY = window.scrollY;
+      setHeroScrollY(currentScrollY);
+
+      let currentSection: ActiveSection = 'home';
+      const windowHeight = window.innerHeight;
+      const offset = windowHeight * 0.4; // Trigger when section is 40% in view
+
+      for (let i = sectionRefs.current.length - 1; i >= 0; i--) {
+        const section = sectionRefs.current[i];
+        if (section) {
+          const rect = section.getBoundingClientRect();
+          if (rect.top < windowHeight - offset) {
+            currentSection = SECTION_IDS[i];
+            break;
+          }
+        }
+      }
+      setActiveSection(currentSection);
     };
+
     window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll(); // Initial check
+
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [setActiveSection]);
 
   return (
     <div className="flex flex-col">
@@ -29,7 +59,7 @@ export default function HomePage() {
       <section id="home" className="min-h-screen flex flex-col items-center justify-center text-center py-16 relative z-10 overflow-hidden">
         <div 
           className="relative z-10"
-          style={{ transform: `translateY(${heroScrollY * 0.2}px)` }} // Parallax effect
+          style={{ transform: `translateY(${heroScrollY * 0.2}px)` }}
         >
           <h1 className="font-headline text-5xl md:text-7xl font-bold mb-6 text-foreground">
             <span className="block">Hi, I&apos;m Ankit Kumar</span>
@@ -52,7 +82,7 @@ export default function HomePage() {
               variant="outline" 
               size="lg" 
               asChild 
-              className="border-accent hover:bg-accent/10 shadow-lg transform hover:scale-105 transition-transform duration-200"
+              className="border-accent hover:bg-accent/10 text-foreground shadow-lg transform hover:scale-105 transition-transform duration-200"
             >
               <Link href="/#contact">
                 Get In Touch <ArrowRight className="ml-2 h-5 w-5" />
