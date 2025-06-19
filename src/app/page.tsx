@@ -36,7 +36,7 @@ export default function HomePage() {
           className="relative z-10"
           style={{ transform: `translateY(${heroScrollY * 0.2}px)` }} 
         >
-          <h1 className="font-headline text-5xl md:text-7xl font-bold mb-6 text-foreground">
+          <h1 className="font-headline text-5xl md:text-7xl font-bold mb-6 text-foreground animate-float">
             <span className="block">Hi, I&apos;m Ankit Kumar</span>
             <span className="block text-accent">
               ML Engineer <br />
