@@ -6,7 +6,6 @@ import * as THREE from 'three';
 
 const ThreeCanvas: React.FC = () => {
   const mountRef = useRef<HTMLDivElement>(null);
-  // No need for rendererSize state if it's fixed full screen
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -17,13 +16,13 @@ const ThreeCanvas: React.FC = () => {
     scene.background = null; // Transparent background
 
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.z = 5;
+    camera.position.z = 4; // Adjusted camera position closer
 
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     currentMount.appendChild(renderer.domElement);
 
-    const geometry = new THREE.BoxGeometry(1.5, 1.5, 1.5);
+    const geometry = new THREE.BoxGeometry(2, 2, 2); // Increased cube size
     const material = new THREE.MeshStandardMaterial({ 
       color: 0xBF00FF, // Electric Purple
       metalness: 0.5,
@@ -59,7 +58,6 @@ const ThreeCanvas: React.FC = () => {
     animate();
 
     const handleResize = () => {
-      // No need to check mountRef.current for resize if canvas is full screen from start
       const width = window.innerWidth;
       const height = window.innerHeight;
       camera.aspect = width / height;
@@ -68,8 +66,7 @@ const ThreeCanvas: React.FC = () => {
     };
     window.addEventListener('resize', handleResize);
 
-    // Initial call to set size
-    handleResize();
+    handleResize(); // Initial call to set size
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
@@ -83,7 +80,7 @@ const ThreeCanvas: React.FC = () => {
     };
   }, []);
 
-  return <div ref={mountRef} className="fixed inset-0 -z-10 opacity-40 pointer-events-none" />;
+  return <div ref={mountRef} className="fixed inset-0 -z-10 opacity-50 pointer-events-none" />; {/* Increased opacity */}
 };
 
 export default ThreeCanvas;
