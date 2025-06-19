@@ -22,7 +22,7 @@ const ThreeCanvas: React.FC = () => {
     scene.background = null; 
 
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.z = 7; // Adjusted for multiple cubes
+    camera.position.z = 5;
     cameraRef.current = camera;
 
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
@@ -31,112 +31,86 @@ const ThreeCanvas: React.FC = () => {
     currentMount.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
     scene.add(ambientLight);
 
-    const pointLight = new THREE.PointLight(0xffffff, 1.5, 150);
-    pointLight.position.set(5, 5, 10);
+    const pointLight = new THREE.PointLight(0xffffff, 1.2, 100);
+    pointLight.position.set(0, 0, 10); // Positioned to light the front of the cubes
     scene.add(pointLight);
-
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    directionalLight.position.set(-5, 5, 5);
-    scene.add(directionalLight);
     
-    // Create three cubes
-    cubesRef.current = []; // Clear previous cubes if any
-
+    cubesRef.current = []; 
     const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
 
-    // Cube 1: Main accent color, rotates on Y and scroll
+    // Cube 1: Scales up, drifts one way
     const material1 = new THREE.MeshStandardMaterial({ 
-      color: 0xBF00FF, // Electric purple
-      metalness: 0.4,
-      roughness: 0.6,
+      color: 0xBF00FF, // Electric purple (accent)
+      metalness: 0.3,
+      roughness: 0.5,
     });
     const cube1 = new THREE.Mesh(cubeGeometry, material1);
-    cube1.position.set(-2.5, 0, 0);
+    cube1.position.set(-1.5, 0.5, 0);
     cube1.userData = {
-      rotationSpeedX: 0.0005,
-      rotationSpeedY: 0.001,
-      scrollIntensity: 0.0003,
-      baseRotationX: 0,
-      baseRotationY: 0,
+      baseScale: 0.8,
+      baseX: -1.5,
+      baseY: 0.5,
+      rotationSpeedY: 0.005,
+      scaleScrollFactor: 0.0003, // Scales up
+      driftXScrollFactor: 0.0002,
+      driftYScrollFactor: -0.00015,
     };
     scene.add(cube1);
     cubesRef.current.push(cube1);
 
-    // Cube 2: Different color, rotates on X & Z, different scroll reaction
+    // Cube 2: Scales down, drifts another way
     const material2 = new THREE.MeshStandardMaterial({
-      color: 0x4B0082, // Indigo
-      metalness: 0.3,
-      roughness: 0.7,
-      wireframe: false,
+      color: 0x4B0082, // Deep Indigo (primary)
+      metalness: 0.4,
+      roughness: 0.6,
     });
     const cube2 = new THREE.Mesh(cubeGeometry, material2);
-    cube2.position.set(2.5, 0, -1);
-    cube2.scale.set(0.8, 0.8, 0.8);
+    cube2.position.set(1.5, -0.5, -1); // Slightly further back
     cube2.userData = {
-      rotationSpeedX: 0.0015,
-      rotationSpeedZ: 0.0008,
-      scrollIntensity: 0.0001, // Slower scroll reaction for rotation
-      bobSpeed: 0.002,
-      bobRange: 0.2,
-      baseY: cube2.position.y,
-      baseRotationX: 0.1,
-      baseRotationZ: 0.2,
+      baseScale: 1.0,
+      baseX: 1.5,
+      baseY: -0.5,
+      rotationSpeedX: 0.003,
+      rotationSpeedY: 0.002,
+      scaleScrollFactor: -0.00025, // Scales down
+      minScale: 0.2, // Minimum scale
+      driftXScrollFactor: -0.00015,
+      driftYScrollFactor: 0.0002,
     };
     scene.add(cube2);
     cubesRef.current.push(cube2);
-
-    // Cube 3: Wireframe, different color, bobs and rotates, different scroll reaction
-    const material3 = new THREE.MeshStandardMaterial({
-      color: 0xffffff, // White
-      wireframe: true,
-      transparent: true,
-      opacity: 0.7,
-    });
-    const cube3 = new THREE.Mesh(cubeGeometry, material3);
-    cube3.position.set(0, 1.5, -2);
-    cube3.scale.set(0.6, 0.6, 0.6);
-    cube3.userData = {
-      rotationSpeedY: -0.0012, // Rotates opposite direction
-      scrollIntensityScale: 0.00005, // Scroll affects scale
-      baseScale: 0.6,
-      baseRotationY: 0,
-    };
-    scene.add(cube3);
-    cubesRef.current.push(cube3);
-
 
     const handleScroll = () => {
       scrollYRef.current = window.scrollY;
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     
-    let time = 0;
     const animate = () => {
       animationFrameIdRef.current = requestAnimationFrame(animate);
-      time += 0.01;
+      const scrollEffect = scrollYRef.current;
       
-      cubesRef.current.forEach((cube, index) => {
+      cubesRef.current.forEach((cube) => {
         const { userData } = cube;
-        const scrollEffect = scrollYRef.current;
 
-        if (index === 0) { // Cube 1
-          cube.rotation.y += userData.rotationSpeedY || 0;
-          cube.rotation.x = (userData.baseRotationX || 0) + scrollEffect * (userData.scrollIntensity || 0);
-        } else if (index === 1) { // Cube 2
-          cube.rotation.x += userData.rotationSpeedX || 0;
-          cube.rotation.z += userData.rotationSpeedZ || 0;
-          cube.position.y = (userData.baseY || 0) + Math.sin(time * (userData.bobSpeed || 1) * (index + 1) * 2) * (userData.bobRange || 0.1);
-          cube.rotation.x = (userData.baseRotationX || 0) + scrollEffect * (userData.scrollIntensity || 0);
-        } else if (index === 2) { // Cube 3
-          cube.rotation.y += userData.rotationSpeedY || 0;
-          const newScale = Math.max(0.2, (userData.baseScale || 0.6) + scrollEffect * (userData.scrollIntensityScale || 0));
-          cube.scale.set(newScale, newScale, newScale);
+        // Base rotation
+        if (userData.rotationSpeedX) cube.rotation.x += userData.rotationSpeedX;
+        if (userData.rotationSpeedY) cube.rotation.y += userData.rotationSpeedY;
+        
+        // Scroll-based scaling (Depth Parallax)
+        let newScale = userData.baseScale + scrollEffect * userData.scaleScrollFactor;
+        if (userData.minScale !== undefined) {
+          newScale = Math.max(userData.minScale, newScale);
         }
-      });
+        newScale = Math.max(0.01, newScale); // Ensure scale is always positive
+        cube.scale.set(newScale, newScale, newScale);
 
+        // Scroll-based axis drift
+        cube.position.x = userData.baseX + scrollEffect * userData.driftXScrollFactor;
+        cube.position.y = userData.baseY + scrollEffect * userData.driftYScrollFactor;
+      });
 
       if (rendererRef.current && sceneRef.current && cameraRef.current) {
         rendererRef.current.render(sceneRef.current, cameraRef.current);
@@ -154,7 +128,7 @@ const ThreeCanvas: React.FC = () => {
       }
     };
     window.addEventListener('resize', handleResize);
-    handleResize();
+    handleResize(); // Call once to set initial size
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
