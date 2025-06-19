@@ -3,7 +3,6 @@
 
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
-// Removed useScrollSection import
 
 const ThreeCanvas: React.FC = () => {
   const mountRef = useRef<HTMLDivElement>(null);
@@ -18,9 +17,7 @@ const ThreeCanvas: React.FC = () => {
   const material2Ref = useRef<THREE.MeshStandardMaterial | null>(null);
 
   const lastScrollYRef = useRef(0);
-  const clockRef = useRef(new THREE.Clock());
-
-  // Removed activeSection from useScrollSection
+  // Removed clockRef as it's not currently used for continuous animation independent of scroll
 
   useEffect(() => {
     if (!mountRef.current || typeof window === 'undefined') return;
@@ -39,84 +36,81 @@ const ThreeCanvas: React.FC = () => {
     currentMount.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.7); // Slightly brighter ambient
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8); // Slightly brighter ambient for lighter cubes
     scene.add(ambientLight);
 
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.0);
     directionalLight.position.set(5, 5, 5);
     scene.add(directionalLight);
 
     const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
     
+    // Light Lavender color for Cube 1
     material1Ref.current = new THREE.MeshStandardMaterial({ 
-      color: 0xBF00FF, // Accent color
-      metalness: 0.3,
-      roughness: 0.5,
-      emissive: 0xBF00FF, // Start with emissive color
-      emissiveIntensity: 0.1,
+      color: 0xD8BFD8, 
+      metalness: 0.2,
+      roughness: 0.6,
+      emissive: 0xD8BFD8,
+      emissiveIntensity: 0.05, // Start with a very subtle glow
     });
     const cube1 = new THREE.Mesh(cubeGeometry, material1Ref.current);
-    cube1.position.set(-2, 0, 0); // Initial positions
+    cube1.position.set(-2, 0, 0); 
     scene.add(cube1);
     cube1Ref.current = cube1;
 
+    // Light Steel Blue color for Cube 2
     material2Ref.current = new THREE.MeshStandardMaterial({
-      color: 0x4B0082, // Primary color
-      metalness: 0.4,
-      roughness: 0.6,
-      emissive: 0x4B0082, // Start with emissive color
-      emissiveIntensity: 0.1,
+      color: 0xB0C4DE, 
+      metalness: 0.3,
+      roughness: 0.5,
+      emissive: 0xB0C4DE,
+      emissiveIntensity: 0.05, // Start with a very subtle glow
     });
     const cube2 = new THREE.Mesh(cubeGeometry, material2Ref.current);
-    cube2.position.set(2, 0, -1); // Initial positions
+    cube2.position.set(2, 0, -1); 
     scene.add(cube2);
     cube2Ref.current = cube2;
     
     lastScrollYRef.current = window.scrollY;
-    clockRef.current = new THREE.Clock();
 
     const animate = () => {
       animationFrameIdRef.current = requestAnimationFrame(animate);
-      // const elapsedTime = clockRef.current.getElapsedTime(); // Use if needed for non-scroll anims
 
       if (cube1Ref.current && cube2Ref.current && material1Ref.current && material2Ref.current) {
         const currentScrollY = window.scrollY;
         const scrollDelta = currentScrollY - lastScrollYRef.current;
 
-        // --- Animations based on scroll ---
         const maxScroll = Math.max(0, document.body.scrollHeight - window.innerHeight);
         const scrollProgress = maxScroll > 0 ? Math.min(currentScrollY / maxScroll, 1) : 0;
 
-        // 1. Rotation on Scroll (momentum-based)
-        const rotationAmount = scrollDelta * 0.005; // Adjust factor for speed
+        // 1. Rotation on Scroll (momentum-based) - Slower
+        const rotationAmount = scrollDelta * 0.0025; // Reduced factor for slower rotation
         cube1Ref.current.rotation.y += rotationAmount;
         cube1Ref.current.rotation.x += rotationAmount * 0.5;
-        cube2Ref.current.rotation.y -= rotationAmount; // Counter-clockwise
+        cube2Ref.current.rotation.y -= rotationAmount; 
         cube2Ref.current.rotation.z -= rotationAmount * 0.5;
 
         // 2. Depth Parallax Movement (scaling)
         const baseScale = 0.8;
-        const scaleFactor = 1.5; // How much it scales up/down
+        const scaleFactor = 1.5; 
         const scale1 = baseScale + scrollProgress * scaleFactor;
-        const scale2 = baseScale + (1 - scrollProgress) * scaleFactor * 0.8; // Cube 2 starts larger and shrinks
+        const scale2 = baseScale + (1 - scrollProgress) * scaleFactor * 0.8; 
         
         cube1Ref.current.scale.set(scale1, scale1, scale1);
-        cube2Ref.current.scale.set(Math.max(0.1, scale2), Math.max(0.1, scale2), Math.max(0.1, scale2)); // Min scale for cube2
+        cube2Ref.current.scale.set(Math.max(0.1, scale2), Math.max(0.1, scale2), Math.max(0.1, scale2));
 
         // 3. Axis Drift
-        const driftRangeX = 3; // Max drift in X units
-        const driftRangeY = 2; // Max drift in Y units
+        const driftRangeX = 3; 
+        const driftRangeY = 2; 
         
-        // Cube 1 drifts from left-center towards right-top
         cube1Ref.current.position.x = -2 + scrollProgress * driftRangeX;
         cube1Ref.current.position.y = 0 + scrollProgress * driftRangeY;
         
-        // Cube 2 drifts from right-center towards left-bottom
         cube2Ref.current.position.x = 2 - scrollProgress * driftRangeX;
         cube2Ref.current.position.y = 0 - scrollProgress * driftRangeY * 0.7;
 
-        // 3. Color Shift (emissive glow change)
-        const emissiveIntensity = 0.1 + scrollProgress * 0.6; // Glow increases with scroll
+        // 4. Color Shift (emissive glow change) - Gentler
+        const emissiveIntensity = 0.05 + scrollProgress * 0.35; // Glow increases more subtly (0.05 to 0.4)
         material1Ref.current.emissiveIntensity = emissiveIntensity;
         material2Ref.current.emissiveIntensity = emissiveIntensity;
         
