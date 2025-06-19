@@ -3,16 +3,15 @@
 
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 const ThreeCanvas: React.FC = () => {
   const mountRef = useRef<HTMLDivElement>(null);
-  const modelRef = useRef<THREE.Group | null>(null); // Single model reference
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const animationFrameIdRef = useRef<number | null>(null);
   const scrollYRef = useRef(0);
+  const cubesRef = useRef<THREE.Mesh[]>([]);
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -23,7 +22,7 @@ const ThreeCanvas: React.FC = () => {
     scene.background = null; 
 
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.z = 5; // Adjusted for a single prominent model
+    camera.position.z = 7; // Adjusted for multiple cubes
     cameraRef.current = camera;
 
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
@@ -32,94 +31,112 @@ const ThreeCanvas: React.FC = () => {
     currentMount.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8); // Slightly increased intensity
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
     scene.add(ambientLight);
 
-    const pointLight = new THREE.PointLight(0xffffff, 1.2, 100); // Increased intensity
-    pointLight.position.set(5, 5, 5);
+    const pointLight = new THREE.PointLight(0xffffff, 1.5, 150);
+    pointLight.position.set(5, 5, 10);
     scene.add(pointLight);
 
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.7);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
     directionalLight.position.set(-5, 5, 5);
     scene.add(directionalLight);
     
+    // Create three cubes
+    cubesRef.current = []; // Clear previous cubes if any
 
-    const createFallbackModel = () => {
-      const geometry = new THREE.BoxGeometry(1, 1, 1); // A single, larger cube
-      const material = new THREE.MeshStandardMaterial({ 
-        color: 0xBF00FF, // Electric purple
-        metalness: 0.5,
-        roughness: 0.5,
-      });
-      const cube = new THREE.Mesh(geometry, material) as unknown as THREE.Group;
-      cube.position.set(0, 0, 0); // Centered
-      cube.userData = {
-        baseRotationX: 0,
-        baseRotationY: 0,
-        rotationSpeedY: 0.001,
-        rotationSpeedX: 0.0005,
-        scrollIntensity: 0.0003,
-      };
-      scene.add(cube);
-      modelRef.current = cube;
+    const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+
+    // Cube 1: Main accent color, rotates on Y and scroll
+    const material1 = new THREE.MeshStandardMaterial({ 
+      color: 0xBF00FF, // Electric purple
+      metalness: 0.4,
+      roughness: 0.6,
+    });
+    const cube1 = new THREE.Mesh(cubeGeometry, material1);
+    cube1.position.set(-2.5, 0, 0);
+    cube1.userData = {
+      rotationSpeedX: 0.0005,
+      rotationSpeedY: 0.001,
+      scrollIntensity: 0.0003,
+      baseRotationX: 0,
+      baseRotationY: 0,
     };
+    scene.add(cube1);
+    cubesRef.current.push(cube1);
 
-    const loader = new GLTFLoader();
-    loader.load(
-      '/models/floating-model.glb',
-      (gltf) => {
-        const loadedModel = gltf.scene;
-        loadedModel.scale.set(1.5, 1.5, 1.5); // Adjust scale as needed for your model
-        loadedModel.position.set(0, 0, 0);   // Center the model
-        
-        // Traverse and ensure materials are suitable for lighting
-        loadedModel.traverse((child) => {
-          if ((child as THREE.Mesh).isMesh) {
-            const mesh = child as THREE.Mesh;
-            // You might want to adjust material properties here if needed
-            // For example, ensuring castShadow and receiveShadow are set
-            mesh.castShadow = true;
-            mesh.receiveShadow = true;
-            if (mesh.material instanceof THREE.MeshStandardMaterial) {
-              // mesh.material.metalness = Math.max(0.1, mesh.material.metalness);
-              // mesh.material.roughness = Math.min(0.9, mesh.material.roughness);
-            }
-          }
-        });
+    // Cube 2: Different color, rotates on X & Z, different scroll reaction
+    const material2 = new THREE.MeshStandardMaterial({
+      color: 0x4B0082, // Indigo
+      metalness: 0.3,
+      roughness: 0.7,
+      wireframe: false,
+    });
+    const cube2 = new THREE.Mesh(cubeGeometry, material2);
+    cube2.position.set(2.5, 0, -1);
+    cube2.scale.set(0.8, 0.8, 0.8);
+    cube2.userData = {
+      rotationSpeedX: 0.0015,
+      rotationSpeedZ: 0.0008,
+      scrollIntensity: 0.0001, // Slower scroll reaction for rotation
+      bobSpeed: 0.002,
+      bobRange: 0.2,
+      baseY: cube2.position.y,
+      baseRotationX: 0.1,
+      baseRotationZ: 0.2,
+    };
+    scene.add(cube2);
+    cubesRef.current.push(cube2);
 
-        loadedModel.userData = {
-          baseRotationX: loadedModel.rotation.x,
-          baseRotationY: loadedModel.rotation.y,
-          rotationSpeedY: 0.001, // Slower base rotation
-          rotationSpeedX: 0.0005,
-          scrollIntensity: 0.0003, // How much scroll affects rotation
-        };
-        scene.add(loadedModel);
-        modelRef.current = loadedModel;
-      },
-      undefined, // onProgress callback (optional)
-      (error) => {
-        console.error('An error happened loading the GLB model (using fallback):', error);
-        createFallbackModel(); // Create fallback if GLB fails
-      }
-    );
+    // Cube 3: Wireframe, different color, bobs and rotates, different scroll reaction
+    const material3 = new THREE.MeshStandardMaterial({
+      color: 0xffffff, // White
+      wireframe: true,
+      transparent: true,
+      opacity: 0.7,
+    });
+    const cube3 = new THREE.Mesh(cubeGeometry, material3);
+    cube3.position.set(0, 1.5, -2);
+    cube3.scale.set(0.6, 0.6, 0.6);
+    cube3.userData = {
+      rotationSpeedY: -0.0012, // Rotates opposite direction
+      scrollIntensityScale: 0.00005, // Scroll affects scale
+      baseScale: 0.6,
+      baseRotationY: 0,
+    };
+    scene.add(cube3);
+    cubesRef.current.push(cube3);
+
 
     const handleScroll = () => {
       scrollYRef.current = window.scrollY;
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     
+    let time = 0;
     const animate = () => {
       animationFrameIdRef.current = requestAnimationFrame(animate);
+      time += 0.01;
       
-      if (modelRef.current && modelRef.current.userData) {
-        const model = modelRef.current;
-        model.rotation.y += model.userData.rotationSpeedY || 0.001;
-        
-        // Scroll-based rotation for a bit more interactivity
-        const scrollRotation = scrollYRef.current * (model.userData.scrollIntensity || 0.0003);
-        model.rotation.x = (model.userData.baseRotationX || 0) + scrollRotation;
-      }
+      cubesRef.current.forEach((cube, index) => {
+        const { userData } = cube;
+        const scrollEffect = scrollYRef.current;
+
+        if (index === 0) { // Cube 1
+          cube.rotation.y += userData.rotationSpeedY || 0;
+          cube.rotation.x = (userData.baseRotationX || 0) + scrollEffect * (userData.scrollIntensity || 0);
+        } else if (index === 1) { // Cube 2
+          cube.rotation.x += userData.rotationSpeedX || 0;
+          cube.rotation.z += userData.rotationSpeedZ || 0;
+          cube.position.y = (userData.baseY || 0) + Math.sin(time * (userData.bobSpeed || 1) * (index + 1) * 2) * (userData.bobRange || 0.1);
+          cube.rotation.x = (userData.baseRotationX || 0) + scrollEffect * (userData.scrollIntensity || 0);
+        } else if (index === 2) { // Cube 3
+          cube.rotation.y += userData.rotationSpeedY || 0;
+          const newScale = Math.max(0.2, (userData.baseScale || 0.6) + scrollEffect * (userData.scrollIntensityScale || 0));
+          cube.scale.set(newScale, newScale, newScale);
+        }
+      });
+
 
       if (rendererRef.current && sceneRef.current && cameraRef.current) {
         rendererRef.current.render(sceneRef.current, cameraRef.current);
@@ -137,7 +154,7 @@ const ThreeCanvas: React.FC = () => {
       }
     };
     window.addEventListener('resize', handleResize);
-    handleResize(); // Initial call
+    handleResize();
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
@@ -146,30 +163,28 @@ const ThreeCanvas: React.FC = () => {
         cancelAnimationFrame(animationFrameIdRef.current);
       }
       
-      if (modelRef.current && sceneRef.current) {
-        sceneRef.current.remove(modelRef.current);
-        modelRef.current.traverse((object) => {
-          if (object instanceof THREE.Mesh) {
-              object.geometry?.dispose();
-              if (Array.isArray(object.material)) {
-                  object.material.forEach(material => material.dispose());
-              } else {
-                  object.material?.dispose();
-              }
+      if (sceneRef.current) {
+        cubesRef.current.forEach(cube => {
+          sceneRef.current?.remove(cube);
+          cube.geometry?.dispose();
+          if (Array.isArray(cube.material)) {
+            cube.material.forEach(material => material.dispose());
+          } else {
+            cube.material?.dispose();
           }
         });
       }
-      modelRef.current = null;
+      cubesRef.current = [];
       
       rendererRef.current?.dispose();
       if (currentMount && rendererRef.current?.domElement?.parentNode === currentMount) {
          currentMount.removeChild(rendererRef.current.domElement);
       }
-      sceneRef.current = null; // Help GC
-      cameraRef.current = null; // Help GC
-      rendererRef.current = null; // Help GC
+      sceneRef.current = null;
+      cameraRef.current = null;
+      rendererRef.current = null;
     };
-  }, []); // Empty dependency array means this effect runs once on mount and cleanup on unmount
+  }, []);
 
   return <div ref={mountRef} className="fixed inset-0 -z-10 opacity-60 pointer-events-none" />;
 };
