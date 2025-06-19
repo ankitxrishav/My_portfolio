@@ -9,52 +9,51 @@ export interface TimelineEvent {
   icon?: React.ComponentType<{ className?: string }>;
 }
 
-// You can use lucide-react icons here if desired, e.g. GraduationCap, Briefcase
-import { GraduationCap, Briefcase, Award } from 'lucide-react';
+import { GraduationCap, Briefcase, Award, Zap, Users } from 'lucide-react'; // Added Zap, Users for variety
 
 export const timelineData: TimelineEvent[] = [
   {
-    id: '1',
-    date: '2023 - Present',
-    title: 'Senior ML Engineer',
-    subtitle: 'Innovatech Solutions Inc.',
-    description: 'Leading development of cutting-edge AI products, focusing on NLP and computer vision. Mentor junior engineers and drive research initiatives.',
-    type: 'work',
-    icon: Briefcase,
-  },
-  {
-    id: '2',
-    date: '2021 - 2023',
-    title: 'Machine Learning Engineer',
-    subtitle: 'DataDriven Corp.',
-    description: 'Designed and implemented machine learning models for predictive analytics and fraud detection. Collaborated with cross-functional teams to integrate ML solutions.',
-    type: 'work',
-    icon: Briefcase,
-  },
-  {
-    id: '3',
-    date: '2020',
-    title: 'Master of Science in Computer Science (AI Specialization)',
-    subtitle: 'Prestigious University',
-    description: 'Focused on advanced machine learning algorithms, deep learning, and big data technologies. Thesis on "Efficient Neural Network Architectures".',
+    id: 'journey-1',
+    date: 'High School (10th Grade)',
+    title: 'DAV Public School, Bikramganj',
+    subtitle: 'Achieved 94%',
+    description: 'Laid a strong academic foundation with a 94% score in my 10th grade, fueling my interest in analytical thinking.',
     type: 'education',
     icon: GraduationCap,
   },
   {
-    id: '4',
-    date: '2018',
-    title: 'Bachelor of Technology in Computer Engineering',
-    subtitle: 'Tech Institute of Excellence',
-    description: 'Graduated with honors, active in coding clubs and AI research groups. Final year project on automated text summarization.',
+    id: 'journey-2',
+    date: 'Senior Secondary (12th Grade)',
+    title: 'PNPS, Sasaram',
+    subtitle: 'Achieved 81%',
+    description: 'Completed my 12th grade with an 81% score. My early love for math and logic naturally guided me toward a career in technology.',
     type: 'education',
     icon: GraduationCap,
+  },
+  {
+    id: 'journey-3',
+    date: '2021 - Present',
+    title: 'B.Tech in AI & ML',
+    subtitle: 'Madhav Institute of Technology and Science (MITS), Gwalior',
+    description: 'Currently in my third year. From day one, I immersed myself in coding, machine learning fundamentals, and hands-on experimentation — from time-series modeling to real-time computer vision systems.',
+    type: 'education',
+    icon: Zap, // Icon changed to reflect active learning/tech
+  },
+  {
+    id: 'journey-4',
+    date: 'During B.Tech',
+    title: 'Evolving into a Creator',
+    subtitle: 'Real-world Problem Solving & Project Development',
+    description: 'Moved beyond classroom knowledge into real-world problem-solving. I explored diverse fields — energy, safety, music, privacy — building tools that merged data, AI, and design.',
+    type: 'milestone',
+    icon: Briefcase,
   },
    {
-    id: '5',
-    date: 'Ongoing',
-    title: 'AI Research & Open Source Contributions',
-    subtitle: 'Personal Endeavors',
-    description: 'Actively contribute to open-source ML projects and publish research papers in AI ethics and explainable AI.',
+    id: 'journey-5',
+    date: 'Looking Ahead',
+    title: 'Vision Going Forward',
+    subtitle: 'Ethical & Engaging AI Systems',
+    description: 'My goal is to build ethical, intelligent, and emotionally resonant AI systems that don’t just function — they engage, adapt, and enhance the world around them.',
     type: 'milestone',
     icon: Award,
   },

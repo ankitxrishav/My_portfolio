@@ -1,5 +1,27 @@
 
-export type Technology = 'Python' | 'TensorFlow' | 'PyTorch' | 'Scikit-learn' | 'Next.js' | 'React' | 'Node.js' | 'MongoDB' | 'SQL' | 'AWS' | 'Docker' | 'TypeScript' | 'TailwindCSS';
+export type Technology = 
+  'Python' | 
+  'TensorFlow' | 
+  'PyTorch' | 
+  'Scikit-learn' | 
+  'Next.js' | 
+  'React' | 
+  'Node.js' | 
+  'MongoDB' | 
+  'SQL' | 
+  'AWS' | 
+  'Docker' | 
+  'TypeScript' | 
+  'TailwindCSS' |
+  'Pandas' |
+  'NumPy' |
+  'Matplotlib' |
+  'Seaborn' |
+  'OpenCV' |
+  'MediaPipe' |
+  'SoundDevice' |
+  'JavaScript' |
+  'HTML/CSS';
 
 export interface Project {
   id: string;
@@ -15,46 +37,44 @@ export interface Project {
 
 export const projectsData: Project[] = [
   {
-    id: '1',
-    name: 'Intelligent Recommendation System',
-    description: 'A personalized recommendation engine for e-commerce, utilizing collaborative filtering and content-based approaches to enhance user engagement and sales.',
-    technologies: ['Python', 'TensorFlow', 'Scikit-learn', 'AWS'],
+    id: 'proj-1',
+    name: 'Electricity Demand Prediction',
+    description: 'A machine learning system that forecasts electricity demand based on historical data and weather features. Built a predictive model using time-series (LSTM) and deep learning techniques. Engineered features like holidays, temperature, solar generation, and seasonality. Visualized demand trends for smart energy planning.',
+    technologies: ['Python', 'Pandas', 'NumPy', 'Matplotlib'],
     imageUrl: 'https://placehold.co/600x400.png',
-    sourceCodeUrl: 'https://github.com/ankitkumar/recommendation-system',
-    liveDemoUrl: '#',
+    sourceCodeUrl: 'https://github.com/ankitxrishav/electricityDemandPrediction.git',
     year: 2023,
-    imageAiHint: 'data algorithm',
+    imageAiHint: 'energy graph',
   },
   {
-    id: '2',
-    name: 'Natural Language Query Interface for Databases',
-    description: 'Developed a system that allows users to query databases using natural language, translating queries into SQL using advanced NLP models.',
-    technologies: ['Python', 'PyTorch', 'SQL', 'Docker'],
+    id: 'proj-2',
+    name: 'Crimes Against Women — Analysis & Prediction',
+    description: 'A social-impact-driven ML pipeline analyzing and predicting trends in crimes against women across Indian states. Cleaned and analyzed crime datasets. Built classification/regression models to predict crime rates. Provided region-wise visual insights for awareness.',
+    technologies: ['Python', 'Scikit-learn', 'Pandas', 'Seaborn', 'Matplotlib'],
     imageUrl: 'https://placehold.co/600x400.png',
-    sourceCodeUrl: 'https://github.com/ankitkumar/nlq-database',
+    sourceCodeUrl: 'https://github.com/ankitxrishav/Crimes-Against-Women-Analysis-and-prediction',
+    year: 2023,
+    imageAiHint: 'data analysis chart',
+  },
+  {
+    id: 'proj-3',
+    name: 'Hand Gesture–Controlled Music Generator',
+    description: 'A creative computer vision project that converts real-time hand gestures into sitar-like musical sounds. Used OpenCV to detect hand positions using webcam input. Mapped gestures to MIDI sounds to generate musical notes. Created a real-time performance experience.',
+    technologies: ['Python', 'OpenCV', 'MediaPipe', 'SoundDevice', 'NumPy'],
+    imageUrl: 'https://placehold.co/600x400.png',
+    sourceCodeUrl: 'https://github.com/ankitxrishav/HandGesture_Music.git',
     year: 2022,
-    imageAiHint: 'database code',
+    imageAiHint: 'hand gesture music',
   },
   {
-    id: '3',
-    name: 'Real-time Anomaly Detection in Sensor Data',
-    description: 'Built a streaming data processing pipeline with an ML model to detect anomalies in IoT sensor data for predictive maintenance.',
-    technologies: ['Python', 'Scikit-learn', 'AWS', 'Node.js'],
+    id: 'proj-4',
+    name: 'FenrirMessage — Secure Messaging App',
+    description: 'A privacy-first messaging application with clean UX and end-to-end message handling. Designed the UI and built the full-stack structure. Focused on minimalism, responsiveness, and data protection. Integrated core messaging features.',
+    technologies: ['JavaScript', 'HTML/CSS', 'Node.js'],
     imageUrl: 'https://placehold.co/600x400.png',
-    sourceCodeUrl: 'https://github.com/ankitkumar/anomaly-detection',
-    liveDemoUrl: '#',
-    year: 2023,
-    imageAiHint: 'iot sensor',
-  },
-  {
-    id: '4',
-    name: 'Portfolio Website (This one!)',
-    description: 'My personal portfolio website built with Next.js, Tailwind CSS, and integrated with GenAI for content generation and 3D animations.',
-    technologies: ['Next.js', 'React', 'TypeScript', 'TailwindCSS'],
-    imageUrl: 'https://placehold.co/600x400.png',
-    sourceCodeUrl: 'https://github.com/ankitkumar/portfolio-nextjs',
+    sourceCodeUrl: 'https://github.com/ankitxrishav/fenrirmessage.git',
     year: 2024,
-    imageAiHint: 'website design',
+    imageAiHint: 'messaging app interface',
   },
 ];
 

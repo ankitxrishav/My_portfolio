@@ -38,10 +38,10 @@ export default function HomePage() {
         >
           <h1 className="font-headline text-5xl md:text-7xl font-bold mb-6 text-foreground">
             <span className="block">Hi, I&apos;m Ankit Kumar</span>
-            <span className="block text-accent">ML Engineer & Innovator</span>
+            <span className="block text-accent">ML Engineer, Creative Technologist, Builder</span>
           </h1>
-          <p className="text-xl md:text-2xl text-muted-foreground mb-10 max-w-2xl mx-auto">
-            Passionate about leveraging machine learning to solve complex problems and build intelligent systems.
+          <p className="text-xl md:text-2xl text-muted-foreground mb-10 max-w-3xl mx-auto">
+            I’m currently in my third year pursuing a B.Tech in Artificial Intelligence and Machine Learning at MITS, Gwalior. I thrive at the intersection of intelligent systems and creative interaction.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
@@ -82,7 +82,7 @@ export default function HomePage() {
       <SectionWrapper
         id="projects"
         title="My Projects"
-        subtitle="A selection of projects I've worked on, showcasing my skills in machine learning and software development."
+        subtitle="Explore a selection of my projects where I merge data, AI, and design to solve real-world challenges. Full source code available on GitHub."
         aria-labelledby="projects-heading"
         className="relative z-10"
       >
