@@ -20,7 +20,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           alt={project.name}
           layout="fill"
           objectFit="cover"
-          className="transition-transform duration-300 group-hover:scale-105"
+          className="transition-transform duration-300 group-hover:scale-105 object-top"
         />
       </div>
       <CardHeader>
