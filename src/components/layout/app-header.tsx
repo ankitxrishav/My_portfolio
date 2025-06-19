@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Code2, Sun, Moon } from 'lucide-react'; // Added Sun and Moon icons
+import { Code2, Sun, Moon } from 'lucide-react'; 
 import { cn } from '@/lib/utils';
 
 const navItems = [
@@ -31,7 +31,7 @@ export default function AppHeader({ currentTheme, toggleTheme }: AppHeaderProps)
           <nav className="hidden md:flex items-center space-x-1">
             {navItems.map((item) => (
               <Button key={item.href} variant="ghost" asChild
-                className="text-sm font-medium transition-colors hover:text-accent text-foreground/70"
+                className="text-sm font-medium transition-colors text-foreground/70" // Removed hover:text-accent
               >
                 <Link href={item.href}>{item.label}</Link>
               </Button>
@@ -42,7 +42,7 @@ export default function AppHeader({ currentTheme, toggleTheme }: AppHeaderProps)
             size="icon"
             onClick={toggleTheme}
             aria-label="Toggle theme"
-            className="text-foreground/70 hover:text-accent transition-colors"
+            className="text-foreground/70 transition-colors" // Removed hover:text-accent, variant="ghost" handles hover state
           >
             {currentTheme === 'light' ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
           </Button>

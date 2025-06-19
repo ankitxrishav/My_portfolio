@@ -16,6 +16,7 @@ export default function RootLayout({
   const [theme, setTheme] = useState('light'); // Default to light for SSR, client will correct
 
   useEffect(() => {
+    // This effect runs only on the client
     const storedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     
@@ -28,6 +29,7 @@ export default function RootLayout({
   }, []);
 
   useEffect(() => {
+    // This effect also runs only on the client
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');
     } else {
@@ -43,6 +45,8 @@ export default function RootLayout({
   return (
     <html lang="en"> 
       <head>
+        <title>Ankit Kumar - ML Engineer Portfolio</title>
+        <meta name="description" content="Portfolio of Ankit Kumar, a Machine Learning Engineer." />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
