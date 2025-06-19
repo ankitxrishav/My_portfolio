@@ -21,7 +21,9 @@ export type Technology =
   'MediaPipe' |
   'SoundDevice' |
   'JavaScript' |
-  'HTML/CSS';
+  'HTML/CSS' |
+  'LSTM' |
+  'Three.js';
 
 export interface Project {
   id: string;
@@ -37,10 +39,20 @@ export interface Project {
 
 export const projectsData: Project[] = [
   {
+    id: 'proj-portfolio',
+    name: 'Personal Portfolio Website',
+    description: 'The interactive portfolio website you are currently viewing. Designed to showcase my skills, projects, and journey as an ML Engineer and Creative Technologist. Built with Next.js, React, Tailwind CSS, and Three.js for dynamic 3D visuals.',
+    technologies: ['Next.js', 'React', 'TypeScript', 'TailwindCSS', 'Three.js'],
+    imageUrl: 'https://placehold.co/600x400.png',
+    sourceCodeUrl: 'https://github.com/ankitxrishav/', 
+    year: new Date().getFullYear(),
+    imageAiHint: 'web design portfolio',
+  },
+  {
     id: 'proj-1',
     name: 'Electricity Demand Prediction',
     description: 'A machine learning system that forecasts electricity demand based on historical data and weather features. Built a predictive model using time-series (LSTM) and deep learning techniques. Engineered features like holidays, temperature, solar generation, and seasonality. Visualized demand trends for smart energy planning.',
-    technologies: ['Python', 'Pandas', 'NumPy', 'Matplotlib'],
+    technologies: ['Python', 'Pandas', 'NumPy', 'Matplotlib', 'LSTM'],
     imageUrl: 'https://placehold.co/600x400.png',
     sourceCodeUrl: 'https://github.com/ankitxrishav/electricityDemandPrediction.git',
     year: 2023,
@@ -79,3 +91,4 @@ export const projectsData: Project[] = [
 ];
 
 export const allTechnologies: Technology[] = Array.from(new Set(projectsData.flatMap(p => p.technologies))).sort() as Technology[];
+

@@ -22,7 +22,7 @@
     --secondary-foreground: 240 5.9% 10%; /* Dark Gray for text on secondary */
 
     --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%; /* Medium Gray */
+    --muted-foreground: 240 5% 20%; /* Darker Gray for muted text in light theme */
 
     --accent: 285 90% 65%; /* Brighter Electric Purple */
     --accent-foreground: 0 0% 98%; /* Light text for contrast on accent */
