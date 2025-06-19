@@ -4,6 +4,7 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import AppHeader from '@/components/layout/app-header';
 import AppFooter from '@/components/layout/app-footer';
+import ThreeCanvas from '@/components/three-canvas';
 
 export const metadata: Metadata = {
   title: 'Ankit Kumar - ML Engineer Portfolio',
@@ -24,8 +25,9 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased bg-background text-foreground min-h-screen flex flex-col">
+        <ThreeCanvas />
         <AppHeader />
-        <main className="flex-grow container mx-auto px-4 py-8">
+        <main className="flex-grow container mx-auto px-4 py-8 relative z-10">
           {children}
         </main>
         <AppFooter />

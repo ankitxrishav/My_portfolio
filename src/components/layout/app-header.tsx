@@ -2,36 +2,33 @@
 "use client";
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+// import { usePathname } from 'next/navigation'; // No longer needed for active state
 import { Button } from '@/components/ui/button';
-import { Code2 } from 'lucide-react'; // Example Icon
+import { Code2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
-  { href: '/', label: 'Home' },
-  { href: '/about', label: 'About Me' },
-  { href: '/projects', label: 'Projects' },
-  { href: '/journey', label: 'Journey' },
-  { href: '/contact', label: 'Contact' },
+  { href: '/#home', label: 'Home' },
+  { href: '/#about', label: 'About Me' },
+  { href: '/#projects', label: 'Projects' },
+  { href: '/#journey', label: 'Journey' },
+  { href: '/#contact', label: 'Contact' },
 ];
 
 export default function AppHeader() {
-  const pathname = usePathname();
+  // const pathname = usePathname(); // Removed for simplicity with fragment links
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 max-w-screen-2xl items-center justify-between">
-        <Link href="/" className="flex items-center space-x-2 font-headline text-xl font-bold text-primary-foreground hover:text-accent transition-colors">
+        <Link href="/#home" className="flex items-center space-x-2 font-headline text-xl font-bold text-primary-foreground hover:text-accent transition-colors">
           <Code2 className="h-6 w-6 text-accent" />
           <span>Ankit Kumar</span>
         </Link>
         <nav className="hidden md:flex items-center space-x-2">
           {navItems.map((item) => (
             <Button key={item.href} variant="ghost" asChild
-              className={cn(
-                "text-sm font-medium transition-colors hover:text-accent",
-                pathname === item.href ? "text-accent" : "text-foreground/70"
-              )}
+              className="text-sm font-medium transition-colors hover:text-accent text-foreground/70"
             >
               <Link href={item.href}>{item.label}</Link>
             </Button>

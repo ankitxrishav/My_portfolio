@@ -1,15 +1,3 @@
 
-import SectionWrapper from '@/components/ui/section-wrapper';
-import ContactForm from '@/components/contact/contact-form';
-
-export default function ContactPage() {
-  return (
-    <SectionWrapper
-      title="Contact Me"
-      subtitle="I'm always open to discussing new projects, creative ideas, or opportunities to be part of your visions."
-      aria-labelledby="contact-heading"
-    >
-      <ContactForm />
-    </SectionWrapper>
-  );
-}
+// This file is no longer needed as Contact content is part of the main page.tsx.
+// Delete this file.
