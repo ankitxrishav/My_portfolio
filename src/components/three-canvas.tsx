@@ -21,9 +21,12 @@ const ThreeCanvas: React.FC = () => {
   const sphereRefs = useRef<THREE.Mesh[]>([]);
   const sphereData = useRef<{direction: number, speed: number, initialY: number}[]>([]);
 
-
   const lastScrollYRef = useRef(0);
   const clockRef = useRef<THREE.Clock | null>(null);
+
+  const spheresActiveRef = useRef(false);
+  const heroSectionHeightThresholdRef = useRef(0);
+
 
   useEffect(() => {
     if (!mountRef.current || typeof window === 'undefined') return;
@@ -78,9 +81,9 @@ const ThreeCanvas: React.FC = () => {
     cube2Ref.current = cube2;
 
     // Spheres
-    const sphereColors = [0xD8BFD8, 0xB0C4DE, 0xBF00FF, 0x8A2BE2, 0xADD8E6]; // Theme-related colors
+    const sphereColors = [0xD8BFD8, 0xB0C4DE, 0xBF00FF, 0x8A2BE2, 0xADD8E6]; 
     for (let i = 0; i < NUM_SPHERES; i++) {
-      const radius = Math.random() * 0.1 + 0.05; // Small spheres
+      const radius = Math.random() * 0.1 + 0.05; 
       const geometry = new THREE.SphereGeometry(radius, 16, 16);
       const material = new THREE.MeshStandardMaterial({
         color: sphereColors[Math.floor(Math.random() * sphereColors.length)],
@@ -91,28 +94,42 @@ const ThreeCanvas: React.FC = () => {
       });
       const sphere = new THREE.Mesh(geometry, material);
       
-      const initialY = (Math.random() - 0.5) * 12; // Spread along Y, wider range
+      const initialY = (Math.random() - 0.5) * 12; 
       sphere.position.set(
-        (Math.random() - 0.5) * 12, // Spread along X, wider range
+        (Math.random() - 0.5) * 12, 
         initialY,
-        (Math.random() * -4) - 1.5 // Positioned behind cubes (z from -1.5 to -5.5)
+        (Math.random() * -4) - 1.5 
       );
+      sphere.visible = false; // Initially invisible
       
       scene.add(sphere);
       sphereRefs.current.push(sphere);
       sphereData.current.push({
         direction: Math.random() < 0.5 ? 1 : -1,
-        speed: Math.random() * 0.015 + 0.005, // Adjusted speed
+        speed: Math.random() * 0.015 + 0.005, 
         initialY: initialY
       });
     }
     
     lastScrollYRef.current = window.scrollY;
 
+    // Scroll handling for spheres
+    heroSectionHeightThresholdRef.current = window.innerHeight * 0.8; // Activate spheres after 80% of viewport height scrolled
+
+    const handleScrollForSpheres = () => {
+      if (window.scrollY > heroSectionHeightThresholdRef.current) {
+        spheresActiveRef.current = true;
+      } else {
+        spheresActiveRef.current = false;
+      }
+    };
+    window.addEventListener('scroll', handleScrollForSpheres, { passive: true });
+    handleScrollForSpheres(); // Initial check
+
     const animate = () => {
       animationFrameIdRef.current = requestAnimationFrame(animate);
       const delta = clockRef.current?.getDelta() || 0;
-      const elapsedTime = clockRef.current?.getElapsedTime() || 0;
+      // const elapsedTime = clockRef.current?.getElapsedTime() || 0; // Keep if needed for other time-based effects
 
       // Cube Animations
       if (cube1Ref.current && cube2Ref.current && material1Ref.current && material2Ref.current) {
@@ -121,9 +138,13 @@ const ThreeCanvas: React.FC = () => {
         const maxScroll = Math.max(0, document.body.scrollHeight - window.innerHeight);
         const scrollProgress = maxScroll > 0 ? Math.min(currentScrollY / maxScroll, 1) : 0;
 
-        cube1Ref.current.rotation.y += 0.1 * delta;
-        cube2Ref.current.rotation.y -= 0.08 * delta;
+        // Continuous micro-animation
+        cube1Ref.current.rotation.x += 0.03 * delta;
+        cube1Ref.current.rotation.y += 0.05 * delta;
+        cube2Ref.current.rotation.x -= 0.02 * delta;
+        cube2Ref.current.rotation.y -= 0.04 * delta;
 
+        // Scroll-based animation
         const scrollRotationAmount = scrollDelta * 0.0025; 
         cube1Ref.current.rotation.y += scrollRotationAmount;
         cube1Ref.current.rotation.x += scrollRotationAmount * 0.5;
@@ -152,24 +173,26 @@ const ThreeCanvas: React.FC = () => {
       }
 
       // Sphere Animations
-      const xBounds = 7; // Horizontal boundary for spheres to wrap around
-      const yBounds = 7; // Vertical boundary for spheres
-      sphereRefs.current.forEach((sphere, i) => {
-        const data = sphereData.current[i];
-        sphere.position.x += data.speed * data.direction * delta * 60; // Multiply by delta and a factor for consistent speed
-        
-        // Gentle sinusoidal vertical movement for variation
-        sphere.position.y = data.initialY + Math.sin(elapsedTime * 0.5 + i * 0.5) * 0.5;
+      const xBounds = 7; 
+      if (spheresActiveRef.current) {
+        sphereRefs.current.forEach((sphere, i) => {
+          sphere.visible = true;
+          const data = sphereData.current[i];
+          sphere.position.x += data.speed * data.direction * delta * 60; // Horizontal movement
+          sphere.position.y = data.initialY; // Keep Y position fixed
 
-
-        if (data.direction === 1 && sphere.position.x > xBounds) {
-          sphere.position.x = -xBounds;
-          data.initialY = (Math.random() - 0.5) * yBounds * 1.5; // Reset Y for variety
-        } else if (data.direction === -1 && sphere.position.x < -xBounds) {
-          sphere.position.x = xBounds;
-          data.initialY = (Math.random() - 0.5) * yBounds * 1.5; // Reset Y for variety
-        }
-      });
+          // Horizontal wrapping
+          if (data.direction === 1 && sphere.position.x > xBounds) {
+            sphere.position.x = -xBounds; 
+          } else if (data.direction === -1 && sphere.position.x < -xBounds) {
+            sphere.position.x = xBounds; 
+          }
+        });
+      } else {
+        sphereRefs.current.forEach(sphere => {
+          sphere.visible = false; // Hide spheres if not active
+        });
+      }
 
 
       if (rendererRef.current && sceneRef.current && cameraRef.current) {
@@ -192,6 +215,7 @@ const ThreeCanvas: React.FC = () => {
 
     return () => {
       window.removeEventListener('resize', handleResize);
+      window.removeEventListener('scroll', handleScrollForSpheres);
       if (animationFrameIdRef.current) {
         cancelAnimationFrame(animationFrameIdRef.current);
       }
