@@ -9,7 +9,7 @@ import { UserCircle, Linkedin, Github } from 'lucide-react';
 
 export default function AboutContent() {
   const [aboutMeText] = useState( 
-    "Whether it’s transforming gesture motion into sitar music, forecasting electricity demand, or developing privacy-first communication apps — I aim to turn complex problems into elegant, impactful solutions. I believe that great tech doesn’t just work — it resonates.\n\nOutside of coding, I’m deeply curious about human-centered design, immersive UI, and experimental digital tools that make tech feel alive."
+    "I’m currently in my third year pursuing a B.Tech in Artificial Intelligence and Machine Learning at MITS, Gwalior. I thrive at the intersection of intelligent systems and creative interaction.\n\nWhether it’s transforming gesture motion into sitar music, forecasting electricity demand, or developing privacy-first communication apps — I aim to turn complex problems into elegant, impactful solutions. I believe that great tech doesn’t just work — it resonates.\n\nOutside of coding, I’m deeply curious about human-centered design, immersive UI, and experimental digital tools that make tech feel alive."
   );
 
   return (
