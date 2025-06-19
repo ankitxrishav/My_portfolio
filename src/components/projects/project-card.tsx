@@ -14,14 +14,13 @@ interface ProjectCardProps {
 export default function ProjectCard({ project }: ProjectCardProps) {
   return (
     <Card className="group flex flex-col h-full overflow-hidden bg-card shadow-lg hover:shadow-accent/20 transition-all duration-300 transform hover:scale-[1.01] rounded-lg">
-      <div className="relative w-full h-48">
+      <div className="relative w-full h-48 bg-muted/30"> {/* Added a light background for contain */}
         <Image
           src={project.imageUrl}
           alt={project.name}
           layout="fill"
-          objectFit="cover"
+          objectFit="contain" // Changed from "cover" to "contain"
           className="transition-transform duration-300 group-hover:scale-105"
-          data-ai-hint={project.imageAiHint || "technology abstract"}
         />
       </div>
       <CardHeader>
