@@ -14,9 +14,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [theme, setTheme] = useState('light'); 
+  const [theme, setTheme] = useState('light'); // Default to light theme initially
 
   useEffect(() => {
+    // This effect runs once on mount to check stored preferences or system settings
     const storedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     
@@ -25,9 +26,11 @@ export default function RootLayout({
     } else if (prefersDark) {
       setTheme('dark');
     }
+    // If no stored theme and no dark preference, it remains 'light' as per initial state
   }, []); 
 
   useEffect(() => {
+    // This effect applies the theme to the document and updates localStorage
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');
     } else {

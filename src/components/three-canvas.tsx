@@ -17,7 +17,7 @@ const ThreeCanvas: React.FC = () => {
   const material2Ref = useRef<THREE.MeshStandardMaterial | null>(null);
 
   const lastScrollYRef = useRef(0);
-  // Removed clockRef as it's not currently used for continuous animation independent of scroll
+  const clockRef = useRef<THREE.Clock | null>(null); // Added clock for continuous animation
 
   useEffect(() => {
     if (!mountRef.current || typeof window === 'undefined') return;
@@ -35,8 +35,10 @@ const ThreeCanvas: React.FC = () => {
     renderer.setPixelRatio(window.devicePixelRatio);
     currentMount.appendChild(renderer.domElement);
     rendererRef.current = renderer;
+    
+    clockRef.current = new THREE.Clock(); // Initialize clock
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8); // Slightly brighter ambient for lighter cubes
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
     scene.add(ambientLight);
 
     const directionalLight = new THREE.DirectionalLight(0xffffff, 1.0);
@@ -45,26 +47,24 @@ const ThreeCanvas: React.FC = () => {
 
     const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
     
-    // Light Lavender color for Cube 1
     material1Ref.current = new THREE.MeshStandardMaterial({ 
       color: 0xD8BFD8, 
       metalness: 0.2,
       roughness: 0.6,
       emissive: 0xD8BFD8,
-      emissiveIntensity: 0.05, // Start with a very subtle glow
+      emissiveIntensity: 0.05,
     });
     const cube1 = new THREE.Mesh(cubeGeometry, material1Ref.current);
     cube1.position.set(-2, 0, 0); 
     scene.add(cube1);
     cube1Ref.current = cube1;
 
-    // Light Steel Blue color for Cube 2
     material2Ref.current = new THREE.MeshStandardMaterial({
       color: 0xB0C4DE, 
       metalness: 0.3,
       roughness: 0.5,
       emissive: 0xB0C4DE,
-      emissiveIntensity: 0.05, // Start with a very subtle glow
+      emissiveIntensity: 0.05,
     });
     const cube2 = new THREE.Mesh(cubeGeometry, material2Ref.current);
     cube2.position.set(2, 0, -1); 
@@ -75,6 +75,7 @@ const ThreeCanvas: React.FC = () => {
 
     const animate = () => {
       animationFrameIdRef.current = requestAnimationFrame(animate);
+      const delta = clockRef.current?.getDelta() || 0; // Get time delta for continuous animation
 
       if (cube1Ref.current && cube2Ref.current && material1Ref.current && material2Ref.current) {
         const currentScrollY = window.scrollY;
@@ -83,12 +84,16 @@ const ThreeCanvas: React.FC = () => {
         const maxScroll = Math.max(0, document.body.scrollHeight - window.innerHeight);
         const scrollProgress = maxScroll > 0 ? Math.min(currentScrollY / maxScroll, 1) : 0;
 
+        // Continuous micro-animation (slow rotation)
+        cube1Ref.current.rotation.y += 0.1 * delta; // Adjust speed as needed
+        cube2Ref.current.rotation.y -= 0.08 * delta; // Adjust speed as needed
+
         // 1. Rotation on Scroll (momentum-based) - Slower
-        const rotationAmount = scrollDelta * 0.0025; // Reduced factor for slower rotation
-        cube1Ref.current.rotation.y += rotationAmount;
-        cube1Ref.current.rotation.x += rotationAmount * 0.5;
-        cube2Ref.current.rotation.y -= rotationAmount; 
-        cube2Ref.current.rotation.z -= rotationAmount * 0.5;
+        const scrollRotationAmount = scrollDelta * 0.0025; 
+        cube1Ref.current.rotation.y += scrollRotationAmount;
+        cube1Ref.current.rotation.x += scrollRotationAmount * 0.5;
+        cube2Ref.current.rotation.y -= scrollRotationAmount; 
+        cube2Ref.current.rotation.z -= scrollRotationAmount * 0.5;
 
         // 2. Depth Parallax Movement (scaling)
         const baseScale = 0.8;
@@ -110,7 +115,7 @@ const ThreeCanvas: React.FC = () => {
         cube2Ref.current.position.y = 0 - scrollProgress * driftRangeY * 0.7;
 
         // 4. Color Shift (emissive glow change) - Gentler
-        const emissiveIntensity = 0.05 + scrollProgress * 0.35; // Glow increases more subtly (0.05 to 0.4)
+        const emissiveIntensity = 0.05 + scrollProgress * 0.35;
         material1Ref.current.emissiveIntensity = emissiveIntensity;
         material2Ref.current.emissiveIntensity = emissiveIntensity;
         
@@ -157,6 +162,7 @@ const ThreeCanvas: React.FC = () => {
       sceneRef.current = null;
       cameraRef.current = null;
       rendererRef.current = null;
+      clockRef.current = null; 
     };
   }, []);
 
