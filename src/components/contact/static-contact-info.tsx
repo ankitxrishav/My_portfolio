@@ -20,7 +20,7 @@ export default function StaticContactInfo() {
         
         <div className="space-y-3">
           <Button variant="outline" asChild className="w-full sm:w-auto sm:mr-2 hover:border-accent hover:text-accent">
-            <a href="mailto:ankit.kumar.ml@example.com">
+            <a href="mailto:ankitkrpt@gmail.com">
               <Mail className="mr-2 h-5 w-5" /> Email Me
             </a>
           </Button>
@@ -33,18 +33,18 @@ export default function StaticContactInfo() {
 
         <div className="flex justify-center space-x-4 pt-4">
           <Button variant="outline" size="icon" asChild className="hover:border-accent hover:text-accent">
-            <a href="https://linkedin.com/in/ankitkumar-ml" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn Profile">
+            <a href="https://www.linkedin.com/in/ankitkx" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn Profile">
               <Linkedin className="h-6 w-6" />
             </a>
           </Button>
           <Button variant="outline" size="icon" asChild className="hover:border-accent hover:text-accent">
-            <a href="https://github.com/ankitkumar" target="_blank" rel="noopener noreferrer" aria-label="GitHub Profile">
+            <a href="https://github.com/ankitxrishav" target="_blank" rel="noopener noreferrer" aria-label="GitHub Profile">
               <Github className="h-6 w-6" />
             </a>
           </Button>
         </div>
         <p className="text-sm text-muted-foreground pt-4">
-          ankit.kumar.ml@example.com
+          ankitkrpt@gmail.com
         </p>
       </CardContent>
     </Card>

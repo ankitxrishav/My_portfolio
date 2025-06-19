@@ -34,7 +34,7 @@ export default function AboutContent() {
           </p>
           <div className="mt-4 flex justify-center space-x-3">
             <Button variant="outline" size="icon" asChild className="hover:border-accent hover:text-accent">
-              <a href="https://linkedin.com/in/ankitkumar-ml" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn Profile">
+              <a href="https://www.linkedin.com/in/ankitkx" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn Profile">
                 <Linkedin className="h-5 w-5" />
               </a>
             </Button>

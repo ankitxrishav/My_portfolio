@@ -38,7 +38,10 @@ export default function HomePage() {
         >
           <h1 className="font-headline text-5xl md:text-7xl font-bold mb-6 text-foreground">
             <span className="block">Hi, I&apos;m Ankit Kumar</span>
-            <span className="block text-accent">ML Engineer, Creative Technologist, Builder</span>
+            <span className="block text-accent">
+              ML Engineer <br />
+              Creative Technologist, Builder
+            </span>
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground mb-10 max-w-3xl mx-auto">
             Hi, I’m Ankit Kumar — a passionate Machine Learning engineer, creative technologist, and builder at heart.
@@ -89,27 +92,28 @@ export default function HomePage() {
         <ProjectList />
       </SectionWrapper>
 
-      {/* Journey Section */}
-      <SectionWrapper
-        id="journey"
-        title="My Journey"
-        subtitle="Follow my professional path, key milestones, and educational background."
-        aria-labelledby="journey-heading"
-        className="relative z-10"
-      >
-        <TimelineDisplay />
-      </SectionWrapper>
+      {/* Journey and Contact Sections - Side by Side */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-8 lg:gap-12">
+        <SectionWrapper
+          id="journey"
+          title="My Journey"
+          subtitle="Follow my professional path, key milestones, and educational background."
+          aria-labelledby="journey-heading"
+          className="relative z-10 md:col-span-1"
+        >
+          <TimelineDisplay />
+        </SectionWrapper>
 
-      {/* Contact Section */}
-      <SectionWrapper
-        id="contact"
-        title="Contact Me"
-        subtitle="I'm always open to discussing new projects, creative ideas, or opportunities to be part of your visions."
-        aria-labelledby="contact-heading"
-        className="relative z-10"
-      >
-        <StaticContactInfo />
-      </SectionWrapper>
+        <SectionWrapper
+          id="contact"
+          title="Contact Me"
+          subtitle="I'm always open to discussing new projects, creative ideas, or opportunities to be part of your visions."
+          aria-labelledby="contact-heading"
+          className="relative z-10 md:col-span-1"
+        >
+          <StaticContactInfo />
+        </SectionWrapper>
+      </div>
     </div>
   );
 }
