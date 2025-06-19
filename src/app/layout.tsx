@@ -14,18 +14,18 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [theme, setTheme] = useState('light'); // Always default to light theme initially
+  const [theme, setTheme] = useState('dark'); // Default to dark theme initially
 
   useEffect(() => {
-    // This effect runs once on mount to check if a dark theme was explicitly set by user
+    // This effect runs once on mount to check if a light theme was explicitly set by user
     const storedTheme = localStorage.getItem('theme');
-    if (storedTheme === 'dark') {
-      setTheme('dark');
+    if (storedTheme === 'light') {
+      setTheme('light');
     } else {
-      // For any other case (no stored theme, or stored theme is light), ensure light theme.
-      setTheme('light'); 
-      // Optionally, you might want to clear or set localStorage to 'light' here if consistency is desired
-      // localStorage.setItem('theme', 'light'); 
+      // For any other case (no stored theme, or stored theme is dark), ensure dark theme.
+      setTheme('dark'); 
+      // Optionally, you might want to clear or set localStorage to 'dark' here if consistency is desired
+      // localStorage.setItem('theme', 'dark'); 
     }
   }, []); 
 
