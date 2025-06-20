@@ -20,13 +20,16 @@ interface HeroTextLineProps {
 
 const HeroTextLine = ({ text, className }: HeroTextLineProps) => {
   return (
-    <div
-      className={cn(
-        "hero-text-line-wrapper", // Keep basic wrapper class if any global styles depend on it
-        className
-      )}
-    >
-      {text}
+    <div className={cn("hero-text-line-wrapper", className)}>
+      {text.split("").map((char, index) => (
+        <span
+          key={index}
+          className="hero-char"
+          style={{ animationDelay: `${index * 0.03}s` }}
+        >
+          {char === " " ? "\u00A0" : char} {/* Replace space with non-breaking space for layout consistency */}
+        </span>
+      ))}
     </div>
   );
 };
@@ -42,7 +45,7 @@ export default function HomePage() {
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll(); // Call once to ensure initial state is set (e.g. if page loads scrolled)
+    handleScroll(); 
 
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);

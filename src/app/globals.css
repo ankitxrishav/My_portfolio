@@ -116,9 +116,28 @@
   }
 }
 
-.hero-text-line-wrapper {
-  /* Base styles for the line wrapper */
-  /* transition property is now handled inline in the component for dynamic scale */
+@keyframes heroCharWaveEffect {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-4px) scale(1.02);
+    opacity: 0.8;
+  }
 }
 
-/* Removed .hero-char styles as they are no longer needed for complex animations */
+.hero-char {
+  display: inline-block; /* Necessary for transforms */
+  transform-origin: bottom;
+  will-change: transform, opacity;
+}
+
+.hero-text-line-wrapper:hover .hero-char {
+  animation-name: heroCharWaveEffect;
+  animation-duration: 0.6s; 
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: 1; 
+  animation-fill-mode: forwards; 
+  /* animation-delay is applied inline in the component */
+}
