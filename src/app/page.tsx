@@ -44,7 +44,7 @@ export default function HomePage() {
           <h1 className="font-headline text-5xl md:text-7xl font-bold mb-6 text-foreground">
             <HeroTextLine text="Hi, I'm Ankit Kumar" className="animate-float" />
             <HeroTextLine text="ML Engineer" className="text-accent dark:text-accent animate-float" delay="0.2s" />
-            <HeroTextLine text="Creative Technologist, Builder" className="text-accent dark:text-accent animate-float" delay="0.4s" />
+            <HeroTextLine text="I play with code and fun tech ideas." className="text-accent dark:text-accent animate-float" delay="0.4s" />
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground mb-10 max-w-3xl mx-auto">
             A passionate Machine Learning engineer, creative technologist, and builder at heart.
