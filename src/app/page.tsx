@@ -1,7 +1,6 @@
 
 "use client";
 
-import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import SectionWrapper from '@/components/ui/section-wrapper';
 import Link from 'next/link';
@@ -28,28 +27,17 @@ const HeroTextLine = ({ text, className }: HeroTextLineProps) => {
 
 
 export default function HomePage() {
-  const [heroScrollY, setHeroScrollY] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      setHeroScrollY(currentScrollY);
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll(); 
-
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   return (
-    <div className="flex flex-col">
-      {/* Hero Section */}
-      <section id="home" className="min-h-screen flex flex-col items-center justify-center text-center py-16 relative z-10 overflow-hidden">
-        <div
-          className="relative z-10" 
-          style={{ transform: `translateY(${heroScrollY * 0.2}px)` }}
-        >
+    // This div is a direct child of .horizontal-scroll-container
+    // It uses flex to lay out its children (sections) horizontally.
+    <div className="flex flex-row">
+      {/* Hero Section - Becomes a horizontal slide */}
+      <section 
+        id="home" 
+        className="w-screen h-screen flex flex-col items-center justify-center text-center p-4 md:p-8 relative z-10 overflow-hidden flex-shrink-0"
+      >
+        <div className="relative z-10">
           <h1 className="font-headline text-5xl md:text-7xl font-bold mb-6 text-foreground">
             <HeroTextLine text="Hi, I'm Ankit Kumar" className="animate-float" />
             <HeroTextLine text="ML Engineer" className="text-accent dark:text-accent animate-float [animation-delay:0.2s]" />
@@ -65,7 +53,8 @@ export default function HomePage() {
               className="bg-accent text-accent-foreground hover:bg-accent/90 hover:text-foreground shadow-lg transform hover:scale-105 transition-transform duration-200"
               data-cursor-interactive="true"
             >
-              <Link href="/#projects">
+              {/* Note: These links will require JS for horizontal scroll later */}
+              <Link href="/#projects"> 
                 View My Work <Eye className="ml-2 h-5 w-5" />
               </Link>
             </Button>
@@ -84,48 +73,65 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* About Section */}
-      <SectionWrapper
-        id="about"
-        title="About Me"
-        subtitle="Discover more about my background, skills, and passion for machine learning."
-        aria-labelledby="about-heading"
-        className="relative z-10"
-      >
-        <AboutContent />
-      </SectionWrapper>
+      {/* About Section - Becomes a horizontal slide */}
+      {/* Outer div for 100vw/100vh and flex centering */}
+      <div id="about-section-container" className="w-screen h-screen flex-shrink-0 flex items-center justify-center p-4 md:p-8 relative z-10">
+        <SectionWrapper
+          id="about"
+          title="About Me"
+          subtitle="Discover more about my background, skills, and passion for machine learning."
+          aria-labelledby="about-heading"
+          className="w-full h-full flex flex-col" // SectionWrapper manages its internal padding and content centering
+        >
+          {/* Max-width container for the actual content if needed, or let AboutContent manage it */}
+          <div className="flex-grow flex items-center justify-center">
+            <AboutContent />
+          </div>
+        </SectionWrapper>
+      </div>
+      
+      {/* Projects Section - Becomes a horizontal slide */}
+      <div id="projects-section-container" className="w-screen h-screen flex-shrink-0 flex items-center justify-center p-4 md:p-8 relative z-10">
+        <SectionWrapper
+          id="projects"
+          title="My Projects"
+          subtitle={<>Here’s a curated list of some of my best work, available on my GitHub: <a href='https://github.com/ankitxrishav' target='_blank' rel='noopener noreferrer' className='text-accent hover:underline' data-cursor-interactive="true">github.com/ankitxrishav</a></>}
+          aria-labelledby="projects-heading"
+          className="w-full h-full flex flex-col"
+        >
+          <div className="flex-grow flex items-center justify-center w-full"> {/* Ensure ProjectList can use width */}
+             <ProjectList />
+          </div>
+        </SectionWrapper>
+      </div>
 
-      {/* Projects Section */}
-      <SectionWrapper
-        id="projects"
-        title="My Projects"
-        subtitle={<>Here’s a curated list of some of my best work, available on my GitHub: <a href='https://github.com/ankitxrishav' target='_blank' rel='noopener noreferrer' className='text-accent hover:underline' data-cursor-interactive="true">github.com/ankitxrishav</a></>}
-        aria-labelledby="projects-heading"
-        className="relative z-10"
-      >
-        <ProjectList />
-      </SectionWrapper>
-
-      {/* Journey and Contact Sections - Side by Side */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-8 lg:gap-12">
+      {/* Journey Section - Becomes a horizontal slide */}
+       <div id="journey-section-container" className="w-screen h-screen flex-shrink-0 flex items-center justify-center p-4 md:p-8 relative z-10">
         <SectionWrapper
           id="journey"
           title="My Journey"
           subtitle="Follow my professional path, key milestones, and educational background."
           aria-labelledby="journey-heading"
-          className="relative z-10 md:col-span-1"
+          className="w-full h-full flex flex-col"
         >
-          <TimelineDisplay />
+          <div className="flex-grow flex items-center justify-center">
+            <TimelineDisplay />
+          </div>
         </SectionWrapper>
+      </div>
 
+      {/* Contact Section - Becomes a horizontal slide */}
+      <div id="contact-section-container" className="w-screen h-screen flex-shrink-0 flex items-center justify-center p-4 md:p-8 relative z-10">
         <SectionWrapper
           id="contact"
           title="Contact Me"
           subtitle="I'm always open to discussing new projects, creative ideas, or opportunities to be part of your visions."
           aria-labelledby="contact-heading"
-          className="relative z-10 md:col-span-1 flex flex-col justify-center"
+          className="w-full h-full flex flex-col"
         >
-          <StaticContactInfo />
+           <div className="flex-grow flex items-center justify-center">
+            <StaticContactInfo />
+          </div>
         </SectionWrapper>
       </div>
     </div>

@@ -61,13 +61,18 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
       </head>
-      <body className="font-body antialiased bg-background text-foreground min-h-screen flex flex-col">
+      {/* Ensure body takes full height and manages overall page structure */}
+      <body className="font-body antialiased bg-background text-foreground h-screen flex flex-col overflow-hidden">
         <CustomCursor />
-        <ThreeCanvas />
+        {/* ThreeCanvas is fixed, so it's outside the main flow */}
+        <ThreeCanvas /> 
         <AppHeader currentTheme={theme} toggleTheme={toggleTheme} />
-        <main className="flex-grow container mx-auto px-4 py-8 relative z-10">
+        
+        {/* Horizontal scroll container takes remaining space and handles content scrolling */}
+        <div className="horizontal-scroll-container flex-grow">
           {children}
-        </main>
+        </div>
+        
         <AppFooter />
         <Toaster />
       </body>
