@@ -61,17 +61,17 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
       </head>
-      {/* Ensure body takes full height and manages overall page structure */}
-      <body className="font-body antialiased bg-background text-foreground h-screen flex flex-col overflow-hidden">
+      {/* Body manages overall page structure with vertical flow */}
+      <body className="font-body antialiased bg-background text-foreground min-h-screen flex flex-col">
         <CustomCursor />
         {/* ThreeCanvas is fixed, so it's outside the main flow */}
         <ThreeCanvas /> 
         <AppHeader currentTheme={theme} toggleTheme={toggleTheme} />
         
-        {/* Horizontal scroll container takes remaining space and handles content scrolling */}
-        <div className="horizontal-scroll-container flex-grow">
+        {/* Main content area that will grow and allow vertical scroll if needed */}
+        <main className="flex-grow relative z-10"> {/* Added z-10 to ensure content is above ThreeCanvas */}
           {children}
-        </div>
+        </main>
         
         <AppFooter />
         <Toaster />
