@@ -5,6 +5,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 
 const MAIN_DOT_DEFAULT_SIZE = 10; // px
 const MAIN_DOT_HOVER_SIZE = 40; // px, size when hovering interactive element
+const TRAIL_DOT_DEFAULT_SIZE = 8; // px, for the trailing dots
 const NUM_TRAIL_DOTS = 8;
 const LERP_FACTOR_CURSOR = 0.15; // Adjusted for a slightly smoother follow
 const TRAIL_LERP_FACTOR = 0.25;
@@ -244,7 +245,7 @@ export default function CustomCursor() {
         cancelAnimationFrame(animationFrameIdRef.current);
       }
     };
-  }, [isVisible, mousePosition, mainCursorStyle.opacity, mainCursorStyle.x, mainCursorStyle.y, mainCursorStyle.width, mainCursorStyle.height, mainCursorStyle.isInteracting, hoveredElementInfo]);
+  }, [isVisible, mousePosition, mainCursorStyle.opacity, mainCursorStyle.x, mainCursorStyle.y, mainCursorStyle.width, mainCursorStyle.height, mainCursorStyle.isInteracting, hoveredElementInfo, trailDots]); // Added trailDots to dependency array
 
 
   if (!isVisible && mainCursorStyle.opacity < 0.01 && trailDots.every(d => d.opacity < 0.01)) { 
@@ -255,7 +256,7 @@ export default function CustomCursor() {
     <div className="fixed inset-0 pointer-events-none z-[9999]" aria-hidden="true">
       <div
         ref={mainCursorRef}
-        className="absolute shadow-lg" // Removed bg-accent/70, border handling below
+        className="absolute shadow-lg" 
         style={{
           left: `${mainCursorStyle.x}px`,
           top: `${mainCursorStyle.y}px`,
@@ -263,10 +264,10 @@ export default function CustomCursor() {
           height: `${mainCursorStyle.height}px`,
           borderRadius: mainCursorStyle.radius,
           opacity: mainCursorStyle.opacity,
-          backgroundColor: mainCursorStyle.isInteracting ? 'transparent' : mainCursorStyle.backgroundColor,
-          border: mainCursorStyle.isInteracting ? `${mainCursorStyle.borderWidth}px solid ${mainCursorStyle.borderColor}` : 'none',
+          backgroundColor: mainCursorStyle.backgroundColor,
+          border: `${mainCursorStyle.borderWidth}px solid ${mainCursorStyle.borderColor}`,
           boxSizing: 'border-box',
-          transition: 'background-color 0.1s ease-out, border-color 0.1s ease-out, border-width 0.1s ease-out',
+          transition: 'background-color 0.1s ease-out, border-color 0.1s ease-out, border-width 0.1s ease-out, width 0.1s ease-out, height 0.1s ease-out, border-radius 0.1s ease-out',
         }}
       />
       {trailDots.map((dot, index) => (
@@ -287,4 +288,3 @@ export default function CustomCursor() {
     </div>
   );
 }
-
