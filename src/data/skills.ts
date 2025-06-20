@@ -3,7 +3,7 @@
 
 import type { LucideIcon } from 'lucide-react';
 import {
-  Code, Layers, AppWindow, Atom, Server, Palette, Cpu, Sigma, Table2, Calculator, BarChart3, PieChart, Camera, Eye, Hand, BoxIcon, LineChart, MessageCircle, Touchpad, Network, Github, DatabaseZap, ContainerIcon, Presentation, FileCode2, Volume2, Video, DraftingCompass, Wrench, Paintbrush
+  Code, Layers, AppWindow, Atom, Server, Palette, Cpu, Sigma, Table2, Calculator, BarChart3, PieChart, Camera, Eye, Hand, BoxIcon, LineChart, MessageCircle, Touchpad, Network, Github, DatabaseZap, ContainerIcon, Presentation, FileCode2, Volume2, Video, DraftingCompass, Wrench, Paintbrush, BrainCog
 } from 'lucide-react';
 
 export interface Skill {
@@ -49,7 +49,7 @@ export const skillsData: SkillCategory[] = [
   },
   {
     name: "AI/ML Expertise",
-    categoryIcon: Cpu, 
+    categoryIcon: Cpu,
     skills: [
       { name: "Machine Learning", icon: Cpu },
       { name: "Deep Learning", icon: BrainCog },
