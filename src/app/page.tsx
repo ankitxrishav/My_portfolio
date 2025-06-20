@@ -16,7 +16,6 @@ import StaticContactInfo from '@/components/contact/static-contact-info';
 interface HeroTextLineProps {
   text: string;
   className?: string;
-  baseDelay?: number;
   isInteractive?: boolean;
 }
 
@@ -37,7 +36,7 @@ const HeroTextLine = ({ text, className, isInteractive = false }: HeroTextLinePr
     const mouseY = event.clientY - lineRect.top;
 
     const newTransforms = Array.from(text).map((_char, charIndex) => {
-      const charSpan = lineRef.current?.children[0]?.children[charIndex] as HTMLElement; // Accessing char spans
+      const charSpan = lineRef.current?.children[0]?.children[charIndex] as HTMLElement;
       if (!charSpan) return 'scale(1)';
 
       const charRect = charSpan.getBoundingClientRect();
@@ -51,10 +50,9 @@ const HeroTextLine = ({ text, className, isInteractive = false }: HeroTextLinePr
       const influenceRadius = 50; // pixels for scaling effect
       let scale = 1;
       if (distance < influenceRadius) {
-        // Calculate scale: 1.2 at 0 distance, 1.0 at influenceRadius distance
-        scale = 1 + (1 - distance / influenceRadius) * 0.2;
+        scale = 1 + (1 - distance / influenceRadius) * 0.2; // Max scale 1.2
       }
-      return `scale(${Math.max(1, scale)})`; // Ensure scale is at least 1
+      return `scale(${Math.max(1, Math.min(scale, 1.2))})`;
     });
     setCharTransforms(newTransforms);
   }, [text, isInteractive]);
@@ -69,8 +67,8 @@ const HeroTextLine = ({ text, className, isInteractive = false }: HeroTextLinePr
     <div
       ref={lineRef}
       className={cn(
-        "hero-text-line-wrapper", // Removed global scale on hover here
-        className // Base styling for the line (e.g., text-accent)
+        "hero-text-line-wrapper",
+        className
       )}
       onMouseEnter={() => {
         if (isInteractive) setIsHovered(true);
@@ -82,10 +80,15 @@ const HeroTextLine = ({ text, className, isInteractive = false }: HeroTextLinePr
         }
       }}
       onMouseMove={handleMouseMoveChars}
-      style={{ zIndex: isHovered ? 10000 : 'auto' }} // Elevate text when hovered
+      style={{
+        transition: 'transform 0.3s ease-out', // For overall line scale (if any was intended)
+        // transform: isHovered ? 'scale(1.05)' : 'scale(1)', // Removed line scale for char scale
+        position: isHovered ? 'relative' : 'static', // Crucial for z-index
+        zIndex: isHovered ? 20 : 'auto', // Ensures text is above lowered cursor
+      }}
       data-cursor-hero-text={isInteractive ? "true" : undefined}
     >
-      <span // This span handles the overall text color change on hover
+      <span
         className={cn(
           "transition-colors duration-200",
           isHovered ? "text-accent-foreground dark:text-accent-foreground" : "inherit"
@@ -94,12 +97,12 @@ const HeroTextLine = ({ text, className, isInteractive = false }: HeroTextLinePr
         {Array.from(text).map((char, index) => (
           <span
             key={index}
-            className="hero-char"
+            className="hero-char" // Ensure .hero-char has transition: transform in globals.css
             style={{
               transform: charTransforms[index],
             }}
           >
-            {char === " " ? "\u00A0" : char} {/* Render non-breaking space for actual spaces */}
+            {char === " " ? "\u00A0" : char}
           </span>
         ))}
       </span>
@@ -128,7 +131,7 @@ export default function HomePage() {
       {/* Hero Section */}
       <section id="home" className="min-h-screen flex flex-col items-center justify-center text-center py-16 relative z-10 overflow-hidden">
         <div
-          className="relative z-10" // This z-index is for within the section
+          className="relative z-10" 
           style={{ transform: `translateY(${heroScrollY * 0.2}px)` }}
         >
           <h1 className="font-headline text-5xl md:text-7xl font-bold mb-6 text-foreground">
