@@ -5,10 +5,10 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 
 const MAIN_DOT_DEFAULT_SIZE = 10;
-const TRAIL_DOT_DEFAULT_SIZE = 8;
+const TRAIL_DOT_DEFAULT_SIZE = 8; 
 const NUM_TRAIL_DOTS = 8;
 const LERP_FACTOR_CURSOR = 0.15;
-const TRAIL_LERP_FACTOR = 0.25;
+const TRAIL_LERP_FACTOR = 0.25; 
 
 interface Position {
   x: number;
@@ -53,6 +53,7 @@ export default function CustomCursor() {
     setMousePosition({ x: event.clientX, y: event.clientY });
   }, [isVisible]);
 
+
   useEffect(() => {
     document.addEventListener('mousemove', handleMouseMove);
     document.body.style.cursor = 'none';
@@ -69,26 +70,24 @@ export default function CustomCursor() {
 
   useEffect(() => {
     const animate = () => {
+      // Animate Main Cursor
       setMainCursorStyle(prevStyle => {
         const targetX = mousePosition.x;
         const targetY = mousePosition.y;
-        const targetWidth = MAIN_DOT_DEFAULT_SIZE;
-        const targetHeight = MAIN_DOT_DEFAULT_SIZE;
-        const targetBorderRadius = '50%';
-        const targetBackgroundColor = 'hsl(var(--accent) / 0.7)';
 
         return {
           ...prevStyle,
-          x: lerp(prevStyle.x, targetX - targetWidth / 2, LERP_FACTOR_CURSOR),
-          y: lerp(prevStyle.y, targetY - targetHeight / 2, LERP_FACTOR_CURSOR),
-          width: lerp(prevStyle.width, targetWidth, LERP_FACTOR_CURSOR * 1.5),
-          height: lerp(prevStyle.height, targetHeight, LERP_FACTOR_CURSOR * 1.5),
+          x: lerp(prevStyle.x, targetX - prevStyle.width / 2, LERP_FACTOR_CURSOR),
+          y: lerp(prevStyle.y, targetY - prevStyle.height / 2, LERP_FACTOR_CURSOR),
+          width: lerp(prevStyle.width, MAIN_DOT_DEFAULT_SIZE, LERP_FACTOR_CURSOR * 1.5),
+          height: lerp(prevStyle.height, MAIN_DOT_DEFAULT_SIZE, LERP_FACTOR_CURSOR * 1.5),
           opacity: lerp(prevStyle.opacity, isVisible ? 1 : 0, 0.2),
-          backgroundColor: targetBackgroundColor,
-          borderRadius: targetBorderRadius,
+          backgroundColor: 'hsl(var(--accent) / 0.7)', 
+          borderRadius: '50%', 
         };
       });
 
+      // Animate Trail Dots
       setTrailDots(prevTrailDots => {
         const newTrailDots = [...prevTrailDots];
         const mainDotCenterX = mainCursorStyle.x + mainCursorStyle.width / 2;
@@ -104,7 +103,7 @@ export default function CustomCursor() {
           const baseOpacity = 1 - (index / NUM_TRAIL_DOTS) * 0.7;
           const baseScale = 1 - (index / NUM_TRAIL_DOTS) * 0.6;
           
-          dot.opacity = lerp(dot.opacity, baseOpacity, 0.2);
+          dot.opacity = lerp(dot.opacity, isVisible ? baseOpacity : 0, 0.2);
           dot.scale = lerp(dot.scale, baseScale, 0.2);
         });
         return newTrailDots;
@@ -114,7 +113,7 @@ export default function CustomCursor() {
     };
 
     if (isVisible) {
-      if (mainCursorStyle.opacity < 0.1 && trailDots.every(d => d.x === -100 && d.y === -100)) {
+      if (mainCursorStyle.opacity < 0.1 && trailDots.some(d => d.x === -100 && d.y === -100)) {
         setTrailDots(
           Array(NUM_TRAIL_DOTS).fill(null).map(() => ({
             x: mousePosition.x,
@@ -150,7 +149,8 @@ export default function CustomCursor() {
         cancelAnimationFrame(animationFrameIdRef.current);
       }
     };
-  }, [isVisible, mousePosition, mainCursorStyle.x, mainCursorStyle.y, mainCursorStyle.width, mainCursorStyle.height, mainCursorStyle.opacity]); 
+  }, [isVisible, mousePosition, mainCursorStyle.opacity, mainCursorStyle.width, mainCursorStyle.height]);
+
 
   if (!isVisible && mainCursorStyle.opacity < 0.01 && trailDots.every(d => d.opacity < 0.01)) {
     return null;
@@ -179,7 +179,7 @@ export default function CustomCursor() {
       />
       {/* Trail Dots */}
       {trailDots.map((dot, index) => (
-        dot.opacity > 0.01 && (isVisible || dot.opacity > 0.1) && 
+        (isVisible || dot.opacity > 0.01) && 
         <div
           key={index}
           style={{
@@ -198,4 +198,3 @@ export default function CustomCursor() {
     </div>
   );
 }
-
