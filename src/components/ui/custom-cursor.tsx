@@ -8,7 +8,6 @@ const MAIN_DOT_DEFAULT_SIZE = 10; // px
 const TRAIL_DOT_DEFAULT_SIZE = 8; // px
 
 const LERP_FACTOR_CURSOR = 0.2; 
-const LERP_FACTOR_HOVER = 0.18; 
 const TRAIL_LERP_FACTOR = 0.3; 
 
 interface Position {
@@ -23,20 +22,11 @@ interface MainCursorStyle {
   height: number;
   radius: string;
   opacity: number;
-  isHovering: boolean; // Added to manage hover state for styling
 }
 
 interface TrailDot extends Position {
   opacity: number;
   scale: number;
-}
-
-interface HoveredElementInfo {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  radius: string;
 }
 
 const lerp = (start: number, end: number, t: number) => start * (1 - t) + end * t;
@@ -50,13 +40,11 @@ export default function CustomCursor() {
     height: MAIN_DOT_DEFAULT_SIZE,
     radius: '50%',
     opacity: 0,
-    isHovering: false, // Initial state
   });
   const [trailDots, setTrailDots] = useState<TrailDot[]>(
     Array(NUM_TRAIL_DOTS).fill(null).map(() => ({ x: -100, y: -100, opacity: 0, scale: 1 }))
   );
   const [isVisible, setIsVisible] = useState(false);
-  const [hoveredElementInfo, setHoveredElementInfo] = useState<HoveredElementInfo | null>(null);
 
   const animationFrameIdRef = useRef<number | null>(null);
 
@@ -69,28 +57,9 @@ export default function CustomCursor() {
     document.addEventListener('mousemove', handleMouseMove);
     document.body.style.cursor = 'none'; 
 
+    // Ensure interactive elements also hide system cursor
     const interactiveElements = document.querySelectorAll('a, button, [data-cursor-interactive="true"]');
-
-    const onMouseEnter = (e: Event) => {
-      const target = e.currentTarget as HTMLElement;
-      const rect = target.getBoundingClientRect();
-      const radius = window.getComputedStyle(target).borderRadius;
-      setHoveredElementInfo({
-        x: rect.left,
-        y: rect.top,
-        width: rect.width,
-        height: rect.height,
-        radius: radius,
-      });
-    };
-
-    const onMouseLeave = () => {
-      setHoveredElementInfo(null);
-    };
-
     interactiveElements.forEach(elem => {
-      elem.addEventListener('mouseenter', onMouseEnter);
-      elem.addEventListener('mouseleave', onMouseLeave);
       (elem as HTMLElement).style.cursor = 'none';
     });
 
@@ -98,8 +67,6 @@ export default function CustomCursor() {
       document.removeEventListener('mousemove', handleMouseMove);
       document.body.style.cursor = 'auto';
       interactiveElements.forEach(elem => {
-        elem.removeEventListener('mouseenter', onMouseEnter);
-        elem.removeEventListener('mouseleave', onMouseLeave);
         (elem as HTMLElement).style.cursor = 'auto';
       });
       if (animationFrameIdRef.current) {
@@ -111,44 +78,32 @@ export default function CustomCursor() {
   useEffect(() => {
     const animate = () => {
       setMainCursorStyle(prev => {
-        let targetX: number, targetY: number, targetWidth: number, targetHeight: number, targetRadius: string;
         const currentOpacity = isVisible ? 1 : 0;
-        const isCurrentlyHovering = !!hoveredElementInfo;
-
-        if (hoveredElementInfo) {
-          targetX = hoveredElementInfo.x;
-          targetY = hoveredElementInfo.y;
-          targetWidth = hoveredElementInfo.width;
-          targetHeight = hoveredElementInfo.height;
-          targetRadius = hoveredElementInfo.radius;
-        } else {
-          targetX = mousePosition.x - prev.width / 2;
-          targetY = mousePosition.y - prev.height / 2;
-          targetWidth = MAIN_DOT_DEFAULT_SIZE;
-          targetHeight = MAIN_DOT_DEFAULT_SIZE;
-          targetRadius = '50%';
-        }
+        
+        const targetX = mousePosition.x - MAIN_DOT_DEFAULT_SIZE / 2;
+        const targetY = mousePosition.y - MAIN_DOT_DEFAULT_SIZE / 2;
+        const targetWidth = MAIN_DOT_DEFAULT_SIZE;
+        const targetHeight = MAIN_DOT_DEFAULT_SIZE;
+        const targetRadius = '50%';
         
         if (prev.opacity === 0 && currentOpacity === 1) {
             return {
-                x: hoveredElementInfo ? targetX : mousePosition.x - MAIN_DOT_DEFAULT_SIZE / 2,
-                y: hoveredElementInfo ? targetY : mousePosition.y - MAIN_DOT_DEFAULT_SIZE / 2,
+                x: targetX,
+                y: targetY,
                 width: targetWidth,
                 height: targetHeight,
                 radius: targetRadius,
                 opacity: currentOpacity,
-                isHovering: isCurrentlyHovering,
             };
         }
         
         return {
-          x: lerp(prev.x, targetX, hoveredElementInfo ? LERP_FACTOR_HOVER : LERP_FACTOR_CURSOR),
-          y: lerp(prev.y, targetY, hoveredElementInfo ? LERP_FACTOR_HOVER : LERP_FACTOR_CURSOR),
-          width: lerp(prev.width, targetWidth, LERP_FACTOR_HOVER),
-          height: lerp(prev.height, targetHeight, LERP_FACTOR_HOVER),
-          radius: targetRadius,
+          x: lerp(prev.x, targetX, LERP_FACTOR_CURSOR),
+          y: lerp(prev.y, targetY, LERP_FACTOR_CURSOR),
+          width: lerp(prev.width, targetWidth, LERP_FACTOR_CURSOR), // Lerp size for smooth appearance
+          height: lerp(prev.height, targetHeight, LERP_FACTOR_CURSOR),
+          radius: targetRadius, // Radius can change instantly or be animated via CSS
           opacity: lerp(prev.opacity, currentOpacity, 0.2),
-          isHovering: isCurrentlyHovering,
         };
       });
 
@@ -172,13 +127,8 @@ export default function CustomCursor() {
           dot.x = lerp(dot.x, targetX, TRAIL_LERP_FACTOR + index * 0.02);
           dot.y = lerp(dot.y, targetY, TRAIL_LERP_FACTOR + index * 0.02);
           
-          if (mainCursorStyle.isHovering) { // Use mainCursorStyle.isHovering
-            dot.opacity = lerp(dot.opacity, 0, 0.25);
-            dot.scale = lerp(dot.scale, 0.3, 0.25);
-          } else {
-             dot.opacity = lerp(dot.opacity, 1 - (index / NUM_TRAIL_DOTS) * 0.7, 0.15);
-             dot.scale = lerp(dot.scale, 1 - (index / NUM_TRAIL_DOTS) * 0.6, 0.15);
-          }
+          dot.opacity = lerp(dot.opacity, 1 - (index / NUM_TRAIL_DOTS) * 0.7, 0.15);
+          dot.scale = lerp(dot.scale, 1 - (index / NUM_TRAIL_DOTS) * 0.6, 0.15);
         });
         return newTrailDots;
       });
@@ -208,7 +158,7 @@ export default function CustomCursor() {
         cancelAnimationFrame(animationFrameIdRef.current);
       }
     };
-  }, [isVisible, mousePosition, hoveredElementInfo, mainCursorStyle.opacity, mainCursorStyle.x, mainCursorStyle.y, mainCursorStyle.width, mainCursorStyle.height, mainCursorStyle.isHovering]);
+  }, [isVisible, mousePosition, mainCursorStyle.opacity, mainCursorStyle.x, mainCursorStyle.y, mainCursorStyle.width, mainCursorStyle.height]);
 
 
   if (!isVisible && mainCursorStyle.opacity < 0.01) { 
@@ -218,11 +168,7 @@ export default function CustomCursor() {
   return (
     <div className="fixed inset-0 pointer-events-none z-[9999]" aria-hidden="true">
       <div
-        className={`absolute shadow-lg ${
-          mainCursorStyle.isHovering 
-            ? 'bg-transparent border-2 border-accent' 
-            : 'bg-accent/70 backdrop-blur-sm' // backdrop-blur only for non-hover state
-        }`}
+        className="absolute shadow-lg bg-accent/70 backdrop-blur-sm"
         style={{
           left: `${mainCursorStyle.x}px`,
           top: `${mainCursorStyle.y}px`,
@@ -230,7 +176,7 @@ export default function CustomCursor() {
           height: `${mainCursorStyle.height}px`,
           borderRadius: mainCursorStyle.radius,
           opacity: mainCursorStyle.opacity,
-          transition: 'border-radius 0.15s ease-out, background-color 0.15s ease-out, border-color 0.15s ease-out',
+          transition: 'border-radius 0.1s ease-out', // Keep radius transition for smoothness if needed
           boxSizing: 'border-box',
         }}
       />
