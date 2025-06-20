@@ -7,9 +7,9 @@ const NUM_TRAIL_DOTS = 8;
 const MAIN_DOT_DEFAULT_SIZE = 10; // px
 const TRAIL_DOT_DEFAULT_SIZE = 8; // px
 
-const LERP_FACTOR_CURSOR = 0.2; // How quickly the main dot follows the mouse (unhovered)
-const LERP_FACTOR_HOVER = 0.18; // How quickly main dot snaps to hovered element (for both pos and size)
-const TRAIL_LERP_FACTOR = 0.3; // How quickly trail dots follow
+const LERP_FACTOR_CURSOR = 0.2; 
+const LERP_FACTOR_HOVER = 0.18; 
+const TRAIL_LERP_FACTOR = 0.3; 
 
 interface Position {
   x: number;
@@ -23,6 +23,7 @@ interface MainCursorStyle {
   height: number;
   radius: string;
   opacity: number;
+  isHovering: boolean; // Added to manage hover state for styling
 }
 
 interface TrailDot extends Position {
@@ -43,12 +44,13 @@ const lerp = (start: number, end: number, t: number) => start * (1 - t) + end * 
 export default function CustomCursor() {
   const [mousePosition, setMousePosition] = useState<Position>({ x: 0, y: 0 });
   const [mainCursorStyle, setMainCursorStyle] = useState<MainCursorStyle>({
-    x: -MAIN_DOT_DEFAULT_SIZE, // Start off-screen
+    x: -MAIN_DOT_DEFAULT_SIZE, 
     y: -MAIN_DOT_DEFAULT_SIZE,
     width: MAIN_DOT_DEFAULT_SIZE,
     height: MAIN_DOT_DEFAULT_SIZE,
     radius: '50%',
     opacity: 0,
+    isHovering: false, // Initial state
   });
   const [trailDots, setTrailDots] = useState<TrailDot[]>(
     Array(NUM_TRAIL_DOTS).fill(null).map(() => ({ x: -100, y: -100, opacity: 0, scale: 1 }))
@@ -65,8 +67,6 @@ export default function CustomCursor() {
 
   useEffect(() => {
     document.addEventListener('mousemove', handleMouseMove);
-    // Ensure system cursor is hidden on body, will be re-applied by globals.css
-    // but explicit here helps if globals.css is slow or fails.
     document.body.style.cursor = 'none'; 
 
     const interactiveElements = document.querySelectorAll('a, button, [data-cursor-interactive="true"]');
@@ -91,7 +91,6 @@ export default function CustomCursor() {
     interactiveElements.forEach(elem => {
       elem.addEventListener('mouseenter', onMouseEnter);
       elem.addEventListener('mouseleave', onMouseLeave);
-      // Ensure these elements also hide the system cursor
       (elem as HTMLElement).style.cursor = 'none';
     });
 
@@ -107,13 +106,14 @@ export default function CustomCursor() {
         cancelAnimationFrame(animationFrameIdRef.current);
       }
     };
-  }, [handleMouseMove]); // isVisible is implicitly handled by its effect on animation loop
+  }, [handleMouseMove]);
 
   useEffect(() => {
     const animate = () => {
       setMainCursorStyle(prev => {
         let targetX: number, targetY: number, targetWidth: number, targetHeight: number, targetRadius: string;
         const currentOpacity = isVisible ? 1 : 0;
+        const isCurrentlyHovering = !!hoveredElementInfo;
 
         if (hoveredElementInfo) {
           targetX = hoveredElementInfo.x;
@@ -122,14 +122,13 @@ export default function CustomCursor() {
           targetHeight = hoveredElementInfo.height;
           targetRadius = hoveredElementInfo.radius;
         } else {
-          targetX = mousePosition.x - prev.width / 2; // Target center for default dot
+          targetX = mousePosition.x - prev.width / 2;
           targetY = mousePosition.y - prev.height / 2;
           targetWidth = MAIN_DOT_DEFAULT_SIZE;
           targetHeight = MAIN_DOT_DEFAULT_SIZE;
           targetRadius = '50%';
         }
         
-        // If becoming visible from an invisible state, snap position and size
         if (prev.opacity === 0 && currentOpacity === 1) {
             return {
                 x: hoveredElementInfo ? targetX : mousePosition.x - MAIN_DOT_DEFAULT_SIZE / 2,
@@ -138,22 +137,23 @@ export default function CustomCursor() {
                 height: targetHeight,
                 radius: targetRadius,
                 opacity: currentOpacity,
+                isHovering: isCurrentlyHovering,
             };
         }
         
         return {
           x: lerp(prev.x, targetX, hoveredElementInfo ? LERP_FACTOR_HOVER : LERP_FACTOR_CURSOR),
           y: lerp(prev.y, targetY, hoveredElementInfo ? LERP_FACTOR_HOVER : LERP_FACTOR_CURSOR),
-          width: lerp(prev.width, targetWidth, LERP_FACTOR_HOVER), // Always use hover factor for size change
+          width: lerp(prev.width, targetWidth, LERP_FACTOR_HOVER),
           height: lerp(prev.height, targetHeight, LERP_FACTOR_HOVER),
-          radius: targetRadius, // Radius snaps for now, CSS transition handles smoothness
-          opacity: lerp(prev.opacity, currentOpacity, 0.2), // Smooth opacity transition
+          radius: targetRadius,
+          opacity: lerp(prev.opacity, currentOpacity, 0.2),
+          isHovering: isCurrentlyHovering,
         };
       });
 
       setTrailDots(prevTrailDots => {
         const newTrailDots = [...prevTrailDots];
-        // Trail should follow the center of the main cursor dot
         const mainCursorCenterX = mainCursorStyle.x + mainCursorStyle.width / 2;
         const mainCursorCenterY = mainCursorStyle.y + mainCursorStyle.height / 2;
 
@@ -172,11 +172,10 @@ export default function CustomCursor() {
           dot.x = lerp(dot.x, targetX, TRAIL_LERP_FACTOR + index * 0.02);
           dot.y = lerp(dot.y, targetY, TRAIL_LERP_FACTOR + index * 0.02);
           
-          if (hoveredElementInfo) {
-            dot.opacity = lerp(dot.opacity, 0, 0.25); // Fade out trail quickly
-            dot.scale = lerp(dot.scale, 0.3, 0.25); // Shrink trail quickly
+          if (mainCursorStyle.isHovering) { // Use mainCursorStyle.isHovering
+            dot.opacity = lerp(dot.opacity, 0, 0.25);
+            dot.scale = lerp(dot.scale, 0.3, 0.25);
           } else {
-            // Restore opacity and scale if not hovering, ensuring smooth transition back
              dot.opacity = lerp(dot.opacity, 1 - (index / NUM_TRAIL_DOTS) * 0.7, 0.15);
              dot.scale = lerp(dot.scale, 1 - (index / NUM_TRAIL_DOTS) * 0.6, 0.15);
           }
@@ -188,18 +187,16 @@ export default function CustomCursor() {
     };
 
     if (isVisible) {
-       // Snap trail dots to initial position when cursor first becomes visible
       if (mainCursorStyle.opacity < 0.1 && trailDots.some(d => d.x === -100)) {
            setTrailDots(Array(NUM_TRAIL_DOTS).fill(null).map(() => ({ 
                 x: mousePosition.x, 
                 y: mousePosition.y, 
-                opacity: 0, // Start trail dots invisible, they will fade in
+                opacity: 0, 
                 scale: 1 
             })));
       }
       animationFrameIdRef.current = requestAnimationFrame(animate);
     } else {
-        // If not visible, ensure main cursor opacity lerps to 0
         setMainCursorStyle(prev => ({...prev, opacity: lerp(prev.opacity, 0, 0.2)}));
         if (animationFrameIdRef.current) {
             cancelAnimationFrame(animationFrameIdRef.current);
@@ -211,19 +208,21 @@ export default function CustomCursor() {
         cancelAnimationFrame(animationFrameIdRef.current);
       }
     };
-  }, [isVisible, mousePosition, hoveredElementInfo, mainCursorStyle.opacity, mainCursorStyle.x, mainCursorStyle.y, mainCursorStyle.width, mainCursorStyle.height]); // Include mainCursorStyle properties used by trail
+  }, [isVisible, mousePosition, hoveredElementInfo, mainCursorStyle.opacity, mainCursorStyle.x, mainCursorStyle.y, mainCursorStyle.width, mainCursorStyle.height, mainCursorStyle.isHovering]);
 
 
-  // Only render if opacity is high enough to be seen, prevents flash of off-screen element
   if (!isVisible && mainCursorStyle.opacity < 0.01) { 
     return null;
   }
 
   return (
     <div className="fixed inset-0 pointer-events-none z-[9999]" aria-hidden="true">
-      {/* Main Cursor Dot */}
       <div
-        className="absolute bg-accent/70 shadow-lg backdrop-blur-sm" // Added some transparency and blur
+        className={`absolute shadow-lg ${
+          mainCursorStyle.isHovering 
+            ? 'bg-transparent border-2 border-accent' 
+            : 'bg-accent/70 backdrop-blur-sm' // backdrop-blur only for non-hover state
+        }`}
         style={{
           left: `${mainCursorStyle.x}px`,
           top: `${mainCursorStyle.y}px`,
@@ -231,16 +230,15 @@ export default function CustomCursor() {
           height: `${mainCursorStyle.height}px`,
           borderRadius: mainCursorStyle.radius,
           opacity: mainCursorStyle.opacity,
-          // CSS transitions for properties not lerped in JS or for smoother visual snap
-          transition: 'border-radius 0.15s ease-out', 
+          transition: 'border-radius 0.15s ease-out, background-color 0.15s ease-out, border-color 0.15s ease-out',
+          boxSizing: 'border-box',
         }}
       />
-      {/* Trail Dots */}
       {trailDots.map((dot, index) => (
-        dot.opacity > 0.01 && // Only render if somewhat visible
+        dot.opacity > 0.01 && 
         <div
           key={index}
-          className="absolute bg-accent/50 rounded-full backdrop-blur-xs" // Added some transparency and blur
+          className="absolute bg-accent/50 rounded-full backdrop-blur-xs" 
           style={{
             left: `${dot.x}px`,
             top: `${dot.y}px`,
@@ -248,12 +246,9 @@ export default function CustomCursor() {
             height: `${TRAIL_DOT_DEFAULT_SIZE * dot.scale}px`,
             opacity: dot.opacity,
             transform: 'translate(-50%, -50%)',
-            // transition for trail dots opacity and scale for smoother fade in/out
-            // transition: 'opacity 0.1s linear, transform 0.1s linear', 
           }}
         />
       ))}
     </div>
   );
 }
-
