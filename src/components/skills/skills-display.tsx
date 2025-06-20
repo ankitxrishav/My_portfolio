@@ -5,6 +5,7 @@ import { skillsData } from '@/data/skills';
 import type { Skill } from '@/data/skills';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 export default function SkillsDisplay() {
   return (
@@ -20,8 +21,12 @@ export default function SkillsDisplay() {
               {category.skills.map((skill: Skill) => (
                 <Badge 
                   key={skill.name} 
-                  variant="secondary" 
-                  className="text-xs bg-secondary/70 text-secondary-foreground hover:bg-secondary transition-colors"
+                  variant={skill.highlight ? "default" : "secondary"}
+                  className={cn(
+                    "text-xs transition-colors",
+                    !skill.highlight && "bg-secondary/70 text-secondary-foreground hover:bg-secondary",
+                    skill.highlight && "hover:bg-primary/90" // Ensures highlighted badges also have a hover effect consistent with default variant
+                  )}
                 >
                   {skill.name}
                 </Badge>
