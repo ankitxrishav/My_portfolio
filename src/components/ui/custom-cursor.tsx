@@ -7,7 +7,7 @@ const MAIN_DOT_DEFAULT_SIZE = 10; // px
 const MAIN_DOT_HOVER_SIZE = 40; // px, size when hovering interactive element
 const TRAIL_DOT_DEFAULT_SIZE = 8; // px, for the trailing dots
 const NUM_TRAIL_DOTS = 8;
-const LERP_FACTOR_CURSOR = 0.15; // Adjusted for a slightly smoother follow
+const LERP_FACTOR_CURSOR = 0.15;
 const TRAIL_LERP_FACTOR = 0.25;
 
 interface Position {
@@ -41,8 +41,18 @@ interface HoveredElementInfo {
 
 const lerp = (start: number, end: number, t: number) => start * (1 - t) + end * t;
 
+// Helper to lerp HSL colors (basic, assumes HSL format)
+// This is a simplified lerp for colors; a more robust one would handle HSL components individually.
+const lerpColor = (startColor: string, endColor: string, t: number): string => {
+    if (startColor === endColor) return startColor;
+    // For simplicity, just snap to endColor if t is high enough, or start if low.
+    if (t > 0.5) return endColor;
+    return startColor;
+};
+
+
 export default function CustomCursor() {
-  const [mousePosition, setMousePosition] = useState<Position>({ x: 0, y: 0 });
+  const [mousePosition, setMousePosition] = useState<Position>({ x: -1000, y: -1000 }); // Initialize off-screen
   const [mainCursorStyle, setMainCursorStyle] = useState<MainCursorStyle>({
     x: -MAIN_DOT_DEFAULT_SIZE,
     y: -MAIN_DOT_DEFAULT_SIZE,
@@ -52,7 +62,7 @@ export default function CustomCursor() {
     opacity: 0,
     isInteracting: false,
     backgroundColor: 'hsl(var(--accent))',
-    borderColor: 'transparent',
+    borderColor: 'hsl(var(--accent))',
     borderWidth: 0,
   });
   const [trailDots, setTrailDots] = useState<TrailDot[]>(
@@ -62,7 +72,7 @@ export default function CustomCursor() {
   const [hoveredElementInfo, setHoveredElementInfo] = useState<HoveredElementInfo | null>(null);
 
   const animationFrameIdRef = useRef<number | null>(null);
-  const mainCursorRef = useRef<HTMLDivElement>(null); // Ref for the main cursor dot
+  const mainCursorRef = useRef<HTMLDivElement>(null);
 
   const handleMouseMove = useCallback((event: MouseEvent) => {
     if (!isVisible) setIsVisible(true);
@@ -78,12 +88,13 @@ export default function CustomCursor() {
     const handleMouseEnter = (event: MouseEvent) => {
       const elem = event.currentTarget as HTMLElement;
       const rect = elem.getBoundingClientRect();
-      const radius = window.getComputedStyle(elem).borderTopLeftRadius;
+      const style = window.getComputedStyle(elem);
+      const radius = style.borderTopLeftRadius;
       setHoveredElementInfo({
         x: rect.left + rect.width / 2,
         y: rect.top + rect.height / 2,
-        width: rect.width,
-        height: rect.height,
+        width: rect.width + parseInt(style.paddingLeft) + parseInt(style.paddingRight), // Include padding for better fit
+        height: rect.height + parseInt(style.paddingTop) + parseInt(style.paddingBottom), // Include padding
         radius: radius,
       });
     };
@@ -110,12 +121,12 @@ export default function CustomCursor() {
         cancelAnimationFrame(animationFrameIdRef.current);
       }
     };
-  }, [handleMouseMove]);
+  }, [handleMouseMove]); // isVisible is implicitly handled by handleMouseMove's own dependency
 
   useEffect(() => {
     const animate = () => {
       setMainCursorStyle(prev => {
-        const isInteracting = !!hoveredElementInfo;
+        const isInteractingWithElement = !!hoveredElementInfo;
         let targetX = mousePosition.x;
         let targetY = mousePosition.y;
         let targetWidth = MAIN_DOT_DEFAULT_SIZE;
@@ -125,44 +136,42 @@ export default function CustomCursor() {
         let targetBorderColor = 'transparent';
         let targetBorderWidth = 0;
 
-        if (isInteracting && hoveredElementInfo) {
-          targetX = hoveredElementInfo.x;
-          targetY = hoveredElementInfo.y;
-          targetWidth = MAIN_DOT_HOVER_SIZE;
-          targetHeight = MAIN_DOT_HOVER_SIZE;
-          targetRadius = '50%'; // Keep the magnetic blob circular
-          targetBgColor = 'transparent';
+        if (isInteractingWithElement && hoveredElementInfo) {
+          targetX = hoveredElementInfo.x; // Center of element
+          targetY = hoveredElementInfo.y; // Center of element
+          targetWidth = hoveredElementInfo.width; // Element's width
+          targetHeight = hoveredElementInfo.height; // Element's height
+          targetRadius = hoveredElementInfo.radius;
+          targetBgColor = 'transparent'; // Outline effect
           targetBorderColor = 'hsl(var(--accent))';
           targetBorderWidth = 2;
         }
         
         const newX = lerp(prev.x, targetX - targetWidth / 2, LERP_FACTOR_CURSOR);
         const newY = lerp(prev.y, targetY - targetHeight / 2, LERP_FACTOR_CURSOR);
-
-        // Instantly update color/border for interacting state, or lerp opacity
         const newOpacity = isVisible ? 1 : 0;
-        const finalOpacity = (prev.opacity === 0 && newOpacity === 1 && !isVisible) ? newOpacity : lerp(prev.opacity, newOpacity, 0.2);
-
-
+        
         return {
           x: newX,
           y: newY,
-          width: lerp(prev.width, targetWidth, LERP_FACTOR_CURSOR),
-          height: lerp(prev.height, targetHeight, LERP_FACTOR_CURSOR),
-          radius: targetRadius, // Can lerp if desired, but instant change for shape is fine
-          opacity: finalOpacity,
-          isInteracting: isInteracting,
-          backgroundColor: isInteracting ? targetBgColor : lerpColor(prev.backgroundColor, targetBgColor, LERP_FACTOR_CURSOR*2),
-          borderColor: isInteracting ? targetBorderColor : lerpColor(prev.borderColor, targetBorderColor, LERP_FACTOR_CURSOR*2),
+          width: lerp(prev.width, targetWidth, LERP_FACTOR_CURSOR * 1.5), // Faster size change
+          height: lerp(prev.height, targetHeight, LERP_FACTOR_CURSOR * 1.5),
+          radius: targetRadius, 
+          opacity: lerp(prev.opacity, newOpacity, 0.2),
+          isInteracting: isInteractingWithElement,
+          backgroundColor: isInteractingWithElement ? targetBgColor : lerpColor(prev.backgroundColor, 'hsl(var(--accent))', LERP_FACTOR_CURSOR * 2),
+          borderColor: isInteractingWithElement ? targetBorderColor : lerpColor(prev.borderColor, 'transparent', LERP_FACTOR_CURSOR*2),
           borderWidth: lerp(prev.borderWidth, targetBorderWidth, LERP_FACTOR_CURSOR*2)
         };
       });
 
       setTrailDots(prevTrailDots => {
         const newTrailDots = [...prevTrailDots];
+        // Read directly from mainCursorStyle state for current interaction status for trail
+        const isMainCurrentlyInteracting = mainCursorStyle.isInteracting; 
         const mainCursorCenterX = mainCursorStyle.x + mainCursorStyle.width / 2;
         const mainCursorCenterY = mainCursorStyle.y + mainCursorStyle.height / 2;
-        const isMainInteracting = mainCursorStyle.isInteracting;
+
 
         newTrailDots.forEach((dot, index) => {
           let targetX: number;
@@ -179,12 +188,11 @@ export default function CustomCursor() {
           dot.x = lerp(dot.x, targetX, TRAIL_LERP_FACTOR + index * 0.02);
           dot.y = lerp(dot.y, targetY, TRAIL_LERP_FACTOR + index * 0.02);
           
-          // Trail fades faster and shrinks if main cursor is interacting
           const baseOpacity = 1 - (index / NUM_TRAIL_DOTS) * 0.7;
           const baseScale = 1 - (index / NUM_TRAIL_DOTS) * 0.6;
           
-          dot.opacity = lerp(dot.opacity, isMainInteracting ? baseOpacity * 0.3 : baseOpacity, 0.2);
-          dot.scale = lerp(dot.scale, isMainInteracting ? baseScale * 0.5 : baseScale, 0.2);
+          dot.opacity = lerp(dot.opacity, isMainCurrentlyInteracting ? baseOpacity * 0.3 : baseOpacity, 0.2);
+          dot.scale = lerp(dot.scale, isMainCurrentlyInteracting ? baseScale * 0.5 : baseScale, 0.2);
         });
         return newTrailDots;
       });
@@ -192,61 +200,56 @@ export default function CustomCursor() {
       animationFrameIdRef.current = requestAnimationFrame(animate);
     };
 
-    // Helper to lerp HSL colors (basic, assumes HSL format)
-    // This is a simplified lerp for colors; a more robust one would handle HSL components individually.
-    const lerpColor = (startColor: string, endColor: string, t: number): string => {
-        if (startColor === endColor) return startColor;
-        // For simplicity, just snap to endColor if t is high enough, or start if low.
-        // A real color lerp is more complex.
-        if (t > 0.5) return endColor;
-        return startColor; // Or implement a proper HSL component lerp
-    };
-
-
     if (isVisible) {
-      // Initialize trail dots if they are far off or cursor just became visible
-      if (mainCursorStyle.opacity < 0.1 && trailDots.some(d => d.x === -100)) {
-           setTrailDots(Array(NUM_TRAIL_DOTS).fill(null).map(() => ({ 
-                x: mousePosition.x, 
-                y: mousePosition.y, 
-                opacity: 0, 
-                scale: 1 
-            })));
-      }
+      // Initialize trail dots when cursor becomes visible and if they are in their initial off-screen state
+      // This uses functional update for setTrailDots to avoid needing trailDots in dependency array here.
+      setTrailDots(currentTrailDots => {
+        if (currentTrailDots.some(d => d.x === -100 && d.y === -100)) {
+          return Array(NUM_TRAIL_DOTS).fill(null).map(() => ({ 
+            x: mousePosition.x, 
+            y: mousePosition.y, 
+            opacity: 0, 
+            scale: 1 
+          }));
+        }
+        return currentTrailDots;
+      });
       animationFrameIdRef.current = requestAnimationFrame(animate);
-    } else {
-        // Fade out main cursor if not visible
+    } else { // isVisible is false
+        // Ensure any active animation from the 'isVisible = true' path is cancelled.
+        if (animationFrameIdRef.current) {
+            cancelAnimationFrame(animationFrameIdRef.current);
+            animationFrameIdRef.current = null;
+        }
+
+        // Update styles to fade out. These setState calls will trigger re-renders.
+        // The useEffect will run again. If isVisible is still false, this logic repeats.
         setMainCursorStyle(prev => ({
-            ...prev, 
+            ...prev,
             opacity: lerp(prev.opacity, 0, 0.2),
-            // Reset interaction style if not visible
             isInteracting: false,
             backgroundColor: 'hsl(var(--accent))',
             borderColor: 'transparent',
             borderWidth: 0,
+            width: lerp(prev.width, MAIN_DOT_DEFAULT_SIZE, 0.2),
+            height: lerp(prev.height, MAIN_DOT_DEFAULT_SIZE, 0.2),
+            radius: '50%',
         }));
-        // Fade out trail dots
+
         setTrailDots(prevTrailDots => prevTrailDots.map(dot => ({
             ...dot,
             opacity: lerp(dot.opacity, 0, 0.2),
             scale: lerp(dot.scale, 0, 0.2)
         })));
-
-        if (animationFrameIdRef.current && mainCursorStyle.opacity < 0.01) {
-            cancelAnimationFrame(animationFrameIdRef.current);
-        } else if (animationFrameIdRef.current) {
-            // continue fading out if not fully transparent
-            animationFrameIdRef.current = requestAnimationFrame(animate);
-        }
     }
 
     return () => {
       if (animationFrameIdRef.current) {
         cancelAnimationFrame(animationFrameIdRef.current);
+        animationFrameIdRef.current = null;
       }
     };
-  }, [isVisible, mousePosition, mainCursorStyle.opacity, mainCursorStyle.x, mainCursorStyle.y, mainCursorStyle.width, mainCursorStyle.height, mainCursorStyle.isInteracting, hoveredElementInfo, trailDots]); // Added trailDots to dependency array
-
+  }, [isVisible, mousePosition, hoveredElementInfo]); // Refined dependency array
 
   if (!isVisible && mainCursorStyle.opacity < 0.01 && trailDots.every(d => d.opacity < 0.01)) { 
     return null;
@@ -267,7 +270,7 @@ export default function CustomCursor() {
           backgroundColor: mainCursorStyle.backgroundColor,
           border: `${mainCursorStyle.borderWidth}px solid ${mainCursorStyle.borderColor}`,
           boxSizing: 'border-box',
-          transition: 'background-color 0.1s ease-out, border-color 0.1s ease-out, border-width 0.1s ease-out, width 0.1s ease-out, height 0.1s ease-out, border-radius 0.1s ease-out',
+          transition: 'border-radius 0.1s ease-out', // Keep radius transition, others handled by lerp
         }}
       />
       {trailDots.map((dot, index) => (
@@ -281,10 +284,11 @@ export default function CustomCursor() {
             width: `${TRAIL_DOT_DEFAULT_SIZE * dot.scale}px`,
             height: `${TRAIL_DOT_DEFAULT_SIZE * dot.scale}px`,
             opacity: dot.opacity,
-            transform: 'translate(-50%, -50%)', // Center the trail dots
+            transform: 'translate(-50%, -50%)',
           }}
         />
       ))}
     </div>
   );
 }
+
