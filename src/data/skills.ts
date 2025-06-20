@@ -23,17 +23,14 @@ export const skillsData: SkillCategory[] = [
     categoryIcon: Code,
     skills: [
       { name: "Python", icon: Code },
-      { name: "JavaScript", icon: Code },
       { name: "TypeScript", icon: Code },
+      { name: "C++", icon: Code },
     ],
   },
   {
     name: "Frameworks & Libraries",
     categoryIcon: Layers,
     skills: [
-      { name: "Next.js", icon: AppWindow },
-      { name: "React", icon: Atom },
-      { name: "Node.js", icon: Server },
       { name: "Tailwind CSS", icon: Palette },
       { name: "TensorFlow", icon: Cpu },
       { name: "PyTorch", icon: Cpu },
@@ -65,8 +62,6 @@ export const skillsData: SkillCategory[] = [
     categoryIcon: Wrench,
     skills: [
       { name: "Git & GitHub", icon: Github },
-      { name: "Firebase", icon: DatabaseZap },
-      { name: "Docker", icon: ContainerIcon },
       { name: "Streamlit", icon: Presentation },
       { name: "HTML/CSS", icon: FileCode2 },
       { name: "SoundDevice", icon: Volume2 },
@@ -81,3 +76,4 @@ export const skillsData: SkillCategory[] = [
     ],
   },
 ];
+
