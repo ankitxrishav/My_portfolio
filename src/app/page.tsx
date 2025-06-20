@@ -12,6 +12,21 @@ import ProjectList from '@/components/projects/project-list';
 import TimelineDisplay from '@/components/journey/timeline-display';
 import StaticContactInfo from '@/components/contact/static-contact-info';
 
+const HeroTextLine = ({ text, className, baseDelay = 0 }: { text: string; className?: string; baseDelay?: number }) => {
+  return (
+    <div className={`hero-text-line-wrapper ${className || ''}`} data-cursor-interactive="true">
+      {text.split('').map((char, index) => (
+        <span
+          key={index}
+          className="hero-char"
+          style={{ animationDelay: `${baseDelay + index * 0.05}s` }}
+        >
+          {char === ' ' ? '\u00A0' : char}
+        </span>
+      ))}
+    </div>
+  );
+};
 
 export default function HomePage() {
   const [heroScrollY, setHeroScrollY] = useState(0);
@@ -36,12 +51,10 @@ export default function HomePage() {
           className="relative z-10"
           style={{ transform: `translateY(${heroScrollY * 0.2}px)` }} 
         >
-          <h1 className="font-headline text-5xl md:text-7xl font-bold mb-6 text-foreground animate-float">
-            <span className="block">Hi, I&apos;m Ankit Kumar</span>
-            <span className="block text-accent dark:text-accent">
-              ML Engineer <br />
-              Creative Technologist, Builder
-            </span>
+          <h1 className="font-headline text-5xl md:text-7xl font-bold mb-6 text-foreground">
+            <HeroTextLine text="Hi, I'm Ankit Kumar" />
+            <HeroTextLine text="ML Engineer" className="text-accent dark:text-accent" />
+            <HeroTextLine text="Creative Technologist, Builder" className="text-accent dark:text-accent" />
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground mb-10 max-w-3xl mx-auto">
             A passionate Machine Learning engineer, creative technologist, and builder at heart.

@@ -116,3 +116,15 @@
   }
 }
 
+@keyframes heroCharWave {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-5px) scale(1.05); } /* Increased translateY slightly */
+}
+
+.hero-char {
+  display: inline-block;
+}
+
+.hero-text-line-wrapper:hover .hero-char {
+  animation: heroCharWave 0.7s ease-in-out infinite; /* Slightly slower duration */
+}
