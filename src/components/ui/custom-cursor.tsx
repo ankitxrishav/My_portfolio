@@ -3,12 +3,12 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 
-const MAIN_DOT_DEFAULT_SIZE = 10; 
-const MAIN_DOT_HERO_HOVER_SIZE = 90; 
+const MAIN_DOT_DEFAULT_SIZE = 10;
+const MAIN_DOT_HERO_HOVER_SIZE = 90; // Increased size for hero text hover
 const TRAIL_DOT_DEFAULT_SIZE = 8;
-const NUM_TRAIL_DOTS = 8;
-const LERP_FACTOR_CURSOR = 0.15;
-const TRAIL_LERP_FACTOR = 0.25;
+const NUM_TRAIL_DOTS = 8; // Number of trail dots
+const LERP_FACTOR_CURSOR = 0.15; // How smoothly the main dot follows
+const TRAIL_LERP_FACTOR = 0.25; // How smoothly trail dots follow
 
 interface Position {
   x: number;
@@ -21,8 +21,6 @@ interface MainCursorStyle extends Position {
   opacity: number;
   backgroundColor: string;
   borderRadius: string;
-  border: string;
-  mixBlendMode: string;
 }
 
 interface TrailDot extends Position {
@@ -42,15 +40,13 @@ export default function CustomCursor() {
     opacity: 0,
     backgroundColor: 'hsl(var(--accent))',
     borderRadius: '50%',
-    border: 'none',
-    mixBlendMode: 'normal',
   });
   const [trailDots, setTrailDots] = useState<TrailDot[]>(
     Array(NUM_TRAIL_DOTS).fill(null).map(() => ({ x: -100, y: -100, opacity: 0, scale: 1 }))
   );
   const [isVisible, setIsVisible] = useState(false);
   const [isHoveringHeroText, setIsHoveringHeroText] = useState(false);
-  
+
   const animationFrameIdRef = useRef<number | null>(null);
 
   const handleMouseMove = useCallback((event: MouseEvent) => {
@@ -80,67 +76,56 @@ export default function CustomCursor() {
 
   useEffect(() => {
     const animate = () => {
+      // Main cursor animation
       setMainCursorStyle(prev => {
-        let targetX = mousePosition.x;
-        let targetY = mousePosition.y;
+        const targetX = mousePosition.x;
+        const targetY = mousePosition.y;
         let targetWidth = MAIN_DOT_DEFAULT_SIZE;
         let targetHeight = MAIN_DOT_DEFAULT_SIZE;
-        let targetBgColor = 'hsl(var(--accent))';
-        let targetBorderRadius = '50%';
-        let targetBorder = 'none';
-        let targetMixBlendMode = 'normal';
-        let targetOpacity = isVisible ? 1 : 0;
+        let targetBgColor = 'hsl(var(--accent))'; // Default accent color
 
         if (isHoveringHeroText) {
           targetWidth = MAIN_DOT_HERO_HOVER_SIZE;
           targetHeight = MAIN_DOT_HERO_HOVER_SIZE;
-          targetBgColor = 'hsl(var(--accent))'; // Solid accent color for hero hover
-          targetBorderRadius = '50%'; // Keep it circular
-          targetBorder = 'none';
-          // targetMixBlendMode could be 'screen' or 'difference' for interesting effects, but 'normal' is safer
+          // Keep accent color for hero hover, text color will contrast
         }
-        
+
         const newX = lerp(prev.x, targetX - targetWidth / 2, LERP_FACTOR_CURSOR);
         const newY = lerp(prev.y, targetY - targetHeight / 2, LERP_FACTOR_CURSOR);
-        
+
         return {
           x: newX,
           y: newY,
           width: lerp(prev.width, targetWidth, LERP_FACTOR_CURSOR * 1.5),
           height: lerp(prev.height, targetHeight, LERP_FACTOR_CURSOR * 1.5),
-          opacity: lerp(prev.opacity, targetOpacity, 0.2),
+          opacity: lerp(prev.opacity, isVisible ? 1 : 0, 0.2),
           backgroundColor: targetBgColor,
-          borderRadius: targetBorderRadius, // Lerp borderRadius if it changes often
-          border: targetBorder,
-          mixBlendMode: targetMixBlendMode,
+          borderRadius: '50%', // Always circular
         };
       });
 
+      // Trail dots animation
       setTrailDots(prevTrailDots => {
         const newTrailDots = [...prevTrailDots];
         const mainCursorCenterX = mainCursorStyle.x + mainCursorStyle.width / 2;
         const mainCursorCenterY = mainCursorStyle.y + mainCursorStyle.height / 2;
 
         newTrailDots.forEach((dot, index) => {
-          let targetX: number;
-          let targetY: number;
+          const targetX = index === 0 ? mainCursorCenterX : newTrailDots[index - 1].x;
+          const targetY = index === 0 ? mainCursorCenterY : newTrailDots[index - 1].y;
 
-          if (index === 0) {
-            targetX = mainCursorCenterX;
-            targetY = mainCursorCenterY;
-          } else {
-            targetX = newTrailDots[index - 1].x;
-            targetY = newTrailDots[index - 1].y;
-          }
-          
           dot.x = lerp(dot.x, targetX, TRAIL_LERP_FACTOR + index * 0.02);
           dot.y = lerp(dot.y, targetY, TRAIL_LERP_FACTOR + index * 0.02);
-          
+
           const baseOpacity = 1 - (index / NUM_TRAIL_DOTS) * 0.7;
           const baseScale = 1 - (index / NUM_TRAIL_DOTS) * 0.6;
           
-          dot.opacity = lerp(dot.opacity, isHoveringHeroText ? baseOpacity * 0.1 : baseOpacity, 0.2);
-          dot.scale = lerp(dot.scale, isHoveringHeroText ? baseScale * 0.2 : baseScale, 0.2);
+          // Fade out trail more if hovering hero text
+          const opacityMultiplier = isHoveringHeroText ? 0.1 : 1;
+          const scaleMultiplier = isHoveringHeroText ? 0.2 : 1;
+
+          dot.opacity = lerp(dot.opacity, baseOpacity * opacityMultiplier, 0.2);
+          dot.scale = lerp(dot.scale, baseScale * scaleMultiplier, 0.2);
         });
         return newTrailDots;
       });
@@ -150,18 +135,19 @@ export default function CustomCursor() {
 
     if (isVisible) {
       // Initialize trail dots if they are at the initial off-screen position
+      // and main cursor is becoming visible
       if (mainCursorStyle.opacity < 0.1 && trailDots.some(d => d.x === -100 && d.y === -100)) {
         setTrailDots(
-          Array(NUM_TRAIL_DOTS).fill(null).map(() => ({ 
-            x: mousePosition.x, 
-            y: mousePosition.y, 
-            opacity: 0, 
-            scale: 1 
+          Array(NUM_TRAIL_DOTS).fill(null).map(() => ({
+            x: mousePosition.x,
+            y: mousePosition.y,
+            opacity: 0,
+            scale: 1
           }))
         );
       }
       animationFrameIdRef.current = requestAnimationFrame(animate);
-    } else {
+    } else { // When isVisible is false
         if (animationFrameIdRef.current) {
             cancelAnimationFrame(animationFrameIdRef.current);
             animationFrameIdRef.current = null;
@@ -171,8 +157,7 @@ export default function CustomCursor() {
             opacity: lerp(prev.opacity, 0, 0.2),
             width: lerp(prev.width, MAIN_DOT_DEFAULT_SIZE, 0.2),
             height: lerp(prev.height, MAIN_DOT_DEFAULT_SIZE, 0.2),
-            border: 'none',
-            // backgroundColor: 'hsl(var(--accent))', // Revert to default
+            backgroundColor: 'hsl(var(--accent))', // Revert to default for main dot
         }));
         setTrailDots(prevTrailDots => prevTrailDots.map(dot => ({
             ...dot,
@@ -186,18 +171,19 @@ export default function CustomCursor() {
         cancelAnimationFrame(animationFrameIdRef.current);
       }
     };
-  }, [isVisible, mousePosition, isHoveringHeroText, mainCursorStyle.width, mainCursorStyle.height, mainCursorStyle.x, mainCursorStyle.y, mainCursorStyle.opacity, trailDots]);
+  }, [isVisible, mousePosition, isHoveringHeroText]); // Corrected dependency array
 
-
-  if (!isVisible && mainCursorStyle.opacity < 0.01 && trailDots.every(d => d.opacity < 0.01)) { 
+  // Only render if the cursor or trail is meant to be somewhat visible
+  if (!isVisible && mainCursorStyle.opacity < 0.01 && trailDots.every(d => d.opacity < 0.01)) {
     return null;
   }
 
   return (
     <div className="fixed inset-0 pointer-events-none z-[9999]" aria-hidden="true">
+      {/* Main Cursor Dot */}
       <div
-        className="absolute shadow-lg" 
         style={{
+          position: 'absolute',
           left: `${mainCursorStyle.x}px`,
           top: `${mainCursorStyle.y}px`,
           width: `${mainCursorStyle.width}px`,
@@ -205,22 +191,23 @@ export default function CustomCursor() {
           opacity: mainCursorStyle.opacity,
           backgroundColor: mainCursorStyle.backgroundColor,
           borderRadius: mainCursorStyle.borderRadius,
-          border: mainCursorStyle.border,
-          mixBlendMode: mainCursorStyle.mixBlendMode as any, // Cast because CSS.Properties types might be strict
-          transition: 'background-color 0.2s ease-out, border-color 0.2s ease-out, border-radius 0.1s ease-out, mix-blend-mode 0.2s ease-out', 
+          transition: 'background-color 0.2s ease-out, border-color 0.2s ease-out',
         }}
       />
+      {/* Trail Dots */}
       {trailDots.map((dot, index) => (
-        dot.opacity > 0.01 && 
+        dot.opacity > 0.01 &&
         <div
           key={index}
-          className="absolute bg-accent/50 rounded-full backdrop-blur-xs" 
           style={{
+            position: 'absolute',
             left: `${dot.x}px`,
             top: `${dot.y}px`,
             width: `${TRAIL_DOT_DEFAULT_SIZE * dot.scale}px`,
             height: `${TRAIL_DOT_DEFAULT_SIZE * dot.scale}px`,
             opacity: dot.opacity,
+            backgroundColor: 'hsl(var(--accent) / 0.5)', // Trail dots are semi-transparent accent
+            borderRadius: '50%',
             transform: 'translate(-50%, -50%)', // Center the trail dots
           }}
         />
@@ -228,3 +215,4 @@ export default function CustomCursor() {
     </div>
   );
 }
+
