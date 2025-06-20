@@ -111,7 +111,7 @@
     @apply bg-background text-foreground;
   }
   /* Hide system cursor for elements that will use custom cursor */
-  body, a, button, [data-cursor-interactive="true"], [data-cursor-hero-text="true"] {
+  body, a, button, [data-cursor-interactive="true"] {
     cursor: none !important; /* Important to override browser defaults */
   }
 }
@@ -121,9 +121,4 @@
   /* transition property is now handled inline in the component for dynamic scale */
 }
 
-.hero-char {
-  display: inline-block; /* Allows transforms */
-  transition: transform 0.1s ease-out; /* Smooth scaling */
-  will-change: transform; /* Hint for performance */
-}
-
+/* Removed .hero-char styles as they are no longer needed for complex animations */
