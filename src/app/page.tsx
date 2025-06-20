@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 import AboutContent from '@/components/about/about-content';
 import ProjectList from '@/components/projects/project-list';
 import TimelineDisplay from '@/components/journey/timeline-display';
-import SkillsDisplay from '@/components/skills/skills-display'; // Import the new component
+import SkillsDisplay from '@/components/skills/skills-display';
 import StaticContactInfo from '@/components/contact/static-contact-info';
 
 interface HeroTextLineProps {
@@ -21,7 +21,7 @@ interface HeroTextLineProps {
 
 const HeroTextLine = ({ text, className, delay }: HeroTextLineProps) => {
   return (
-    <div 
+    <div
       className={cn("hero-text-line", className)}
       style={{ animationDelay: delay }}
     >
@@ -36,15 +36,15 @@ export default function HomePage() {
   return (
     <div>
       {/* Hero Section */}
-      <section 
-        id="home" 
+      <section
+        id="home"
         className="min-h-screen flex flex-col items-center justify-center text-center p-4 md:p-8 relative"
       >
         <div className="relative z-10">
           <h1 className="font-headline text-5xl md:text-7xl font-bold mb-6 text-foreground">
             <HeroTextLine text="Hi, I'm Ankit Kumar" className="animate-float" />
             <HeroTextLine text="ML Engineer" className="text-accent dark:text-accent animate-float" delay="0.2s" />
-            <HeroTextLine text="I play with code and fun tech ideas." className="text-accent dark:text-accent animate-float" delay="0.4s" />
+            <HeroTextLine text="I play with code and fun tech ideas." className="text-3xl md:text-5xl text-accent dark:text-accent animate-float" delay="0.4s" />
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground mb-10 max-w-3xl mx-auto">
             A passionate Machine Learning engineer, creative technologist, and builder at heart.
@@ -56,7 +56,7 @@ export default function HomePage() {
               className="bg-accent text-accent-foreground hover:bg-accent/90 hover:text-foreground shadow-lg transform hover:scale-105 transition-transform duration-200"
               data-cursor-interactive="true"
             >
-              <Link href="#projects"> 
+              <Link href="#projects">
                 View My Work <Eye className="ml-2 h-5 w-5" />
               </Link>
             </Button>
@@ -84,7 +84,7 @@ export default function HomePage() {
       >
         <AboutContent />
       </SectionWrapper>
-      
+
       {/* Projects Section */}
       <SectionWrapper
         id="projects"
@@ -97,8 +97,8 @@ export default function HomePage() {
 
       {/* Journey & Skills Section */}
       <SectionWrapper
-        id="journey-skills" 
-        title="Journey & Expertise" 
+        id="journey-skills"
+        title="Journey & Expertise"
         subtitle="Exploring my professional path and the skills I've honed along the way."
         aria-labelledby="journey-skills-heading"
       >
