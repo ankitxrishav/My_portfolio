@@ -9,7 +9,7 @@ import { UserCircle, Linkedin, Github } from 'lucide-react';
 
 export default function AboutContent() {
   const [aboutMeText] = useState( 
-    "I’m currently in my third year pursuing a B.Tech in Artificial Intelligence and Machine Learning at MITS, Gwalior. I thrive at the intersection of intelligent systems and creative interaction.\n\nWhether it’s transforming gesture motion into sitar music, forecasting electricity demand, or developing privacy-first communication apps — I aim to turn complex problems into elegant, impactful solutions. I believe that great tech doesn’t just work — it resonates.\n\nOutside of coding, I’m deeply curious about human-centered design, immersive UI, and experimental digital tools that make tech feel alive."
+    "I’m in my third year of B.Tech in AI & Machine Learning at MITS, Gwalior, trying to make tech that’s not just smart — but also a little fun, a little weird, and actually useful.\n\nI enjoy building things that mix intelligent systems with creative interaction — like making sitar music using hand gestures (yes, that’s a real project), forecasting electricity demand like a digital weather guy, or crafting private chat apps where even your nosy cousin can’t sneak in.\n\nFor me, solving problems isn’t just about getting it to “work” — it’s about making it click, feel right, and maybe even make someone smile.\n\nOutside of code, I love exploring human-centered design, immersive UI, and random digital experiments that make tech feel less like a tool and more like an experience."
   );
 
   return (
