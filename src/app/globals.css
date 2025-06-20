@@ -116,7 +116,7 @@
   }
 }
 
-/* Removed heroChar and related distortion/wave animations */
 .hero-text-line-wrapper {
-  /* Add any necessary base styles for the line wrapper if needed */
+  /* Base styles for the line wrapper */
+  /* transition property is now handled inline in the component for dynamic scale */
 }

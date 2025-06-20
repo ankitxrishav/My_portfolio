@@ -18,10 +18,15 @@ const HeroTextLine = ({ text, className, baseDelay = 0, isInteractive = false }:
 
   return (
     <div
-      className={cn("hero-text-line-wrapper", isInteractive && "cursor-none", className)}
+      className={cn(
+        "hero-text-line-wrapper transition-transform duration-200 ease-out", 
+        isInteractive && "cursor-none", 
+        isHovered ? "scale-105" : "scale-100",
+        className
+      )}
       onMouseEnter={() => isInteractive && setIsHovered(true)}
       onMouseLeave={() => isInteractive && setIsHovered(false)}
-      data-cursor-hero-text={isInteractive ? "true" : undefined}
+      data-cursor-hero-text={isInteractive ? "true" : undefined} // Keep this for the cursor to detect hero text
     >
       <span className={cn(
         "transition-colors duration-200",
@@ -70,6 +75,7 @@ export default function HomePage() {
               size="lg"
               asChild
               className="bg-accent text-accent-foreground hover:bg-accent/90 hover:text-foreground shadow-lg transform hover:scale-105 transition-transform duration-200"
+              data-cursor-interactive="true"
             >
               <Link href="/#projects">
                 View My Work <Eye className="ml-2 h-5 w-5" />
@@ -80,6 +86,7 @@ export default function HomePage() {
               size="lg"
               asChild
               className="border-accent text-foreground hover:bg-accent/10 hover:text-foreground shadow-lg transform hover:scale-105 transition-transform duration-200"
+              data-cursor-interactive="true"
             >
               <Link href="/#contact">
                 Get In Touch <ArrowRight className="ml-2 h-5 w-5" />
@@ -104,7 +111,7 @@ export default function HomePage() {
       <SectionWrapper
         id="projects"
         title="My Projects"
-        subtitle={<>Here’s a curated list of some of my best work, available on my GitHub: <a href='https://github.com/ankitxrishav' target='_blank' rel='noopener noreferrer' className='text-accent hover:underline'>github.com/ankitxrishav</a></>}
+        subtitle={<>Here’s a curated list of some of my best work, available on my GitHub: <a href='https://github.com/ankitxrishav' target='_blank' rel='noopener noreferrer' className='text-accent hover:underline' data-cursor-interactive="true">github.com/ankitxrishav</a></>}
         aria-labelledby="projects-heading"
         className="relative z-10"
       >
