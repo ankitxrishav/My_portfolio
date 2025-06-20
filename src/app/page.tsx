@@ -10,16 +10,21 @@ import { cn } from '@/lib/utils';
 import AboutContent from '@/components/about/about-content';
 import ProjectList from '@/components/projects/project-list';
 import TimelineDisplay from '@/components/journey/timeline-display';
+import SkillsDisplay from '@/components/skills/skills-display'; // Import the new component
 import StaticContactInfo from '@/components/contact/static-contact-info';
 
 interface HeroTextLineProps {
   text: string;
   className?: string;
+  delay?: string;
 }
 
-const HeroTextLine = ({ text, className }: HeroTextLineProps) => {
+const HeroTextLine = ({ text, className, delay }: HeroTextLineProps) => {
   return (
-    <div className={cn("hero-text-line", className)}>
+    <div 
+      className={cn("hero-text-line", className)}
+      style={{ animationDelay: delay }}
+    >
       {text}
     </div>
   );
@@ -29,18 +34,17 @@ const HeroTextLine = ({ text, className }: HeroTextLineProps) => {
 export default function HomePage() {
 
   return (
-    // Sections will now stack vertically
     <div>
       {/* Hero Section */}
       <section 
         id="home" 
-        className="min-h-screen flex flex-col items-center justify-center text-center p-4 md:p-8 relative" // Removed w-screen, h-screen fixed sizes, kept relative for z-index context if needed
+        className="min-h-screen flex flex-col items-center justify-center text-center p-4 md:p-8 relative"
       >
-        <div className="relative z-10"> {/* Ensure content is above potential fixed background elements */}
+        <div className="relative z-10">
           <h1 className="font-headline text-5xl md:text-7xl font-bold mb-6 text-foreground">
             <HeroTextLine text="Hi, I'm Ankit Kumar" className="animate-float" />
-            <HeroTextLine text="ML Engineer" className="text-accent dark:text-accent animate-float [animation-delay:0.2s]" />
-            <HeroTextLine text="Creative Technologist, Builder" className="text-accent dark:text-accent animate-float [animation-delay:0.4s]" />
+            <HeroTextLine text="ML Engineer" className="text-accent dark:text-accent animate-float" delay="0.2s" />
+            <HeroTextLine text="Creative Technologist, Builder" className="text-accent dark:text-accent animate-float" delay="0.4s" />
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground mb-10 max-w-3xl mx-auto">
             A passionate Machine Learning engineer, creative technologist, and builder at heart.
@@ -77,7 +81,6 @@ export default function HomePage() {
         title="About Me"
         subtitle="Discover more about my background, skills, and passion for machine learning."
         aria-labelledby="about-heading"
-        // Removed w-full h-full, relying on SectionWrapper's default padding and natural content height
       >
         <AboutContent />
       </SectionWrapper>
@@ -92,14 +95,23 @@ export default function HomePage() {
            <ProjectList />
       </SectionWrapper>
 
-      {/* Journey Section */}
+      {/* Journey & Skills Section */}
       <SectionWrapper
-        id="journey"
-        title="My Journey"
-        subtitle="Follow my professional path, key milestones, and educational background."
-        aria-labelledby="journey-heading"
+        id="journey-skills" 
+        title="Journey & Expertise" 
+        subtitle="Exploring my professional path and the skills I've honed along the way."
+        aria-labelledby="journey-skills-heading"
       >
-        <TimelineDisplay />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-12 gap-y-10 items-start">
+          <div>
+            <h3 className="text-3xl font-headline mb-8 text-foreground text-center lg:text-left">My Journey</h3>
+            <TimelineDisplay />
+          </div>
+          <div>
+            <h3 className="text-3xl font-headline mb-8 text-foreground text-center lg:text-left">My Skillset</h3>
+            <SkillsDisplay />
+          </div>
+        </div>
       </SectionWrapper>
 
       {/* Contact Section */}
