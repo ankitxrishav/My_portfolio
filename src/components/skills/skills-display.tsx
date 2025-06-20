@@ -19,13 +19,15 @@ export default function SkillsDisplay() {
           <CardContent className="pb-5">
             <div className="flex flex-wrap gap-2">
               {category.skills.map((skill: Skill) => (
-                <Badge 
-                  key={skill.name} 
+                <Badge
+                  key={skill.name}
                   variant={skill.highlight ? "default" : "secondary"}
                   className={cn(
-                    "text-xs transition-colors",
-                    !skill.highlight && "bg-secondary/70 text-secondary-foreground hover:bg-secondary",
-                    skill.highlight && "hover:bg-primary/90" // Ensures highlighted badges also have a hover effect consistent with default variant
+                    // Base styling like text-xs, font-semibold, transition-colors, border-transparent
+                    // will come from the variant="default" or variant="secondary".
+                    // We only override/specify colors and hover states here.
+                    skill.highlight && "bg-accent text-accent-foreground hover:bg-accent/90",
+                    !skill.highlight && "bg-secondary/70 text-secondary-foreground hover:bg-secondary"
                   )}
                 >
                   {skill.name}
@@ -38,3 +40,4 @@ export default function SkillsDisplay() {
     </div>
   );
 }
+
