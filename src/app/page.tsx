@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import SectionWrapper from '@/components/ui/section-wrapper';
 import Link from 'next/link';
@@ -20,16 +20,8 @@ interface HeroTextLineProps {
 
 const HeroTextLine = ({ text, className }: HeroTextLineProps) => {
   return (
-    <div className={cn("hero-text-line-wrapper", className)}>
-      {text.split("").map((char, index) => (
-        <span
-          key={index}
-          className="hero-char"
-          style={{ animationDelay: `${index * 0.03}s` }}
-        >
-          {char === " " ? "\u00A0" : char} {/* Replace space with non-breaking space for layout consistency */}
-        </span>
-      ))}
+    <div className={cn("hero-text-line", className)}>
+      {text}
     </div>
   );
 };
@@ -59,9 +51,9 @@ export default function HomePage() {
           style={{ transform: `translateY(${heroScrollY * 0.2}px)` }}
         >
           <h1 className="font-headline text-5xl md:text-7xl font-bold mb-6 text-foreground">
-            <HeroTextLine text="Hi, I'm Ankit Kumar" />
-            <HeroTextLine text="ML Engineer" className="text-accent dark:text-accent" />
-            <HeroTextLine text="Creative Technologist, Builder" className="text-accent dark:text-accent" />
+            <HeroTextLine text="Hi, I'm Ankit Kumar" className="animate-float" />
+            <HeroTextLine text="ML Engineer" className="text-accent dark:text-accent animate-float [animation-delay:0.2s]" />
+            <HeroTextLine text="Creative Technologist, Builder" className="text-accent dark:text-accent animate-float [animation-delay:0.4s]" />
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground mb-10 max-w-3xl mx-auto">
             A passionate Machine Learning engineer, creative technologist, and builder at heart.
