@@ -4,6 +4,7 @@
 import { skillsData } from '@/data/skills';
 import type { Skill } from '@/data/skills';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 export default function SkillsDisplay() {
   return (
@@ -15,18 +16,17 @@ export default function SkillsDisplay() {
             <CardTitle className="font-headline text-xl text-foreground">{category.name}</CardTitle>
           </CardHeader>
           <CardContent className="pb-5">
-            <ul className="space-y-3">
+            <div className="flex flex-wrap gap-2">
               {category.skills.map((skill: Skill) => (
-                <li key={skill.name} className="flex items-center gap-3">
-                  <div className="flex-shrink-0 w-10 h-10 rounded-full bg-muted flex items-center justify-center border border-border">
-                    <skill.icon className="w-5 h-5 text-accent" />
-                  </div>
-                  <p className="text-sm font-medium text-foreground">
-                    {skill.name}
-                  </p>
-                </li>
+                <Badge 
+                  key={skill.name} 
+                  variant="secondary" 
+                  className="text-xs bg-secondary/70 text-secondary-foreground hover:bg-secondary transition-colors"
+                >
+                  {skill.name}
+                </Badge>
               ))}
-            </ul>
+            </div>
           </CardContent>
         </Card>
       ))}
