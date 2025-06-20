@@ -1,87 +1,34 @@
 
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import SectionWrapper from '@/components/ui/section-wrapper';
 import Link from 'next/link';
 import { ArrowRight, Eye } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 import AboutContent from '@/components/about/about-content';
 import ProjectList from '@/components/projects/project-list';
 import TimelineDisplay from '@/components/journey/timeline-display';
 import StaticContactInfo from '@/components/contact/static-contact-info';
 
-const HeroTextLine = ({ text, className, baseDelay = 0 }: { text: string; className?: string; baseDelay?: number }) => {
-  const lineRef = useRef<HTMLDivElement>(null);
-  const charRefs = useRef<(HTMLSpanElement | null)[]>([]);
-
-  useEffect(() => {
-    // Initialize refs for characters
-    if (lineRef.current) {
-      charRefs.current = Array.from(lineRef.current.querySelectorAll('.hero-char'));
-    }
-  }, [text]);
-
-  const handleMouseMove = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
-    if (!lineRef.current) return;
-    const rect = lineRef.current.getBoundingClientRect();
-    const mouseX = event.clientX - rect.left;
-    const mouseY = event.clientY - rect.top;
-
-    requestAnimationFrame(() => {
-      charRefs.current.forEach((span) => {
-        if (!span) return;
-        const spanRect = span.getBoundingClientRect();
-        const spanCenterX = (spanRect.left - rect.left) + spanRect.width / 2;
-        const spanCenterY = (spanRect.top - rect.top) + spanRect.height / 2;
-
-        const deltaX = spanCenterX - mouseX;
-        const deltaY = spanCenterY - mouseY;
-        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-
-        const MAX_DIST = 75; // Max influence radius
-        const PUSH_FACTOR = 10; // How much to push the characters
-
-        if (distance < MAX_DIST) {
-          const force = (MAX_DIST - distance) / MAX_DIST; // 1 when close, 0 when far
-          const pushX = (deltaX / distance) * force * PUSH_FACTOR;
-          const pushY = (deltaY / distance) * force * PUSH_FACTOR;
-          span.style.transform = `translate(${pushX}px, ${pushY}px)`;
-        } else {
-          span.style.transform = 'translate(0px, 0px)';
-        }
-      });
-    });
-  }, []);
-
-  const handleMouseLeave = useCallback(() => {
-    requestAnimationFrame(() => {
-      charRefs.current.forEach((span) => {
-        if (span) {
-          span.style.transform = 'translate(0px, 0px)';
-        }
-      });
-    });
-  }, []);
+const HeroTextLine = ({ text, className, baseDelay = 0, isInteractive = false }: { text: string; className?: string; baseDelay?: number; isInteractive?: boolean }) => {
+  const [isHovered, setIsHovered] = useState(false);
 
   return (
     <div
-      ref={lineRef}
-      className={`hero-text-line-wrapper ${className || ''}`}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      data-cursor-interactive="true" // For main custom cursor interaction
+      className={cn("hero-text-line-wrapper", isInteractive && "cursor-none", className)}
+      onMouseEnter={() => isInteractive && setIsHovered(true)}
+      onMouseLeave={() => isInteractive && setIsHovered(false)}
+      data-cursor-hero-text={isInteractive ? "true" : undefined}
     >
-      {text.split('').map((char, index) => (
-        <span
-          key={index}
-          className="hero-char"
-          // Removed animationDelay, as it's not used for this effect
-        >
-          {char === ' ' ? '\u00A0' : char}
-        </span>
-      ))}
+      <span className={cn(
+        "transition-colors duration-200",
+        isHovered ? "text-accent-foreground dark:text-accent-foreground" : "text-inherit"
+      )}>
+        {text}
+      </span>
     </div>
   );
 };
@@ -111,9 +58,9 @@ export default function HomePage() {
           style={{ transform: `translateY(${heroScrollY * 0.2}px)` }}
         >
           <h1 className="font-headline text-5xl md:text-7xl font-bold mb-6 text-foreground">
-            <HeroTextLine text="Hi, I'm Ankit Kumar" />
-            <HeroTextLine text="ML Engineer" className="text-accent dark:text-accent" />
-            <HeroTextLine text="Creative Technologist, Builder" className="text-accent dark:text-accent" />
+            <HeroTextLine text="Hi, I'm Ankit Kumar" isInteractive={true} />
+            <HeroTextLine text="ML Engineer" className="text-accent dark:text-accent" isInteractive={true} />
+            <HeroTextLine text="Creative Technologist, Builder" className="text-accent dark:text-accent" isInteractive={true}/>
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground mb-10 max-w-3xl mx-auto">
             A passionate Machine Learning engineer, creative technologist, and builder at heart.
