@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import SectionWrapper from '@/components/ui/section-wrapper';
 import Link from 'next/link';
@@ -13,26 +13,95 @@ import ProjectList from '@/components/projects/project-list';
 import TimelineDisplay from '@/components/journey/timeline-display';
 import StaticContactInfo from '@/components/contact/static-contact-info';
 
-const HeroTextLine = ({ text, className, baseDelay = 0, isInteractive = false }: { text: string; className?: string; baseDelay?: number; isInteractive?: boolean }) => {
+interface HeroTextLineProps {
+  text: string;
+  className?: string;
+  baseDelay?: number;
+  isInteractive?: boolean;
+}
+
+const HeroTextLine = ({ text, className, isInteractive = false }: HeroTextLineProps) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [charTransforms, setCharTransforms] = useState<string[]>([]);
+  const lineRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setCharTransforms(Array(text.length).fill('scale(1)'));
+  }, [text]);
+
+  const handleMouseMoveChars = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
+    if (!isInteractive || !lineRef.current) return;
+
+    const lineRect = lineRef.current.getBoundingClientRect();
+    const mouseX = event.clientX - lineRect.left;
+    const mouseY = event.clientY - lineRect.top;
+
+    const newTransforms = Array.from(text).map((_char, charIndex) => {
+      const charSpan = lineRef.current?.children[0]?.children[charIndex] as HTMLElement; // Accessing char spans
+      if (!charSpan) return 'scale(1)';
+
+      const charRect = charSpan.getBoundingClientRect();
+      const charCenterX = (charRect.left - lineRect.left) + charRect.width / 2;
+      const charCenterY = (charRect.top - lineRect.top) + charRect.height / 2;
+
+      const distanceX = mouseX - charCenterX;
+      const distanceY = mouseY - charCenterY;
+      const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+
+      const influenceRadius = 50; // pixels for scaling effect
+      let scale = 1;
+      if (distance < influenceRadius) {
+        // Calculate scale: 1.2 at 0 distance, 1.0 at influenceRadius distance
+        scale = 1 + (1 - distance / influenceRadius) * 0.2;
+      }
+      return `scale(${Math.max(1, scale)})`; // Ensure scale is at least 1
+    });
+    setCharTransforms(newTransforms);
+  }, [text, isInteractive]);
+
+  const handleMouseLeaveChars = useCallback(() => {
+    if (!isInteractive) return;
+    setCharTransforms(Array(text.length).fill('scale(1)'));
+  }, [text, isInteractive]);
+
 
   return (
     <div
+      ref={lineRef}
       className={cn(
-        "hero-text-line-wrapper transition-transform duration-200 ease-out", 
-        isInteractive && "cursor-none", 
-        isHovered ? "scale-105" : "scale-100",
-        className
+        "hero-text-line-wrapper", // Removed global scale on hover here
+        className // Base styling for the line (e.g., text-accent)
       )}
-      onMouseEnter={() => isInteractive && setIsHovered(true)}
-      onMouseLeave={() => isInteractive && setIsHovered(false)}
-      data-cursor-hero-text={isInteractive ? "true" : undefined} // Keep this for the cursor to detect hero text
+      onMouseEnter={() => {
+        if (isInteractive) setIsHovered(true);
+      }}
+      onMouseLeave={() => {
+        if (isInteractive) {
+          setIsHovered(false);
+          handleMouseLeaveChars();
+        }
+      }}
+      onMouseMove={handleMouseMoveChars}
+      style={{ zIndex: isHovered ? 10000 : 'auto' }} // Elevate text when hovered
+      data-cursor-hero-text={isInteractive ? "true" : undefined}
     >
-      <span className={cn(
-        "transition-colors duration-200",
-        isHovered ? "text-accent-foreground dark:text-accent-foreground" : "text-inherit"
-      )}>
-        {text}
+      <span // This span handles the overall text color change on hover
+        className={cn(
+          "transition-colors duration-200",
+          isHovered ? "text-accent-foreground dark:text-accent-foreground" : "inherit"
+        )}
+      >
+        {Array.from(text).map((char, index) => (
+          <span
+            key={index}
+            className="hero-char"
+            style={{
+              transform: charTransforms[index],
+            }}
+          >
+            {char === " " ? "\u00A0" : char} {/* Render non-breaking space for actual spaces */}
+          </span>
+        ))}
       </span>
     </div>
   );
@@ -59,7 +128,7 @@ export default function HomePage() {
       {/* Hero Section */}
       <section id="home" className="min-h-screen flex flex-col items-center justify-center text-center py-16 relative z-10 overflow-hidden">
         <div
-          className="relative z-10"
+          className="relative z-10" // This z-index is for within the section
           style={{ transform: `translateY(${heroScrollY * 0.2}px)` }}
         >
           <h1 className="font-headline text-5xl md:text-7xl font-bold mb-6 text-foreground">

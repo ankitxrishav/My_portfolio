@@ -120,3 +120,10 @@
   /* Base styles for the line wrapper */
   /* transition property is now handled inline in the component for dynamic scale */
 }
+
+.hero-char {
+  display: inline-block; /* Allows transforms */
+  transition: transform 0.1s ease-out; /* Smooth scaling */
+  will-change: transform; /* Hint for performance */
+}
+
