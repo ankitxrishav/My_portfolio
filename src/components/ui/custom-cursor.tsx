@@ -2,139 +2,153 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { cn } from '@/lib/utils';
-
-interface Particle {
-  id: number;
-  x: number;
-  y: number;
-  size: number;
-  opacity: number;
-  createdAt: number;
-  color: string; // Added color property
-}
-
-const MAX_PARTICLES = 35; // Increased for a longer tail
-const PARTICLE_LIFESPAN = 1000; // Increased for a longer tail (milliseconds)
-const PARTICLE_INITIAL_SIZE = 8; // px
-
-// Array of bright colors for the particles
-const BRIGHT_COLORS = [
-  '#FF00FF', // Magenta
-  '#00FFFF', // Cyan
-  '#39FF14', // Neon Green
-  '#FFD700', // Gold
-  '#FF69B4', // Hot Pink
-  '#7FFF00', // Chartreuse
-];
+import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'; // Added for potential debugging, not active control
 
 export default function CustomCursor() {
-  const [particles, setParticles] = useState<Particle[]>([]);
-  const [mousePosition, setMousePosition] = useState({ x: -100, y: -100 });
+  const mountRef = useRef<HTMLDivElement>(null);
+  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
+  const sceneRef = useRef<THREE.Scene | null>(null);
+  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const modelRef = useRef<THREE.Mesh | null>(null);
+  const pointLightRef = useRef<THREE.PointLight | null>(null);
+  const animationFrameIdRef = useRef<number | null>(null);
+  const mousePositionRef = useRef({ x: 0, y: 0 });
+  const targetModelPositionRef = useRef(new THREE.Vector3());
+  const isInitializedRef = useRef(false);
+
   const [isVisible, setIsVisible] = useState(false);
-  const requestRef = useRef<number>();
-  const lastParticleTimeRef = useRef<number>(0);
-  const particleIdCounterRef = useRef<number>(0);
 
-  const createParticle = useCallback((x: number, y: number) => {
-    const colorIndex = particleIdCounterRef.current % BRIGHT_COLORS.length;
-    const newParticle: Particle = {
-      id: particleIdCounterRef.current++,
-      x: x - PARTICLE_INITIAL_SIZE / 2,
-      y: y - PARTICLE_INITIAL_SIZE / 2,
-      size: PARTICLE_INITIAL_SIZE,
-      opacity: 1,
-      createdAt: performance.now(),
-      color: BRIGHT_COLORS[colorIndex], // Assign color
-    };
-
-    setParticles(prev => {
-      const updatedParticles = [newParticle, ...prev];
-      if (updatedParticles.length > MAX_PARTICLES) {
-        return updatedParticles.slice(0, MAX_PARTICLES);
-      }
-      return updatedParticles;
-    });
-  }, []);
+  const handleMouseMove = useCallback((event: MouseEvent) => {
+    if (!isVisible) setIsVisible(true);
+    mousePositionRef.current = { x: event.clientX, y: event.clientY };
+  }, [isVisible]);
 
   useEffect(() => {
-    const handleMouseMove = (event: MouseEvent) => {
-      const now = performance.now();
-      setMousePosition({ x: event.clientX, y: event.clientY });
-      if (!isVisible) setIsVisible(true);
+    if (!mountRef.current || typeof window === 'undefined' || isInitializedRef.current) return;
 
-      if (now - lastParticleTimeRef.current > 30) { 
-        createParticle(event.clientX, event.clientY);
-        lastParticleTimeRef.current = now;
+    const currentMount = mountRef.current;
+
+    // Scene
+    sceneRef.current = new THREE.Scene();
+
+    // Camera
+    cameraRef.current = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    cameraRef.current.position.z = 1; // Camera is relatively close
+
+    // Renderer
+    rendererRef.current = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    rendererRef.current.setSize(window.innerWidth, window.innerHeight);
+    rendererRef.current.setPixelRatio(window.devicePixelRatio);
+    currentMount.appendChild(rendererRef.current.domElement);
+
+    // Lighting
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6); // Softer ambient
+    sceneRef.current.add(ambientLight);
+
+    pointLightRef.current = new THREE.PointLight(0xffffff, 0.8, 100); // Point light to cast highlights
+    pointLightRef.current.position.set(0, 0, 0.5); // Initial position, will follow cursor
+    sceneRef.current.add(pointLightRef.current);
+
+    // 3D Model (Torus Knot)
+    const geometry = new THREE.TorusKnotGeometry(0.1, 0.03, 100, 16); // Smaller, sleeker
+    const material = new THREE.MeshStandardMaterial({
+      color: 0xBF00FF, // Accent Purple
+      metalness: 0.6,
+      roughness: 0.2,
+      emissive: 0xBF00FF,
+      emissiveIntensity: 0.25,
+    });
+    modelRef.current = new THREE.Mesh(geometry, material);
+    sceneRef.current.add(modelRef.current);
+    modelRef.current.visible = false; // Initially hidden until first mouse move
+
+    isInitializedRef.current = true;
+
+    // Mouse move listener
+    document.addEventListener('mousemove', handleMouseMove);
+    document.body.style.cursor = 'none'; // Ensure system cursor is hidden
+
+    const animate = () => {
+      animationFrameIdRef.current = requestAnimationFrame(animate);
+      if (!rendererRef.current || !sceneRef.current || !cameraRef.current || !modelRef.current || !pointLightRef.current) return;
+
+      if (isVisible && !modelRef.current.visible) {
+        modelRef.current.visible = true; // Show model on first interaction
+      }
+      
+      if (modelRef.current.visible) {
+        // Convert mouse screen coordinates to 3D world space
+        const vec = new THREE.Vector3();
+        const pos = new THREE.Vector3();
+        
+        vec.set(
+          (mousePositionRef.current.x / window.innerWidth) * 2 - 1,
+          -(mousePositionRef.current.y / window.innerHeight) * 2 + 1,
+          0.5 // A point in front of the camera
+        );
+        
+        vec.unproject(cameraRef.current); // Unproject from camera's view
+        
+        vec.sub(cameraRef.current.position).normalize();
+        const distance = -cameraRef.current.position.z / vec.z; // Distance to Z=0 plane
+        pos.copy(cameraRef.current.position).add(vec.multiplyScalar(distance));
+        
+        targetModelPositionRef.current.copy(pos);
+
+        // Smoothly interpolate model position (lerp)
+        modelRef.current.position.lerp(targetModelPositionRef.current, 0.2);
+
+        // Update light position to follow model
+        pointLightRef.current.position.copy(modelRef.current.position);
+        pointLightRef.current.position.z += 0.3; // Slightly in front of the model
+
+        // Subtle rotation
+        modelRef.current.rotation.x += 0.005;
+        modelRef.current.rotation.y += 0.007;
+      }
+      
+      rendererRef.current.render(sceneRef.current, cameraRef.current);
+    };
+    animate();
+
+    const handleResize = () => {
+      if (cameraRef.current && rendererRef.current) {
+        cameraRef.current.aspect = window.innerWidth / window.innerHeight;
+        cameraRef.current.updateProjectionMatrix();
+        rendererRef.current.setSize(window.innerWidth, window.innerHeight);
       }
     };
-
-    document.addEventListener('mousemove', handleMouseMove);
-    document.body.style.cursor = 'none';
-    const interactiveElements = document.querySelectorAll('a, button, [data-cursor-interactive="true"]');
-    interactiveElements.forEach(el => (el as HTMLElement).style.cursor = 'none');
-
-    const animateParticles = () => {
-      setParticles(prevParticles =>
-        prevParticles
-          .map(p => {
-            const age = performance.now() - p.createdAt;
-            if (age > PARTICLE_LIFESPAN) {
-              return null; 
-            }
-            const progress = age / PARTICLE_LIFESPAN;
-            return {
-              ...p,
-              opacity: 1 - progress,
-              size: PARTICLE_INITIAL_SIZE * (1 - progress * 0.75),
-            };
-          })
-          .filter(p => p !== null) as Particle[]
-      );
-      requestRef.current = requestAnimationFrame(animateParticles);
-    };
-
-    requestRef.current = requestAnimationFrame(animateParticles);
+    window.addEventListener('resize', handleResize);
 
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
-      if (requestRef.current) {
-        cancelAnimationFrame(requestRef.current);
+      window.removeEventListener('resize', handleResize);
+      if (animationFrameIdRef.current) {
+        cancelAnimationFrame(animationFrameIdRef.current);
       }
-      document.body.style.cursor = '';
-      interactiveElements.forEach(el => (el as HTMLElement).style.cursor = '');
+      modelRef.current?.geometry?.dispose();
+      if (modelRef.current?.material) {
+        if (Array.isArray(modelRef.current.material)) {
+          modelRef.current.material.forEach(m => m.dispose());
+        } else {
+          (modelRef.current.material as THREE.Material).dispose();
+        }
+      }
+      rendererRef.current?.dispose();
+      if (currentMount && rendererRef.current?.domElement?.parentNode === currentMount) {
+        currentMount.removeChild(rendererRef.current.domElement);
+      }
+      sceneRef.current = null;
+      cameraRef.current = null;
+      rendererRef.current = null;
+      modelRef.current = null;
+      pointLightRef.current = null;
+      isInitializedRef.current = false;
+      document.body.style.cursor = ''; // Restore system cursor on cleanup
     };
-  }, [isVisible, createParticle]);
+  }, [handleMouseMove, isVisible]); // isVisible is a dependency for initial model visibility
 
-  if (!isVisible) {
-    return null;
-  }
-
-  return (
-    <>
-      {particles.map(particle => (
-        <div
-          key={particle.id}
-          className="fixed rounded-full pointer-events-none z-[9999]"
-          style={{
-            left: `${particle.x}px`,
-            top: `${particle.y}px`,
-            width: `${Math.max(0, particle.size)}px`,
-            height: `${Math.max(0, particle.size)}px`,
-            opacity: particle.opacity,
-            backgroundColor: particle.color, // Use dynamic particle color
-            transform: `translate(-50%, -50%) scale(${Math.max(0, particle.size / PARTICLE_INITIAL_SIZE)})`,
-            transition: 'opacity 0.05s ease-out, transform 0.05s ease-out',
-          }}
-        />
-      ))}
-      <div
-        className="fixed w-1.5 h-1.5 rounded-full bg-accent pointer-events-none -translate-x-1/2 -translate-y-1/2 z-[9999]"
-        style={{
-          left: `${mousePosition.x}px`,
-          top: `${mousePosition.y}px`,
-        }}
-      />
-    </>
-  );
+  return <div ref={mountRef} className="fixed inset-0 pointer-events-none z-[9999]" />;
 }
+
