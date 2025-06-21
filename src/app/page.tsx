@@ -108,11 +108,9 @@ export default function HomePage() {
       >
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-12 gap-y-10 items-start">
           <div>
-            <h3 className="text-3xl font-headline mb-8 text-foreground text-center lg:text-left">My Journey</h3>
             <TimelineDisplay />
           </div>
           <div>
-            <h3 className="text-3xl font-headline mb-8 text-foreground text-center lg:text-left">My Skillset</h3>
             <SkillsDisplay />
           </div>
         </div>
