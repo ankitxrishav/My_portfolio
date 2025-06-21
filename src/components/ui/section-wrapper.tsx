@@ -20,10 +20,10 @@ export default function SectionWrapper({ title, subtitle, children, className, .
         )}
         {subtitle && (
           <div className="mb-10 md:mb-16 flex justify-center">
-            <Card className="relative p-4 md:p-6 max-w-2xl w-full text-center text-lg md:text-xl text-muted-foreground shadow-xl">
+            <Card className="relative p-4 md:p-6 max-w-xl w-full text-center text-lg md:text-xl text-muted-foreground shadow-xl overflow-visible">
               {typeof subtitle === 'string' ? subtitle : <div>{subtitle}</div>}
               <div 
-                className="absolute left-1/2 bottom-0 w-5 h-5 bg-card transform -translate-x-1/2 translate-y-1/2 rotate-45 rounded-sm"
+                className="absolute left-1/2 bottom-0 w-4 h-4 bg-card transform -translate-x-1/2 translate-y-1/2 rotate-45 border-b border-r border-border"
               ></div>
             </Card>
           </div>
