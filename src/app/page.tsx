@@ -54,7 +54,7 @@ export default function HomePage() {
             />
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground mb-10 max-w-3xl mx-auto">
-            A passionate Machine Learning engineer, creative technologist, and builder at heart.
+            A passionate AIML Enthusiast & Builder, creative technologist, and builder at heart.
           </p>
           <div className="flex flex-col items-center sm:flex-row gap-4 justify-center">
             <Button

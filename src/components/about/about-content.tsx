@@ -25,7 +25,7 @@ export default function AboutContent() {
             />
           </div>
           <CardTitle className="font-headline text-2xl text-foreground">Ankit Kumar</CardTitle>
-          <CardDescription className="text-accent">ML Engineer</CardDescription>
+          <CardDescription className="text-accent">AIML Enthusiast & Builder</CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground text-center">
