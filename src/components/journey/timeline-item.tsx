@@ -12,7 +12,6 @@ export default function TimelineItem({ event, isLast }: TimelineItemProps) {
   const IconComponent = event.icon;
   return (
     <div className="relative pl-8 sm:pl-12 py-6 group">
-      {/* Vertical line */}
       {!isLast && (
         <div className={cn(
           "absolute left-3 sm:left-5 top-0 w-0.5 h-full group-hover:bg-accent transition-colors duration-300",
@@ -20,7 +19,6 @@ export default function TimelineItem({ event, isLast }: TimelineItemProps) {
         )} />
       )}
       
-      {/* Dot */}
       <div className={cn(
         "absolute left-[0.30rem] sm:left-[0.80rem] top-[calc(1.5rem-0.5rem)] w-4 h-4 rounded-full border-2 border-background group-hover:border-accent transition-colors duration-300",
         event.type === 'work' ? 'bg-primary' : event.type === 'education' ? 'bg-secondary' : 'bg-muted-foreground'

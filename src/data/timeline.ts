@@ -9,7 +9,7 @@ export interface TimelineEvent {
   icon?: React.ComponentType<{ className?: string }>;
 }
 
-import { GraduationCap, Briefcase, Award, Zap, Users } from 'lucide-react'; // Added Zap, Users for variety
+import { GraduationCap, Briefcase, Award, Zap, Users } from 'lucide-react';
 
 export const timelineData: TimelineEvent[] = [
   {

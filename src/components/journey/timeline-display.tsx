@@ -3,10 +3,9 @@
 
 import { timelineData, type TimelineEvent } from '@/data/timeline';
 import TimelineItem from './timeline-item';
-// Removed AI generation related imports and logic
 
 export default function TimelineDisplay() {
-  const currentTimelineData: TimelineEvent[] = timelineData; // Directly use static data
+  const currentTimelineData: TimelineEvent[] = timelineData;
 
   return (
     <div>

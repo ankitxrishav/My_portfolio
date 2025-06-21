@@ -24,11 +24,6 @@ export default function StaticContactInfo() {
               <Mail className="mr-2 h-5 w-5" /> Email Me
             </a>
           </Button>
-          {/* <Button variant="link" asChild className="text-accent hover:text-accent/80">
-            <a href="/resume.pdf" target="_blank" rel="noopener noreferrer">
-              <FileText className="mr-2 h-5 w-5" /> Download Resume
-            </a>
-          </Button> */}
         </div>
 
         <div className="flex justify-center space-x-4 pt-4">

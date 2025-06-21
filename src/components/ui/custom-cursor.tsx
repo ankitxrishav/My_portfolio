@@ -70,7 +70,6 @@ export default function CustomCursor() {
 
   useEffect(() => {
     const animate = () => {
-      // Animate Main Cursor
       setMainCursorStyle(prevStyle => {
         const targetX = mousePosition.x;
         const targetY = mousePosition.y;
@@ -87,7 +86,6 @@ export default function CustomCursor() {
         };
       });
 
-      // Animate Trail Dots
       setTrailDots(prevTrailDots => {
         const newTrailDots = [...prevTrailDots];
         const mainDotCenterX = mainCursorStyle.x + mainCursorStyle.width / 2;
@@ -162,7 +160,6 @@ export default function CustomCursor() {
 
   return (
     <div className={rootCursorClasses} aria-hidden="true">
-      {/* Main Cursor Dot */}
       <div
         style={{
           position: 'absolute',
@@ -177,7 +174,6 @@ export default function CustomCursor() {
           boxSizing: 'border-box',
         }}
       />
-      {/* Trail Dots */}
       {trailDots.map((dot, index) => (
         (isVisible || dot.opacity > 0.01) && 
         <div

@@ -23,9 +23,6 @@ export default function SkillsDisplay() {
                   key={skill.name}
                   variant={skill.highlight ? "default" : "secondary"}
                   className={cn(
-                    // Base styling like text-xs, font-semibold, transition-colors, border-transparent
-                    // will come from the variant="default" or variant="secondary".
-                    // We only override/specify colors and hover states here.
                     skill.highlight && "bg-accent text-accent-foreground hover:bg-accent/90",
                     !skill.highlight && "bg-secondary/70 text-secondary-foreground hover:bg-secondary"
                   )}
@@ -40,4 +37,3 @@ export default function SkillsDisplay() {
     </div>
   );
 }
-

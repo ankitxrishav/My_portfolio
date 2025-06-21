@@ -35,7 +35,6 @@ export default function HomePage() {
 
   return (
     <div>
-      {/* Hero Section */}
       <section
         id="home"
         className="min-h-screen flex flex-col items-center justify-center text-center p-4 md:p-8 relative"
@@ -75,7 +74,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* About Section */}
       <SectionWrapper
         id="about"
         title="About Me"
@@ -85,7 +83,6 @@ export default function HomePage() {
         <AboutContent />
       </SectionWrapper>
 
-      {/* Projects Section */}
       <SectionWrapper
         id="projects"
         title="My Projects"
@@ -95,7 +92,6 @@ export default function HomePage() {
            <ProjectList />
       </SectionWrapper>
 
-      {/* Journey & Skills Section */}
       <SectionWrapper
         id="journey-skills"
         title="Journey & Expertise"
@@ -114,7 +110,6 @@ export default function HomePage() {
         </div>
       </SectionWrapper>
 
-      {/* Contact Section */}
       <SectionWrapper
         id="contact"
         title="Contact Me"

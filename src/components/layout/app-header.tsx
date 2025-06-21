@@ -50,7 +50,6 @@ export default function AppHeader({ currentTheme, toggleTheme }: AppHeaderProps)
             {currentTheme === 'light' ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
           </Button>
         </div>
-        {/* Mobile Menu Trigger (optional, can be added later if needed) */}
       </div>
     </header>
   );

@@ -8,9 +8,9 @@ import {
 
 export interface Skill {
   name: string;
-  icon: LucideIcon; // Retained for potential future use, but not used in current badge display
-  level: number; // Proficiency level from 0 to 100, retained for potential future use
-  highlight?: boolean; // New property to mark highlighted skills
+  icon: LucideIcon;
+  level: number;
+  highlight?: boolean;
 }
 
 export interface SkillCategory {

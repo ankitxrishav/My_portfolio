@@ -4,25 +4,21 @@
 import { useEffect, useRef, useCallback } from 'react';
 import * as THREE from 'three';
 
-// Cube constants
 const CUBE_SIZE = 0.6;
-const CUBE_SPACING = 2.0; // Horizontal spacing for cubes
-const CUBE_INITIAL_Y = 0; // Initial Y position, will be adjusted by scroll
-const CUBE_SCROLL_FACTOR = 0.003; // Sensitivity of cube Y movement to scroll
+const CUBE_SPACING = 2.0;
+const CUBE_INITIAL_Y = 0;
+const CUBE_SCROLL_FACTOR = 0.003;
 
-// Particle Sphere constants
 const NUM_PARTICLES = 7000;
 const PARTICLE_SPHERE_BASE_RADIUS = 2.5;
 const MIN_SPHERE_SCALE = 0.1;
 const MAX_SPHERE_SCALE = 1.2;
-const PARTICLE_COLOR = 0xBF00FF; // Electric Purple
+const PARTICLE_COLOR = 0xBF00FF;
 const PARTICLE_OPACITY = 0.7;
 
-// Camera constants
 const CAMERA_INITIAL_Z = 5;
-const CAMERA_ZOOM_FACTOR = 2; // How much to zoom in
-// Threshold factor relative to viewport height for vertical scroll to activate zoom
-const CAMERA_ZOOM_ACTIVATION_SCROLL_THRESHOLD_FACTOR = 0.5; // e.g., zoom after scrolling 50% of viewport height
+const CAMERA_ZOOM_FACTOR = 2;
+const CAMERA_ZOOM_ACTIVATION_SCROLL_THRESHOLD_FACTOR = 0.5;
 
 const ThreeCanvas: React.FC = () => {
   const mountRef = useRef<HTMLDivElement>(null);
@@ -36,16 +32,15 @@ const ThreeCanvas: React.FC = () => {
   const cube2Ref = useRef<THREE.Mesh | null>(null);
   
   const pointsRef = useRef<THREE.Points | null>(null);
-  const scrollYRef = useRef(0); // Current vertical scroll position
-  const cameraZoomActivationThresholdRef = useRef(0); // Pixel value for scrollY to activate zoom
+  const scrollYRef = useRef(0);
+  const cameraZoomActivationThresholdRef = useRef(0);
 
   const handleScroll = useCallback(() => {
     scrollYRef.current = window.scrollY;
     
-    // Adjust cube positions based on vertical scroll
     if (cube1Ref.current && cube2Ref.current) {
       cube1Ref.current.position.y = CUBE_INITIAL_Y - scrollYRef.current * CUBE_SCROLL_FACTOR;
-      cube2Ref.current.position.y = CUBE_INITIAL_Y + scrollYRef.current * CUBE_SCROLL_FACTOR * 0.8; // Different factor for variation
+      cube2Ref.current.position.y = CUBE_INITIAL_Y + scrollYRef.current * CUBE_SCROLL_FACTOR * 0.8;
     }
   }, []);
 
@@ -71,26 +66,23 @@ const ThreeCanvas: React.FC = () => {
     directionalLight.position.set(5, 5, 5);
     sceneRef.current.add(directionalLight);
 
-    // Create Cubes
     const geometry1 = new THREE.BoxGeometry(CUBE_SIZE, CUBE_SIZE, CUBE_SIZE);
-    const material1 = new THREE.MeshStandardMaterial({ color: 0x8A2BE2, roughness: 0.5, metalness: 0.1 }); // BlueViolet
+    const material1 = new THREE.MeshStandardMaterial({ color: 0x8A2BE2, roughness: 0.5, metalness: 0.1 });
     cube1Ref.current = new THREE.Mesh(geometry1, material1);
-    cube1Ref.current.position.x = -CUBE_SPACING / 2; // Positioned to the left
+    cube1Ref.current.position.x = -CUBE_SPACING / 2;
     cube1Ref.current.position.y = CUBE_INITIAL_Y;
     sceneRef.current.add(cube1Ref.current);
 
-    const geometry2 = new THREE.BoxGeometry(CUBE_SIZE * 0.8, CUBE_SIZE * 0.8, CUBE_SIZE * 0.8); // Slightly smaller
-    const material2 = new THREE.MeshStandardMaterial({ color: 0x4D4DFF, roughness: 0.5, metalness: 0.1 }); // A brighter blue/purple
+    const geometry2 = new THREE.BoxGeometry(CUBE_SIZE * 0.8, CUBE_SIZE * 0.8, CUBE_SIZE * 0.8);
+    const material2 = new THREE.MeshStandardMaterial({ color: 0x4D4DFF, roughness: 0.5, metalness: 0.1 });
     cube2Ref.current = new THREE.Mesh(geometry2, material2);
-    cube2Ref.current.position.x = CUBE_SPACING / 2; // Positioned to the right
+    cube2Ref.current.position.x = CUBE_SPACING / 2;
     cube2Ref.current.position.y = CUBE_INITIAL_Y;
     sceneRef.current.add(cube2Ref.current);
 
-    // Create Particle Sphere
     const particleGeometry = new THREE.BufferGeometry();
     const positions = new Float32Array(NUM_PARTICLES * 3);
     for (let i = 0; i < NUM_PARTICLES; i++) {
-      // Spherical distribution
       const phi = Math.acos(-1 + (2 * i) / NUM_PARTICLES);
       const theta = Math.sqrt(NUM_PARTICLES * Math.PI) * phi;
       positions[i * 3] = PARTICLE_SPHERE_BASE_RADIUS * Math.cos(theta) * Math.sin(phi);
@@ -107,14 +99,13 @@ const ThreeCanvas: React.FC = () => {
       sizeAttenuation: true,
     });
     pointsRef.current = new THREE.Points(particleGeometry, particleMaterial);
-    pointsRef.current.visible = true; // Initially visible
+    pointsRef.current.visible = true;
     sceneRef.current.add(pointsRef.current);
     
-    // Set initial camera zoom activation threshold
     cameraZoomActivationThresholdRef.current = window.innerHeight * CAMERA_ZOOM_ACTIVATION_SCROLL_THRESHOLD_FACTOR;
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll(); // Call once to set initial positions based on any initial scroll
+    handleScroll();
 
     const animate = () => {
       animationFrameIdRef.current = requestAnimationFrame(animate);
@@ -123,7 +114,6 @@ const ThreeCanvas: React.FC = () => {
       const elapsedTime = clockRef.current.getDelta();
       const totalElapsedTime = clockRef.current.getElapsedTime();
 
-      // Cube rotations
       if (cube1Ref.current) {
         cube1Ref.current.rotation.x += elapsedTime * 0.1;
         cube1Ref.current.rotation.y += elapsedTime * 0.15;
@@ -133,38 +123,34 @@ const ThreeCanvas: React.FC = () => {
         cube2Ref.current.rotation.y -= elapsedTime * 0.08;
       }
 
-      // Particle sphere animation
       if (pointsRef.current) {
         const scroll = scrollYRef.current;
         const pageHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
         const normalizedScroll = pageHeight > 0 ? Math.min(1, Math.max(0, scroll / pageHeight)) : 0;
         
-        // Scale sphere based on scroll (e.g., expand then shrink)
         let scaleFactor;
-        if (normalizedScroll < 0.5) { // First half of scroll
-          scaleFactor = normalizedScroll * 2; // Grows from 0 to 1
-        } else { // Second half of scroll
-          scaleFactor = 1 - (normalizedScroll - 0.5) * 2; // Shrinks from 1 to 0
+        if (normalizedScroll < 0.5) {
+          scaleFactor = normalizedScroll * 2;
+        } else {
+          scaleFactor = 1 - (normalizedScroll - 0.5) * 2;
         }
-        scaleFactor = Math.max(0, Math.min(1, scaleFactor)); // Clamp between 0 and 1
+        scaleFactor = Math.max(0, Math.min(1, scaleFactor));
         
         const currentScale = MIN_SPHERE_SCALE + (MAX_SPHERE_SCALE - MIN_SPHERE_SCALE) * scaleFactor;
         
-        pointsRef.current.rotation.y += elapsedTime * 0.05; // Gentle rotation
+        pointsRef.current.rotation.y += elapsedTime * 0.05;
         pointsRef.current.rotation.x += elapsedTime * 0.02;
-        const pulse = (1 + Math.sin(totalElapsedTime * 1.0) * 0.03) * currentScale; // Pulsing effect combined with scroll-based scale
+        const pulse = (1 + Math.sin(totalElapsedTime * 1.0) * 0.03) * currentScale;
         pointsRef.current.scale.set(pulse, pulse, pulse);
-        pointsRef.current.visible = true; // Ensure it's visible
+        pointsRef.current.visible = true;
       }
 
-      // Camera Zoom based on vertical scroll
       if (scrollYRef.current > cameraZoomActivationThresholdRef.current) {
           const scrollAfterActivation = Math.max(0, scrollYRef.current - cameraZoomActivationThresholdRef.current);
-          const zoomScrollRange = window.innerHeight * 1.5; // Zoom over 1.5 viewport heights of scrolling
+          const zoomScrollRange = window.innerHeight * 1.5;
           const normalizedZoomScroll = Math.min(scrollAfterActivation / zoomScrollRange, 1);
           cameraRef.current.position.z = CAMERA_INITIAL_Z - (normalizedZoomScroll * CAMERA_ZOOM_FACTOR);
       } else {
-         // Gradually reset zoom if scrolling back up above threshold or ensure it's at initial if not scrolled enough
          if (cameraRef.current.position.z !== CAMERA_INITIAL_Z) {
             cameraRef.current.position.z = THREE.MathUtils.lerp(cameraRef.current.position.z, CAMERA_INITIAL_Z, 0.1);
             if (Math.abs(cameraRef.current.position.z - CAMERA_INITIAL_Z) < 0.01) {
@@ -183,13 +169,12 @@ const ThreeCanvas: React.FC = () => {
         cameraRef.current.aspect = width / height;
         cameraRef.current.updateProjectionMatrix();
         rendererRef.current.setSize(width, height);
-        // Recalculate zoom activation threshold on resize
         cameraZoomActivationThresholdRef.current = window.innerHeight * CAMERA_ZOOM_ACTIVATION_SCROLL_THRESHOLD_FACTOR;
-        handleScroll(); // Update positions on resize based on current scroll
+        handleScroll();
       }
     };
     window.addEventListener('resize', handleResize);
-    handleResize(); // Initial setup
+    handleResize();
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
@@ -198,7 +183,6 @@ const ThreeCanvas: React.FC = () => {
         cancelAnimationFrame(animationFrameIdRef.current);
       }
       
-      // Dispose of Three.js objects
       if (sceneRef.current) {
         if (cube1Ref.current) sceneRef.current.remove(cube1Ref.current);
         if (cube2Ref.current) sceneRef.current.remove(cube2Ref.current);
@@ -212,11 +196,9 @@ const ThreeCanvas: React.FC = () => {
       if (pointsRef.current?.material) { (pointsRef.current.material as THREE.Material).dispose(); }
       
       rendererRef.current?.dispose();
-      // Check if domElement is still a child of currentMount before removing
       if (currentMount && rendererRef.current?.domElement?.parentNode === currentMount) {
          currentMount.removeChild(rendererRef.current.domElement);
       }
-      // Nullify refs
       sceneRef.current = null;
       cameraRef.current = null;
       rendererRef.current = null;
