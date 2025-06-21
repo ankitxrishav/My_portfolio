@@ -98,6 +98,23 @@
   }
 }
 
+@layer utilities {
+  .animated-underline {
+    @apply relative py-1;
+  }
+
+  .animated-underline::after {
+    @apply content-[''] absolute w-full h-[2px] bg-accent;
+    @apply bottom-0 left-0;
+    @apply scale-x-0 transform-gpu transition-transform duration-300 ease-in-out;
+    @apply origin-center;
+  }
+  
+  .animated-underline:hover::after {
+    @apply scale-x-100;
+  }
+}
+
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-5px); }
