@@ -1,50 +1,76 @@
-# Ankit Kumar – Portfolio & Template
+<p align="center">
+  <img src="https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge" alt="MIT License" />
+  <img src="https://img.shields.io/badge/Next.js-14-blue?style=for-the-badge&logo=next.js" alt="Next.js" />
+  <img src="https://img.shields.io/badge/TailwindCSS-3.4-38B2AC?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind CSS" />
+  <img src="https://img.shields.io/badge/Deployed-Vercel-black?style=for-the-badge&logo=vercel" alt="Vercel" />
+  <img src="https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React" />
+</p>
+<h1 align="center">🚀 Ankit Kumar – Portfolio & Template</h1>
 
-A modern, interactive, and fully customizable personal portfolio website built with Next.js, React, Tailwind CSS, and Three.js. This template is designed to help you showcase your work, skills, and professional journey in a visually appealing way.
+<p align="center">
+  A sleek, modern, and highly interactive personal portfolio built with <strong>Next.js</strong>, <strong>React</strong>, <strong>Tailwind CSS</strong>, and <strong>Three.js</strong>. Designed to visually showcase your work, journey, and digital identity with a developer-first approach.
+</p>
 
-**Live Demo:** [ankitxk.vercel.app](https://ankitxk.vercel.app)
+<p align="center">
+  🔗 <strong>Live Demo:</strong> <a href="https://ankitxk.vercel.app" target="_blank">ankitxk.vercel.app</a>
+</p>
 
-![Screenshot of Landing Page](https://github.com/user-attachments/assets/9080c3a0-0390-40c7-9ecd-c9b0a953f834)
+---
+
+## 📸 Screenshots
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/14097c5c-11bb-45b4-a084-5a10d21f8d68" width="47%" style="margin: 1%;" />
+  <img src="https://github.com/user-attachments/assets/49b8cc9c-f6d9-428a-813e-7c269c501be5" width="47%" style="margin: 1%;" />
+</p>
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/42c156aa-d948-4402-8544-398eb1f7b850" width="47%" style="margin: 1%;" />
+  <img src="https://github.com/user-attachments/assets/0c94c41f-d522-4bd8-ad1f-d7244cb497f3" width="47%" style="margin: 1%;" />
+</p>
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/c046f1a6-92fa-4ffb-836f-66c64638c7a7" width="47%" style="margin: 1%;" />
+</p>
+
+---
 
 ## ✨ Features
 
-- **Modern Tech Stack**: Built with Next.js 14 (App Router) & React 18.
-- **Dynamic 3D Background**: Interactive particle and shape animations using Three.js.
-- **Responsive Design**: Looks great on all devices, from desktops to mobile phones.
-- **Customizable Theme**: Easily change colors for both light and dark modes via CSS variables.
-- **Component-Based**: Built with reusable components from ShadCN UI.
-- **Data-Driven Content**: All personal data (projects, skills, journey) is managed in separate data files, making it easy to update.
-- **SEO Friendly**: Configured with meta tags for better search engine visibility.
-- **Custom Cursor**: An elegant trailing cursor to enhance user experience.
+- 🎯 Built with **Next.js 14** (App Router) & **React 18**
+- 🎨 **3D Dynamic Background** with Three.js for immersive experience
+- 📱 **Fully Responsive** – Desktop, Tablet, and Mobile ready
+- 🌙 **Light/Dark Mode** with easy CSS variable tweaks
+- 🧩 **Component-Based UI** using ShadCN UI and Tailwind CSS
+- 📊 **Data-Driven Content** – Easy to manage via `src/data/`
+- 🔍 **SEO Optimized** with proper meta tags
+- 🖱️ **Animated Cursor** to enhance interactivity
 
-## 🚀 Getting Started
+---
 
-Follow these instructions to get a copy of the project up and running on your local machine for development and customization.
+## 🧰 Getting Started
 
-### Prerequisites
+### ⚙️ Prerequisites
 
-Make sure you have the following installed:
-- [Node.js](https://nodejs.org/en/) (v18.x or later recommended)
-- [npm](https://www.npmjs.com/), [yarn](https://yarnpkg.com/), or [pnpm](https://pnpm.io/)
+Ensure you have the following installed:
 
-### Installation
+- [Node.js](https://nodejs.org/en/) (v18 or newer)
+- npm / yarn / pnpm
 
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/ankitxrishav/My_portfolio.git
-    ```
-2.  **Navigate to the project directory:**
-    ```bash
-    cd your-repo-name
-    ```
-3.  **Install dependencies:**
-    ```bash
-    npm install
-    ```
-4.  **Run the development server:**
-    ```bash
-    npm run dev
-    ```
+### 🔧 Installation Steps
+
+```bash
+# 1. Clone the repo
+git clone https://github.com/ankitxrishav/My_portfolio.git
+
+# 2. Enter project directory
+cd My_portfolio
+
+# 3. Install dependencies
+npm install
+
+# 4. Start development server
+npm run dev
 Open [http://localhost:9002](http://localhost:9002) in your browser to see the result.
 
 ## 🛠️ How to Customize
@@ -115,8 +141,10 @@ To update your skills:
 
 ## 📜 License
 
-This project is licensed under the MIT License. You are free to use, modify, and distribute it. (It's recommended to add a `LICENSE` file to your repository).
+This project is licensed under the MIT License. You are free to use, modify, and distribute it. 
 
 ---
 
 ⭐ If you find this template helpful, please give it a star on GitHub
+
+<p align="center"><strong>Made with ❤️ by <a href="https://github.com/ankitxrishav" target="_blank">Ankit Kumar</a></strong></p>
