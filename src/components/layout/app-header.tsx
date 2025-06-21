@@ -73,11 +73,11 @@ export default function AppHeader({ currentTheme, toggleTheme }: AppHeaderProps)
                 size="icon"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 aria-label="Toggle menu"
-                className="text-foreground/70"
+                className="text-foreground/70 transition-transform duration-200 hover:scale-110"
               >
                 <div className="relative h-6 w-6">
-                   <Menu className={cn("absolute transition-all duration-300", isMenuOpen ? "rotate-90 scale-0 opacity-0" : "rotate-0 scale-100 opacity-100")} />
-                   <X className={cn("absolute transition-all duration-300", isMenuOpen ? "rotate-0 scale-100 opacity-100" : "-rotate-90 scale-0 opacity-0")} />
+                   <Menu className={cn("absolute h-6 w-6 transition-all duration-300", isMenuOpen ? "rotate-90 scale-0 opacity-0" : "rotate-0 scale-100 opacity-100")} />
+                   <X className={cn("absolute h-6 w-6 transition-all duration-300", isMenuOpen ? "rotate-0 scale-100 opacity-100" : "-rotate-90 scale-0 opacity-0")} />
                 </div>
               </Button>
             </div>
@@ -100,7 +100,7 @@ export default function AppHeader({ currentTheme, toggleTheme }: AppHeaderProps)
               href={item.href} 
               className={cn(
                 "text-2xl font-semibold text-foreground transition-all duration-300 hover:text-accent",
-                isMenuOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
+                isMenuOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-8"
               )}
               style={{ transitionDelay: isMenuOpen ? `${100 + index * 50}ms` : '0ms' }}
               onClick={(e) => {
