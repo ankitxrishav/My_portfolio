@@ -109,14 +109,20 @@ export default function HomePage() {
       >
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-12 gap-y-10 items-start">
           <div>
-            <Card className="mb-8 p-4 text-center">
+            <Card className="relative overflow-visible mb-8 p-4 text-center">
               <h3 className="font-headline text-2xl font-bold text-foreground">My Journey</h3>
+              <div 
+                className="absolute left-1/2 bottom-0 w-3 h-3 bg-card transform -translate-x-1/2 translate-y-1/2 rotate-45 border-b border-r border-border"
+              ></div>
             </Card>
             <TimelineDisplay />
           </div>
           <div>
-            <Card className="mb-8 p-4 text-center">
+            <Card className="relative overflow-visible mb-8 p-4 text-center">
               <h3 className="font-headline text-2xl font-bold text-foreground">My Skillset</h3>
+              <div 
+                className="absolute left-1/2 bottom-0 w-3 h-3 bg-card transform -translate-x-1/2 translate-y-1/2 rotate-45 border-b border-r border-border"
+              ></div>
             </Card>
             <SkillsDisplay />
           </div>
