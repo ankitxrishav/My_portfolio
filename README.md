@@ -267,9 +267,8 @@ To update your skills:
 
 ## 📜 License
 
-This project is licensed under the MIT License. You are free to use, modify, and distribute it. (It's recommended to add a `LICENSE` file to your repository).
+This project is licensed under the MIT License. You are free to use, modify, and distribute it. See the `LICENSE` file for more details.
 
 ---
 
 ⭐ If you find this template helpful, please give it a star on GitHub
-
