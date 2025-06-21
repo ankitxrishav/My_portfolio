@@ -25,7 +25,7 @@ export default function AppHeader({ currentTheme, toggleTheme }: AppHeaderProps)
       <div className="container flex h-16 max-w-screen-2xl items-center justify-between">
         <Link 
           href="/#home" 
-          className="flex items-center space-x-2 font-headline text-xl font-bold text-foreground hover:text-accent transition-colors ml-2"
+          className="flex items-center space-x-2 font-headline text-xl font-bold text-foreground hover:text-accent transition-colors ml-4"
         >
           <Code2 className="h-6 w-6 text-accent" />
           <span>Ankit Kumar</span>
