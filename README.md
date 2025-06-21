@@ -68,6 +68,7 @@ cd My_portfolio
 
 # 3. Install dependencies
 npm install
+```
 
 # 4. Start development server
 npm run dev
