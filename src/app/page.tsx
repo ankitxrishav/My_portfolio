@@ -6,6 +6,7 @@ import SectionWrapper from '@/components/ui/section-wrapper';
 import Link from 'next/link';
 import { ArrowRight, Eye } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Card } from '@/components/ui/card';
 
 import AboutContent from '@/components/about/about-content';
 import ProjectList from '@/components/projects/project-list';
@@ -108,9 +109,15 @@ export default function HomePage() {
       >
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-12 gap-y-10 items-start">
           <div>
+            <Card className="mb-8 p-4 text-center">
+              <h3 className="font-headline text-2xl font-bold text-foreground">My Journey</h3>
+            </Card>
             <TimelineDisplay />
           </div>
           <div>
+            <Card className="mb-8 p-4 text-center">
+              <h3 className="font-headline text-2xl font-bold text-foreground">My Skillset</h3>
+            </Card>
             <SkillsDisplay />
           </div>
         </div>
