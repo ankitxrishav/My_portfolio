@@ -13,23 +13,7 @@ import ProjectList from '@/components/projects/project-list';
 import TimelineDisplay from '@/components/journey/timeline-display';
 import SkillsDisplay from '@/components/skills/skills-display';
 import StaticContactInfo from '@/components/contact/static-contact-info';
-
-interface HeroTextLineProps {
-  text: string;
-  className?: string;
-  delay?: string;
-}
-
-const HeroTextLine = ({ text, className, delay }: HeroTextLineProps) => {
-  return (
-    <div
-      className={cn("hero-text-line", className)}
-      style={{ animationDelay: delay }}
-    >
-      {text}
-    </div>
-  );
-};
+import HeroTextLine from '@/components/ui/hero-text-line';
 
 
 export default function HomePage() {

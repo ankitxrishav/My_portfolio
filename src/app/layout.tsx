@@ -16,26 +16,24 @@ export default function RootLayout({
 }>) {
   const [theme, setTheme] = useState('dark');
 
+  // This effect runs once on the client to set the initial theme from storage
   useEffect(() => {
     const storedTheme = localStorage.getItem('theme');
     if (storedTheme === 'light') {
       setTheme('light');
     } else {
-      setTheme('dark'); 
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('theme', 'dark');
-      }
+      setTheme('dark');
     }
   }, []); 
 
+  // This effect synchronizes the theme state with the DOM and localStorage
   useEffect(() => {
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
     } else {
       document.documentElement.classList.remove('dark');
-    }
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('theme', theme);
+      localStorage.setItem('theme', 'light');
     }
   }, [theme]);
 
