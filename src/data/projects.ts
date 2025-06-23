@@ -44,6 +44,7 @@ export const projectsData: Project[] = [
     technologies: ['Next.js', 'React', 'TypeScript', 'TailwindCSS', 'Three.js'],
     imageUrl: '/images/port.png', 
     sourceCodeUrl: 'https://github.com/ankitxrishav/', 
+    liveDemoUrl: 'https://ankitxk.vercel.app',
     year: new Date().getFullYear(),
   },
   {
@@ -62,6 +63,7 @@ export const projectsData: Project[] = [
     technologies: ['JavaScript', 'HTML/CSS', 'Node.js'],
     imageUrl: '/images/mess.png',
     sourceCodeUrl: 'https://github.com/ankitxrishav/fenrirmessage.git',
+    liveDemoUrl: 'https://fenrirmessage.onrender.com',
     year: 2024,
   },
   {
