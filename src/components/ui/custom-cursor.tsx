@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -6,8 +5,8 @@ import { cn } from '@/lib/utils';
 
 const MAIN_DOT_DEFAULT_SIZE = 10;
 const TRAIL_DOT_DEFAULT_SIZE = 8; 
-const NUM_TRAIL_DOTS = 8;
-const LERP_FACTOR_CURSOR = 0.15;
+const NUM_TRAIL_DOTS = 15;
+const LERP_FACTOR_CURSOR = 0.6;
 const TRAIL_LERP_FACTOR = 0.25; 
 
 interface Position {
