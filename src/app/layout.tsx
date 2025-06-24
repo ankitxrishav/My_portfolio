@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -68,6 +67,7 @@ export default function RootLayout({
       <head>
         <title>Ankit Kumar Portfolio</title>
         <meta name="description" content="Portfolio of Ankit Kumar, an AIML Enthusiast & Builder." />
+        <link rel="icon" href="data:image/x-icon;base64,=" />
         <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
         <meta name="theme-color" content="#222222" media="(prefers-color-scheme: dark)" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
