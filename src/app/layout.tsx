@@ -46,8 +46,8 @@ export default function RootLayout({
       <head>
         <title>Ankit Kumar Portfolio</title>
         <meta name="description" content="Portfolio of Ankit Kumar, an AIML Enthusiast & Builder." />
-        <link rel="icon" href="/images/favicon.svg" type="image/svg+xml" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon-a.png" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/favicon.svg" />
         <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
         <meta name="theme-color" content="#222222" media="(prefers-color-scheme: dark)" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
