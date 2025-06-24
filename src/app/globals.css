@@ -48,6 +48,10 @@
     --sidebar-accent-foreground: 240 10% 3.9%;
     --sidebar-border: 0 0% 90%;
     --sidebar-ring: 285 90% 65%;
+
+    --reveal-x: 0;
+    --reveal-y: 0;
+    --reveal-radius: 0;
   }
 
   .dark {
@@ -113,4 +117,34 @@
   .animated-underline:hover::after {
     @apply scale-x-100;
   }
+}
+
+/* View Transition API Theme Toggle Animation */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* For dark to light transition, we want the old (dark) view on top */
+.dark::view-transition-old(root) {
+  z-index: 9999;
+}
+.dark::view-transition-new(root) {
+  z-index: 1;
+}
+
+@keyframes reveal {
+  from { clip-path: circle(0px at var(--reveal-x) var(--reveal-y)); }
+  to { clip-path: circle(var(--reveal-radius) at var(--reveal-x) var(--reveal-y)); }
+}
+
+/* Light -> Dark: New view reveals (it's on top by default) */
+::view-transition-new(root) {
+  animation: reveal 0.5s ease-in-out;
+}
+
+/* Dark -> Light: Old view shrinks away (we put it on top with z-index) */
+.dark::view-transition-old(root) {
+  animation: reveal 0.5s ease-in-out reverse;
 }

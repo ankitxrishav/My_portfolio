@@ -17,7 +17,7 @@ const navItems = [
 
 interface AppHeaderProps {
   currentTheme: string;
-  toggleTheme: () => void;
+  toggleTheme: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 export default function AppHeader({ currentTheme, toggleTheme }: AppHeaderProps) {
@@ -59,7 +59,7 @@ export default function AppHeader({ currentTheme, toggleTheme }: AppHeaderProps)
             <Button
               variant="ghost"
               size="icon"
-              onClick={toggleTheme}
+              onClick={(e) => toggleTheme(e)}
               aria-label="Toggle theme"
               className="text-foreground/70 transition-colors"
             >

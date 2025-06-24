@@ -37,8 +37,30 @@ export default function RootLayout({
     }
   }, [theme]);
 
-  const toggleTheme = () => {
-    setTheme((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light'));
+  const toggleTheme = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+
+    // @ts-ignore
+    if (!document.startViewTransition) {
+      setTheme(newTheme);
+      return;
+    }
+    
+    const x = event.clientX;
+    const y = event.clientY;
+    const endRadius = Math.hypot(
+      Math.max(x, window.innerWidth - x),
+      Math.max(y, window.innerHeight - y)
+    );
+
+    document.documentElement.style.setProperty('--reveal-x', `${x}px`);
+    document.documentElement.style.setProperty('--reveal-y', `${y}px`);
+    document.documentElement.style.setProperty('--reveal-radius', `${endRadius}px`);
+
+    // @ts-ignore
+    document.startViewTransition(() => {
+      setTheme(newTheme);
+    });
   };
 
   return (
