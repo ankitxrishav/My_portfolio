@@ -142,7 +142,7 @@ To update your skills:
 
 ## 📜 License
 
-This project is licensed under the <a href = "https://github.com/Pratik261201/Gps-spoofing-HackRF/blob/main/LICENSE">MIT License.</a> You are free to use, modify, and distribute it. 
+This project is licensed under the <a href = "https://github.com/ankitxrishav/My_portfolio/blob/master/LICENSE">MIT License.</a> You are free to use, modify, and distribute it. 
 
 ---
 
