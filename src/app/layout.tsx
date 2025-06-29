@@ -1,12 +1,16 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useLayoutEffect } from 'react';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import AppHeader from '@/components/layout/app-header';
 import AppFooter from '@/components/layout/app-footer';
 import ThreeCanvas from '@/components/three-canvas';
 import CustomCursor from '@/components/ui/custom-cursor';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { ScrollSmoother } from 'gsap/ScrollSmoother';
+
 
 export default function RootLayout({
   children,
@@ -36,30 +40,25 @@ export default function RootLayout({
     }
   }, [theme]);
 
+  useLayoutEffect(() => {
+    gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
+
+    const smoother = ScrollSmoother.create({
+      wrapper: '#smooth-wrapper',
+      content: '#smooth-content',
+      smooth: 1.5,
+      effects: true,
+    });
+
+    return () => {
+      // Cleanup GSAP context
+      if (smoother) smoother.kill();
+    };
+  }, []);
+
   const toggleTheme = (event: React.MouseEvent<HTMLButtonElement>) => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
-
-    // @ts-ignore
-    if (!document.startViewTransition) {
-      setTheme(newTheme);
-      return;
-    }
-    
-    const x = event.clientX;
-    const y = event.clientY;
-    const endRadius = Math.hypot(
-      Math.max(x, window.innerWidth - x),
-      Math.max(y, window.innerHeight - y)
-    );
-
-    document.documentElement.style.setProperty('--reveal-x', `${x}px`);
-    document.documentElement.style.setProperty('--reveal-y', `${y}px`);
-    document.documentElement.style.setProperty('--reveal-radius', `${endRadius}px`);
-
-    // @ts-ignore
-    document.startViewTransition(() => {
-      setTheme(newTheme);
-    });
+    setTheme(newTheme);
   };
 
   return (
@@ -75,16 +74,20 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
       </head>
-      <body className="font-body antialiased bg-background text-foreground min-h-screen flex flex-col">
+      <body className="font-body antialiased bg-background text-foreground">
         <CustomCursor />
         <ThreeCanvas /> 
         <AppHeader currentTheme={theme} toggleTheme={toggleTheme} />
         
-        <main className="flex-grow relative z-10">
-          {children}
-        </main>
+        <div id="smooth-wrapper">
+          <div id="smooth-content">
+            <main className="flex-grow relative z-10">
+              {children}
+            </main>
+            <AppFooter />
+          </div>
+        </div>
         
-        <AppFooter />
         <Toaster />
       </body>
     </html>

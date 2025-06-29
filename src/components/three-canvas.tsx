@@ -67,14 +67,14 @@ const ThreeCanvas: React.FC = () => {
     sceneRef.current.add(directionalLight);
 
     const geometry1 = new THREE.BoxGeometry(CUBE_SIZE, CUBE_SIZE, CUBE_SIZE);
-    const material1 = new THREE.MeshStandardMaterial({ color: 0x8A2BE2, roughness: 0.5, metalness: 0.1 });
+    const material1 = new THREE.MeshStandardMaterial({ color: 0x8A2BE2, roughness: 0.2, metalness: 0.1, transparent: true, opacity: 0.7 });
     cube1Ref.current = new THREE.Mesh(geometry1, material1);
     cube1Ref.current.position.x = -CUBE_SPACING / 2;
     cube1Ref.current.position.y = CUBE_INITIAL_Y;
     sceneRef.current.add(cube1Ref.current);
 
     const geometry2 = new THREE.BoxGeometry(CUBE_SIZE * 0.8, CUBE_SIZE * 0.8, CUBE_SIZE * 0.8);
-    const material2 = new THREE.MeshStandardMaterial({ color: 0x4D4DFF, roughness: 0.5, metalness: 0.1 });
+    const material2 = new THREE.MeshStandardMaterial({ color: 0x4D4DFF, roughness: 0.2, metalness: 0.1, transparent: true, opacity: 0.7 });
     cube2Ref.current = new THREE.Mesh(geometry2, material2);
     cube2Ref.current.position.x = CUBE_SPACING / 2;
     cube2Ref.current.position.y = CUBE_INITIAL_Y;
