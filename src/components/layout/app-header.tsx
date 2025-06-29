@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -36,17 +35,17 @@ export default function AppHeader({ currentTheme, toggleTheme }: AppHeaderProps)
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 max-w-screen-2xl items-center justify-between">
+      <header className="fixed top-4 left-1/2 z-50 w-[calc(100%-2rem)] max-w-screen-md -translate-x-1/2">
+        <div className="flex h-16 items-center justify-between rounded-full border border-border/40 bg-card px-4 shadow-lg backdrop-blur-lg supports-[backdrop-filter]:bg-card md:px-6">
           <Link 
             href="/#home" 
-            className="flex items-center space-x-2 font-headline text-xl font-bold text-foreground hover:text-accent transition-colors ml-4"
+            className="flex items-center space-x-2 font-headline text-lg font-bold text-foreground hover:text-accent transition-colors"
             onClick={() => setIsMenuOpen(false)}
           >
-            <Code2 className="h-6 w-6 text-accent" />
-            <span>Ankit Kumar</span>
+            <Code2 className="h-5 w-5 text-accent md:h-6 md:w-6" />
+            <span className="hidden sm:inline">Ankit Kumar</span>
           </Link>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-1 md:space-x-2">
             <nav className="hidden md:flex items-center space-x-1">
               {navItems.map((item) => (
                 <Button key={item.href} variant="ghost" asChild
@@ -66,7 +65,6 @@ export default function AppHeader({ currentTheme, toggleTheme }: AppHeaderProps)
               {currentTheme === 'light' ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
             </Button>
             
-            {/* Mobile Menu Button */}
             <div className="md:hidden">
               <Button
                 variant="ghost"
