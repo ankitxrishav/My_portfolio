@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useRef, useCallback } from 'react';
@@ -117,7 +116,7 @@ const ThreeCanvas: React.FC = () => {
       
       const particleMaterial = new THREE.PointsMaterial({
           map: texture,
-          size: 0.35,
+          size: 0.15,
           transparent: true,
           opacity: PARTICLE_OPACITY,
           blending: THREE.AdditiveBlending,
