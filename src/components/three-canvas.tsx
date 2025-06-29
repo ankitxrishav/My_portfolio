@@ -31,7 +31,9 @@ const ThreeCanvas: React.FC = () => {
   const cube1Ref = useRef<THREE.Mesh | null>(null);
   const cube2Ref = useRef<THREE.Mesh | null>(null);
   
-  const pointsRef = useRef<THREE.Points | null>(null);
+  const pointsRefA = useRef<THREE.Points | null>(null);
+  const pointsRefR = useRef<THREE.Points | null>(null);
+  
   const scrollYRef = useRef(0);
   const cameraZoomActivationThresholdRef = useRef(0);
 
@@ -80,27 +82,65 @@ const ThreeCanvas: React.FC = () => {
     cube2Ref.current.position.y = CUBE_INITIAL_Y;
     sceneRef.current.add(cube2Ref.current);
 
-    const particleGeometry = new THREE.BufferGeometry();
-    const positions = new Float32Array(NUM_PARTICLES * 3);
-    for (let i = 0; i < NUM_PARTICLES; i++) {
-      const phi = Math.acos(-1 + (2 * i) / NUM_PARTICLES);
-      const theta = Math.sqrt(NUM_PARTICLES * Math.PI) * phi;
-      positions[i * 3] = PARTICLE_SPHERE_BASE_RADIUS * Math.cos(theta) * Math.sin(phi);
-      positions[i * 3 + 1] = PARTICLE_SPHERE_BASE_RADIUS * Math.sin(theta) * Math.sin(phi);
-      positions[i * 3 + 2] = PARTICLE_SPHERE_BASE_RADIUS * Math.cos(phi);
+    const createTextTexture = (text: string, color: string, fontSize: number): THREE.CanvasTexture | null => {
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      if (!context) return null;
+      const size = fontSize * 1.5;
+      canvas.width = size;
+      canvas.height = size;
+      context.font = `bold ${fontSize}px Arial`;
+      context.fillStyle = color;
+      context.textAlign = 'center';
+      context.textBaseline = 'middle';
+      context.fillText(text, size / 2, size / 2 + fontSize * 0.05);
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.needsUpdate = true;
+      return texture;
+    };
+
+    const textureColor = `#${new THREE.Color(PARTICLE_COLOR).getHexString()}`;
+    const textureA = createTextTexture('A', textureColor, 128);
+    const textureR = createTextTexture('R', textureColor, 128);
+
+    const createParticleSystem = (numParticles: number, texture: THREE.Texture | null) => {
+      const particleGeometry = new THREE.BufferGeometry();
+      const positions = new Float32Array(numParticles * 3);
+      for (let i = 0; i < numParticles; i++) {
+        const phi = Math.acos(-1 + (2 * i) / numParticles);
+        const theta = Math.sqrt(numParticles * Math.PI) * phi;
+        positions[i * 3] = PARTICLE_SPHERE_BASE_RADIUS * Math.cos(theta) * Math.sin(phi);
+        positions[i * 3 + 1] = PARTICLE_SPHERE_BASE_RADIUS * Math.sin(theta) * Math.sin(phi);
+        positions[i * 3 + 2] = PARTICLE_SPHERE_BASE_RADIUS * Math.cos(phi);
+      }
+      particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      
+      const particleMaterial = new THREE.PointsMaterial({
+          map: texture,
+          size: 0.35,
+          transparent: true,
+          opacity: PARTICLE_OPACITY,
+          blending: THREE.AdditiveBlending,
+          sizeAttenuation: true,
+          depthWrite: false,
+      });
+      
+      const points = new THREE.Points(particleGeometry, particleMaterial);
+      points.visible = true;
+      return points;
     }
-    particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    const particleMaterial = new THREE.PointsMaterial({
-      color: PARTICLE_COLOR,
-      size: 0.025,
-      transparent: true,
-      opacity: PARTICLE_OPACITY,
-      blending: THREE.AdditiveBlending,
-      sizeAttenuation: true,
-    });
-    pointsRef.current = new THREE.Points(particleGeometry, particleMaterial);
-    pointsRef.current.visible = true;
-    sceneRef.current.add(pointsRef.current);
+
+    const numParticlesA = Math.floor(NUM_PARTICLES / 2);
+    const numParticlesR = NUM_PARTICLES - numParticlesA;
+    
+    if (textureA) {
+      pointsRefA.current = createParticleSystem(numParticlesA, textureA);
+      sceneRef.current.add(pointsRefA.current);
+    }
+    if (textureR) {
+      pointsRefR.current = createParticleSystem(numParticlesR, textureR);
+      sceneRef.current.add(pointsRefR.current);
+    }
     
     cameraZoomActivationThresholdRef.current = window.innerHeight * CAMERA_ZOOM_ACTIVATION_SCROLL_THRESHOLD_FACTOR;
 
@@ -123,27 +163,35 @@ const ThreeCanvas: React.FC = () => {
         cube2Ref.current.rotation.y -= elapsedTime * 0.08;
       }
 
-      if (pointsRef.current) {
-        const scroll = scrollYRef.current;
-        const pageHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-        const normalizedScroll = pageHeight > 0 ? Math.min(1, Math.max(0, scroll / pageHeight)) : 0;
-        
-        let scaleFactor;
-        if (normalizedScroll < 0.5) {
-          scaleFactor = normalizedScroll * 2;
-        } else {
-          scaleFactor = 1 - (normalizedScroll - 0.5) * 2;
-        }
-        scaleFactor = Math.max(0, Math.min(1, scaleFactor));
-        
-        const currentScale = MIN_SPHERE_SCALE + (MAX_SPHERE_SCALE - MIN_SPHERE_SCALE) * scaleFactor;
-        
-        pointsRef.current.rotation.y += elapsedTime * 0.05;
-        pointsRef.current.rotation.x += elapsedTime * 0.02;
-        const pulse = (1 + Math.sin(totalElapsedTime * 1.0) * 0.03) * currentScale;
-        pointsRef.current.scale.set(pulse, pulse, pulse);
-        pointsRef.current.visible = true;
+      const scroll = scrollYRef.current;
+      const pageHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const normalizedScroll = pageHeight > 0 ? Math.min(1, Math.max(0, scroll / pageHeight)) : 0;
+      
+      let scaleFactor;
+      if (normalizedScroll < 0.5) {
+        scaleFactor = normalizedScroll * 2;
+      } else {
+        scaleFactor = 1 - (normalizedScroll - 0.5) * 2;
       }
+      scaleFactor = Math.max(0, Math.min(1, scaleFactor));
+      
+      const currentScale = MIN_SPHERE_SCALE + (MAX_SPHERE_SCALE - MIN_SPHERE_SCALE) * scaleFactor;
+      const pulse = (1 + Math.sin(totalElapsedTime * 1.0) * 0.03) * currentScale;
+
+      if (pointsRefA.current) {
+        pointsRefA.current.rotation.y += elapsedTime * 0.05;
+        pointsRefA.current.rotation.x += elapsedTime * 0.02;
+        pointsRefA.current.scale.set(pulse, pulse, pulse);
+        pointsRefA.current.visible = true;
+      }
+      
+      if (pointsRefR.current) {
+        pointsRefR.current.rotation.y -= elapsedTime * 0.04;
+        pointsRefR.current.rotation.x += elapsedTime * 0.025;
+        pointsRefR.current.scale.set(pulse, pulse, pulse);
+        pointsRefR.current.visible = true;
+      }
+
 
       if (scrollYRef.current > cameraZoomActivationThresholdRef.current) {
           const scrollAfterActivation = Math.max(0, scrollYRef.current - cameraZoomActivationThresholdRef.current);
@@ -186,14 +234,27 @@ const ThreeCanvas: React.FC = () => {
       if (sceneRef.current) {
         if (cube1Ref.current) sceneRef.current.remove(cube1Ref.current);
         if (cube2Ref.current) sceneRef.current.remove(cube2Ref.current);
-        if (pointsRef.current) sceneRef.current.remove(pointsRef.current);
+        if (pointsRefA.current) sceneRef.current.remove(pointsRefA.current);
+        if (pointsRefR.current) sceneRef.current.remove(pointsRefR.current);
       }
       cube1Ref.current?.geometry?.dispose();
       if (cube1Ref.current?.material) { (cube1Ref.current.material as THREE.Material).dispose(); }
       cube2Ref.current?.geometry?.dispose();
       if (cube2Ref.current?.material) { (cube2Ref.current.material as THREE.Material).dispose(); }
-      pointsRef.current?.geometry?.dispose();
-      if (pointsRef.current?.material) { (pointsRef.current.material as THREE.Material).dispose(); }
+      
+      pointsRefA.current?.geometry?.dispose();
+      if (pointsRefA.current?.material) {
+        const material = pointsRefA.current.material as THREE.PointsMaterial;
+        material.map?.dispose();
+        material.dispose();
+      }
+
+      pointsRefR.current?.geometry?.dispose();
+      if (pointsRefR.current?.material) {
+        const material = pointsRefR.current.material as THREE.PointsMaterial;
+        material.map?.dispose();
+        material.dispose();
+      }
       
       rendererRef.current?.dispose();
       if (currentMount && rendererRef.current?.domElement?.parentNode === currentMount) {
@@ -205,7 +266,8 @@ const ThreeCanvas: React.FC = () => {
       clockRef.current = null;
       cube1Ref.current = null;
       cube2Ref.current = null;
-      pointsRef.current = null;
+      pointsRefA.current = null;
+      pointsRefR.current = null;
     };
   }, [handleScroll]);
 
