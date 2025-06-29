@@ -35,7 +35,7 @@ export default function AppHeader({ currentTheme, toggleTheme }: AppHeaderProps)
 
   return (
     <>
-      <header className="fixed top-4 left-1/2 z-50 w-[calc(100%-2rem)] max-w-screen-md -translate-x-1/2 animate-slide-down-fade">
+      <header className="fixed top-4 left-1/2 z-50 w-[calc(100%-2rem)] max-w-screen-md -translate-x-1/2">
         <div className="flex h-16 items-center justify-between rounded-full border border-border/40 bg-card px-4 shadow-lg backdrop-blur-lg supports-[backdrop-filter]:bg-card md:px-6">
           <Link 
             href="/#home" 
