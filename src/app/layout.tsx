@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useLayoutEffect } from 'react';
@@ -19,7 +20,6 @@ export default function RootLayout({
 }>) {
   const [theme, setTheme] = useState('dark');
 
-  // This effect runs once on the client to set the initial theme from storage
   useEffect(() => {
     const storedTheme = localStorage.getItem('theme');
     if (storedTheme === 'light') {
@@ -29,7 +29,6 @@ export default function RootLayout({
     }
   }, []); 
 
-  // This effect synchronizes the theme state with the DOM and localStorage
   useEffect(() => {
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');
@@ -51,14 +50,38 @@ export default function RootLayout({
     });
 
     return () => {
-      // Cleanup GSAP context
       if (smoother) smoother.kill();
     };
   }, []);
 
   const toggleTheme = (event: React.MouseEvent<HTMLButtonElement>) => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
-    setTheme(newTheme);
+
+    if (!document.startViewTransition) {
+      setTheme(newTheme);
+      return;
+    }
+    
+    const x = event.clientX;
+    const y = event.clientY;
+    const endRadius = Math.hypot(
+      Math.max(x, window.innerWidth - x),
+      Math.max(y, window.innerHeight - y)
+    );
+
+    document.documentElement.style.setProperty('--reveal-x', `${x}px`);
+    document.documentElement.style.setProperty('--reveal-y', `${y}px`);
+    document.documentElement.style.setProperty('--reveal-radius', `${endRadius}px`);
+
+    const transition = document.startViewTransition(() => {
+      setTheme(newTheme);
+    });
+
+    transition.ready.then(() => {
+      document.documentElement.style.removeProperty('--reveal-x');
+      document.documentElement.style.removeProperty('--reveal-y');
+      document.documentElement.style.removeProperty('--reveal-radius');
+    });
   };
 
   return (
