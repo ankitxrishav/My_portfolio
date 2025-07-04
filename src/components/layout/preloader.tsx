@@ -14,9 +14,6 @@ export default function Preloader() {
           </span>
         ))}
       </h1>
-      <div id="preloader-percentage" className="font-code">
-        0%
-      </div>
     </div>
   );
 }

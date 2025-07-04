@@ -46,9 +46,8 @@ export default function RootLayout({
     const preloader = document.getElementById('preloader');
     const preloaderText = document.getElementById('preloader-text');
     const letters = document.querySelectorAll('#preloader-text span');
-    const percentageEl = document.getElementById('preloader-percentage');
 
-    if (!preloader || !preloaderText || letters.length === 0 || !percentageEl) return;
+    if (!preloader || !preloaderText || letters.length === 0) return;
 
     document.body.style.overflow = 'hidden';
     
@@ -59,38 +58,10 @@ export default function RootLayout({
       opacity: 1,
     });
 
-    const floatingTweens: gsap.core.Tween[] = [];
-    letters.forEach(letter => {
-        const tween = gsap.to(letter, {
-            x: `+=${Math.random() * 60 - 30}`,
-            y: `+=${Math.random() * 60 - 30}`,
-            rotation: `+=${Math.random() * 20 - 10}`,
-            duration: Math.random() * 3 + 3,
-            repeat: -1,
-            yoyo: true,
-            ease: "sine.inOut"
-        });
-        floatingTweens.push(tween);
-    });
-
-    const loadingProgress = { value: 0 };
-    const loadingTween = gsap.to(loadingProgress, {
-      value: 99,
-      duration: 4,
-      ease: 'power1.in',
-      onUpdate: () => {
-        percentageEl.textContent = `${Math.floor(loadingProgress.value)}%`;
-      }
-    });
-
     let isFinished = false;
     const finishLoading = () => {
       if (isFinished) return;
       isFinished = true;
-
-      floatingTweens.forEach(tween => tween.kill());
-      loadingTween.kill();
-      percentageEl.textContent = '100%';
 
       const tl = gsap.timeline();
 
@@ -113,17 +84,12 @@ export default function RootLayout({
         ease: 'power1.inOut',
         stagger: 0.1,
       }, "-=0.5")
-      .to(percentageEl, {
-        opacity: 0,
-        duration: 0.5,
-        ease: 'power2.in'
-      }, "+=0.3")
       .to(preloaderText, {
         scale: 1.5,
         opacity: 0,
         duration: 0.8,
         ease: 'power2.in'
-      }, "<")
+      }, "+=0.3")
       .to(preloader, {
         opacity: 0,
         duration: 1.0,
