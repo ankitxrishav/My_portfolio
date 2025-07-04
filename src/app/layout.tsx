@@ -164,7 +164,10 @@ export default function RootLayout({
       }
     }
 
+    let isFinished = false;
     const finishLoading = () => {
+      if (isFinished) return;
+      isFinished = true;
       textElement.style.display = 'none';
       particles.forEach(p => p.explode());
       animate();
@@ -183,24 +186,31 @@ export default function RootLayout({
         }
       });
     };
-
-    initParticles();
-    window.addEventListener('load', finishLoading);
-    const fallbackTimeout = setTimeout(finishLoading, 5000);
-
-    const handleResize = () => {
+    
+    const startAnimation = async () => {
+      await document.fonts.ready;
       initParticles();
-    };
-    window.addEventListener('resize', handleResize);
+      window.addEventListener('load', finishLoading);
+      const fallbackTimeout = setTimeout(finishLoading, 5000);
+
+      const handleResize = () => {
+        initParticles();
+      };
+      window.addEventListener('resize', handleResize);
+      
+      return () => {
+        window.removeEventListener('load', finishLoading);
+        window.removeEventListener('resize', handleResize);
+        clearTimeout(fallbackTimeout);
+        if (animationFrameId) cancelAnimationFrame(animationFrameId);
+      }
+    }
+    
+    const cleanupPromise = startAnimation();
 
     return () => {
-      window.removeEventListener('load', finishLoading);
-      window.removeEventListener('resize', handleResize);
-      clearTimeout(fallbackTimeout);
+      cleanupPromise.then(cleanup => cleanup && cleanup());
       document.body.style.overflow = 'auto';
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
-      }
     };
   }, []);
 
