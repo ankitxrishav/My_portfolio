@@ -126,18 +126,31 @@ export default function RootLayout({
             return;
         }
 
+        // Initially hide all letters so they don't take up space, and ensure cursor is visible and blinking
+        gsap.set(letters, { display: 'none' });
+        gsap.set(cursor, { opacity: 1, display: 'inline-block' });
+        if(cursor) cursor.style.animation = 'blink 1s step-end infinite';
+
+
         tl = gsap.timeline({ onComplete });
         
-        tl.to(letters, {
-            opacity: 1,
-            stagger: 0.1,
-            ease: 'none',
-            duration: 0.1,
+        const typeSpeed = 0.1;
+
+        // Animate each letter appearing, which pushes the cursor to the right
+        letters.forEach((letter) => {
+            tl.set(letter, { display: 'inline-block' }, `+=${typeSpeed}`);
+        });
+
+        // After typing, stop the CSS blink and make it blink with GSAP, then fade out
+        tl.call(() => {
+            if (cursor) cursor.style.animation = 'none';
         })
         .to(cursor, {
             opacity: 0,
             ease: 'power1.inOut',
-            duration: 0.5
+            duration: 0.5,
+            repeat: 2, // blink
+            yoyo: true
         }, '+=0.5')
         .to({}, {duration: 0.5});
     }
