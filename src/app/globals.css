@@ -118,25 +118,23 @@
     @apply scale-x-100;
   }
 
-  .bg-preloader-fluid {
-    background-image: radial-gradient(circle at 20% 20%, hsl(var(--accent) / 0.1), transparent 40%),
-                      radial-gradient(circle at 80% 70%, hsl(var(--primary) / 0.1), transparent 40%);
-    animation: preloader-fluid 20s ease-in-out infinite;
+  .text-bg-animate {
+    background-size: 200% 200%;
+    background-image: radial-gradient(circle at 20% 20%, hsl(var(--accent)), transparent 40%),
+                      radial-gradient(circle at 80% 70%, hsl(var(--primary)), transparent 40%);
+    animation: text-bg-pan 15s linear infinite;
   }
 }
 
-@keyframes preloader-fluid {
+@keyframes text-bg-pan {
   0% {
-    transform: scale(1) rotate(0deg);
-    filter: blur(10px);
+    background-position: 0% 50%;
   }
   50% {
-    transform: scale(1.5) rotate(180deg);
-    filter: blur(20px);
+    background-position: 100% 50%;
   }
   100% {
-    transform: scale(1) rotate(360deg);
-    filter: blur(10px);
+    background-position: 0% 50%;
   }
 }
 

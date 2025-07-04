@@ -45,43 +45,57 @@ export default function RootLayout({
 
     const preloader = document.getElementById('preloader');
     const preloaderText = document.getElementById('preloader-text');
-    const fluidBg = document.querySelector('.bg-preloader-fluid');
+    const preloaderPercentage = document.getElementById('preloader-percentage');
 
-    if (preloader && preloaderText && fluidBg) {
-      gsap.to(preloaderText, {
-        opacity: 1,
-        scale: 1,
-        duration: 1.5,
-        ease: 'power3.out',
-        delay: 0.2
+    if (preloader && preloaderText && preloaderPercentage) {
+      document.body.style.overflow = 'hidden';
+
+      gsap.to(preloaderPercentage, {
+        innerText: 99,
+        duration: 3,
+        snap: { innerText: 1 },
+        ease: 'power2.out',
+        onStart: () => {
+          gsap.to(preloaderPercentage, { opacity: 1, duration: 0.5 });
+        }
       });
-
+      
       const finishLoading = () => {
+        gsap.killTweensOf(preloaderPercentage);
+
         const tl = gsap.timeline();
-        tl.to(preloaderText, {
-          opacity: 0,
-          y: -50,
-          scale: 0.8,
-          ease: 'power2.in',
-          duration: 0.8,
+        tl.to(preloaderPercentage, {
+          innerText: 100,
+          duration: 0.7,
+          snap: { innerText: 1 },
+          ease: 'power2.inOut',
         })
-        .to([preloader, fluidBg], {
+        .to([preloaderText, preloaderPercentage], {
+          scale: 15,
+          opacity: 0,
+          y: "-=50",
+          duration: 1.5,
+          ease: 'power3.in',
+        }, "-=0.5")
+        .to(preloader, {
           opacity: 0,
           duration: 1.2,
           ease: 'power3.inOut',
-        }, '-=0.5')
-        .to(preloader, {
-          display: 'none',
-        });
+          onComplete: () => {
+            preloader.style.display = 'none';
+            document.body.style.overflow = 'auto';
+          }
+        }, '-=1');
       };
       
       window.addEventListener('load', finishLoading);
       
-      const fallbackTimeout = setTimeout(finishLoading, 4000);
+      const fallbackTimeout = setTimeout(finishLoading, 5000);
 
       return () => {
         window.removeEventListener('load', finishLoading);
         clearTimeout(fallbackTimeout);
+        document.body.style.overflow = 'auto';
       };
     }
   }, []);
