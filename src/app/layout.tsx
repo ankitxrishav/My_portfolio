@@ -59,6 +59,20 @@ export default function RootLayout({
       opacity: 1,
     });
 
+    const floatingTweens: gsap.core.Tween[] = [];
+    letters.forEach(letter => {
+        const tween = gsap.to(letter, {
+            x: `+=${Math.random() * 60 - 30}`,
+            y: `+=${Math.random() * 60 - 30}`,
+            rotation: `+=${Math.random() * 20 - 10}`,
+            duration: Math.random() * 3 + 3,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut"
+        });
+        floatingTweens.push(tween);
+    });
+
     const loadingProgress = { value: 0 };
     const loadingTween = gsap.to(loadingProgress, {
       value: 99,
@@ -74,6 +88,7 @@ export default function RootLayout({
       if (isFinished) return;
       isFinished = true;
 
+      floatingTweens.forEach(tween => tween.kill());
       loadingTween.kill();
       percentageEl.textContent = '100%';
 
