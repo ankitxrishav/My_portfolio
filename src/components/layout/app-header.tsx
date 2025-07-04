@@ -40,11 +40,11 @@ export default function AppHeader({ currentTheme, toggleTheme }: AppHeaderProps)
         <div className="flex h-16 items-center justify-between rounded-full border border-border/40 bg-card px-4 shadow-lg backdrop-blur-lg supports-[backdrop-filter]:bg-card md:px-6">
           <Link 
             href="/#home" 
-            className="flex items-center space-x-2 font-headline text-lg font-bold text-foreground hover:text-accent transition-colors"
+            className="flex items-center space-x-2 font-headline font-bold text-foreground hover:text-accent transition-colors"
             onClick={() => setIsMenuOpen(false)}
           >
-            <Code2 className="h-5 w-5 text-accent md:h-6 md:w-6" />
-            <span className="hidden sm:inline">Ankit Kumar</span>
+            <Code2 className="h-5 w-5 text-accent sm:h-6 sm:w-6" />
+            <span className="text-base sm:text-lg">Ankit Kumar</span>
           </Link>
           <div className="flex items-center space-x-1 md:space-x-2">
             <nav className="hidden md:flex items-center space-x-1">
