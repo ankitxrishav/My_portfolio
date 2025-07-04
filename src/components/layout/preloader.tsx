@@ -2,6 +2,8 @@
 'use client';
 
 export default function Preloader() {
+  const name = "Ankit's Portfolio";
+
   return (
     <div
       id="preloader"
@@ -10,19 +12,14 @@ export default function Preloader() {
       <div className="relative text-center">
         <h1
           id="preloader-text"
-          className="font-headline text-[15vw] md:text-[12vw] lg:text-[10vw] font-bold uppercase text-transparent bg-clip-text text-bg-animate"
-          style={{
-             lineHeight: 1,
-          }}
+          className="font-headline"
         >
-          Ankit's Portfolio
+          {name.split('').map((letter, index) => (
+            <span key={index} className="preloader-letter">
+              {letter}
+            </span>
+          ))}
         </h1>
-        <div 
-          id="preloader-percentage" 
-          className="absolute -bottom-4 right-0 md:-bottom-8 font-code text-2xl md:text-4xl text-white opacity-0"
-        >
-          0%
-        </div>
       </div>
     </div>
   );

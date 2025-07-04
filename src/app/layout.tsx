@@ -44,54 +44,52 @@ export default function RootLayout({
     gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 
     const preloader = document.getElementById('preloader');
-    const preloaderText = document.getElementById('preloader-text');
-    const preloaderPercentage = document.getElementById('preloader-percentage');
-
-    if (preloader && preloaderText && preloaderPercentage) {
+    if (preloader) {
       document.body.style.overflow = 'hidden';
-
-      gsap.to(preloaderPercentage, {
-        innerText: 99,
-        duration: 3,
-        snap: { innerText: 1 },
-        ease: 'power2.out',
-        onStart: () => {
-          gsap.to(preloaderPercentage, { opacity: 1, duration: 0.5 });
-        }
-      });
+      const letters = document.querySelectorAll('.preloader-letter');
       
-      const finishLoading = () => {
-        gsap.killTweensOf(preloaderPercentage);
+      gsap.set(letters, {
+        x: () => gsap.utils.random(-window.innerWidth / 2, window.innerWidth / 2),
+        y: () => gsap.utils.random(-window.innerHeight / 2, window.innerHeight / 2),
+        rotation: () => gsap.utils.random(-360, 360),
+        scale: () => gsap.utils.random(0.5, 1.5),
+        opacity: 0,
+      });
 
+      const finishLoading = () => {
         const tl = gsap.timeline();
-        tl.to(preloaderPercentage, {
-          innerText: 100,
-          duration: 0.7,
-          snap: { innerText: 1 },
-          ease: 'power2.inOut',
-        })
-        .to(preloaderText, {
-          scale: 15,
-          opacity: 0,
-          y: "-=50",
+        tl.to(letters, {
+          x: 0,
+          y: 0,
+          rotation: 0,
+          scale: 1,
+          opacity: 1,
           duration: 1.5,
-          ease: 'power3.in',
+          ease: 'power3.inOut',
+          stagger: {
+            each: 0.05,
+            from: 'random'
+          }
+        })
+        .to(letters, { 
+          scale: 1.1,
+          duration: 0.3,
+          yoyo: true,
+          repeat: 1,
+          ease: 'power2.out',
+          stagger: {
+            each: 0.03,
+          }
         }, "-=0.5")
-        .to(preloaderPercentage, {
-          opacity: 0,
-          y: "-=50",
-          duration: 1.0,
-          ease: 'power3.in',
-        }, "<")
         .to(preloader, {
           opacity: 0,
-          duration: 1.2,
-          ease: 'power3.inOut',
+          duration: 1,
+          ease: 'power2.inOut',
           onComplete: () => {
             preloader.style.display = 'none';
             document.body.style.overflow = 'auto';
           }
-        }, '-=1');
+        }, '+=0.2');
       };
       
       window.addEventListener('load', finishLoading);

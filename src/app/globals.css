@@ -117,25 +117,6 @@
   .animated-underline:hover::after {
     @apply scale-x-100;
   }
-
-  .text-bg-animate {
-    background-size: 100% 300%;
-    background-image: radial-gradient(circle at 50% 100%, hsl(var(--accent)), transparent 40%),
-                      radial-gradient(circle at 50% 0%, hsl(var(--primary)), transparent 40%);
-    animation: text-bg-pan 10s linear infinite;
-  }
-}
-
-@keyframes text-bg-pan {
-  0% {
-    background-position: 50% 100%;
-  }
-  50% {
-    background-position: 50% 0%;
-  }
-  100% {
-    background-position: 50% 100%;
-  }
 }
 
 @layer base {
@@ -173,4 +154,20 @@
   ::view-transition-new(root) {
     animation: reveal 0.7s ease-in-out;
   }
+}
+
+#preloader-text {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  font-weight: 700;
+  color: hsl(var(--accent));
+  line-height: 1;
+  font-size: clamp(2rem, 10vw, 8rem);
+}
+
+.preloader-letter {
+  display: inline-block;
+  white-space: pre;
 }
