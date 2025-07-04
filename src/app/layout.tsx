@@ -12,6 +12,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ScrollSmoother } from 'gsap/ScrollSmoother';
 import Preloader from '@/components/layout/preloader';
+import PreloaderShimmer from '@/components/layout/preloader-shimmer';
 
 
 export default function RootLayout({
@@ -20,8 +21,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const [theme, setTheme] = useState('dark');
+  const [preloaderVariant, setPreloaderVariant] = useState<'stroke' | 'shimmer' | null>(null);
 
   useEffect(() => {
+    // Randomly select preloader on client mount to avoid hydration errors
+    setPreloaderVariant(Math.random() < 0.5 ? 'stroke' : 'shimmer');
+
     const storedTheme = localStorage.getItem('theme');
     if (storedTheme === 'light') {
       setTheme('light');
@@ -42,40 +47,68 @@ export default function RootLayout({
 
   useLayoutEffect(() => {
     gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
+    
+    if (!preloaderVariant) return;
 
     const preloader = document.getElementById('preloader');
-    const letters = document.querySelectorAll<HTMLElement>('.preloader-letter');
-
-    if (!preloader || letters.length === 0) return;
-
+    if (!preloader) return;
+    
     document.body.style.overflow = 'hidden';
 
-    const tl = gsap.timeline({
-      onComplete: () => {
-        if (preloader) {
-          preloader.style.display = 'none';
-        }
-        document.body.style.overflow = 'auto';
+    let tl: gsap.core.Timeline;
+
+    const onComplete = () => {
+      if (preloader) {
+        preloader.style.display = 'none';
       }
-    });
-
-    tl.to(letters, {
-      color: 'white',
-      stagger: 0.05,
-      ease: 'power1.inOut',
-      duration: 0.4,
-    })
-    .to(preloader, {
-      opacity: 0,
-      duration: 0.5,
-      ease: 'power2.inOut',
-    }, '+=0.3');
-
-    return () => {
-      tl.kill();
       document.body.style.overflow = 'auto';
     };
-  }, []);
+
+    if (preloaderVariant === 'stroke') {
+        const letters = document.querySelectorAll<HTMLElement>('.preloader-letter');
+        if (letters.length === 0) {
+            onComplete();
+            return;
+        };
+
+        tl = gsap.timeline({ onComplete });
+        
+        tl.to(letters, {
+            color: 'white',
+            stagger: 0.1,
+            ease: 'power1.inOut',
+            duration: 0.5,
+        })
+        .to(preloader, {
+            opacity: 0,
+            duration: 0.5,
+            ease: 'power2.inOut',
+        }, '+=0.5');
+
+    } else if (preloaderVariant === 'shimmer') {
+        const textElement = document.getElementById('preloader-text');
+        if (!textElement) {
+            onComplete();
+            return;
+        }
+
+        textElement.classList.add('shimmer-effect');
+
+        tl = gsap.timeline({ onComplete });
+
+        tl.to(preloader, {
+            opacity: 0,
+            duration: 0.5,
+            ease: 'power2.inOut',
+            delay: 6 // Wait for 3 shimmer cycles (2s each)
+        });
+    }
+
+    return () => {
+      if (tl) tl.kill();
+      document.body.style.overflow = 'auto';
+    };
+  }, [preloaderVariant]);
 
   useLayoutEffect(() => {
     const smoother = ScrollSmoother.create({
@@ -134,7 +167,14 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased bg-background text-foreground">
-        <Preloader />
+        {preloaderVariant && (
+            <>
+              {preloaderVariant === 'stroke' && <Preloader />}
+              {preloaderVariant === 'shimmer' && <PreloaderShimmer />}
+            </>
+        )}
+        {!preloaderVariant && <div id="preloader" className="fixed inset-0 z-[99999] bg-black"></div>}
+        
         <CustomCursor />
         <ThreeCanvas /> 
         <AppHeader currentTheme={theme} toggleTheme={toggleTheme} />
