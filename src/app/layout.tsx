@@ -70,13 +70,19 @@ export default function RootLayout({
           snap: { innerText: 1 },
           ease: 'power2.inOut',
         })
-        .to([preloaderText, preloaderPercentage], {
+        .to(preloaderText, {
           scale: 15,
           opacity: 0,
           y: "-=50",
           duration: 1.5,
           ease: 'power3.in',
         }, "-=0.5")
+        .to(preloaderPercentage, {
+          opacity: 0,
+          y: "-=50",
+          duration: 1.0,
+          ease: 'power3.in',
+        }, "<")
         .to(preloader, {
           opacity: 0,
           duration: 1.2,
