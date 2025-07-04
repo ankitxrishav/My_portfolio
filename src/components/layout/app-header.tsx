@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Code2, Sun, Moon, Menu, X } from 'lucide-react'; 
 import { cn } from '@/lib/utils';
+import { gsap } from 'gsap';
+import { ScrollSmoother } from 'gsap/ScrollSmoother';
 
 const navItems = [
   { href: '/#home', label: 'Home' },
@@ -23,6 +25,12 @@ export default function AppHeader({ currentTheme, toggleTheme }: AppHeaderProps)
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
+    // GSAP plugins are registered in layout.tsx, but we must ensure they are
+    // available here for the get() method to work.
+    gsap.registerPlugin(ScrollSmoother);
+  }, []);
+
+  useEffect(() => {
     if (isMenuOpen) {
       document.body.style.overflow = 'hidden';
     } else {
@@ -33,6 +41,25 @@ export default function AppHeader({ currentTheme, toggleTheme }: AppHeaderProps)
     };
   }, [isMenuOpen]);
 
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+    const smoother = ScrollSmoother.get();
+    if (smoother && href.includes('#')) {
+      const id = href.substring(href.indexOf('#'));
+      smoother.scrollTo(id, true);
+    }
+    setIsMenuOpen(false);
+  };
+  
+  const handleLogoClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (window.location.pathname === '/') {
+        e.preventDefault();
+        const smoother = ScrollSmoother.get();
+        smoother?.scrollTo('#home', true);
+        setIsMenuOpen(false);
+    }
+  }
+
   return (
     <>
       <header id="app-header" className="fixed top-4 left-1/2 z-50 w-[calc(100%-2rem)] max-w-screen-md -translate-x-1/2">
@@ -40,7 +67,7 @@ export default function AppHeader({ currentTheme, toggleTheme }: AppHeaderProps)
           <Link 
             href="/#home" 
             className="flex items-center space-x-2 font-headline font-bold text-foreground hover:text-accent transition-colors"
-            onClick={() => setIsMenuOpen(false)}
+            onClick={handleLogoClick}
           >
             <Code2 className="h-5 w-5 text-accent sm:h-6 sm:w-6" />
             <span className="text-base sm:text-lg">Ankit Kumar</span>
@@ -51,7 +78,7 @@ export default function AppHeader({ currentTheme, toggleTheme }: AppHeaderProps)
                 <Button key={item.href} variant="ghost" asChild
                   className="text-sm font-medium transition-colors text-foreground/70"
                 >
-                  <Link href={item.href}>{item.label}</Link>
+                  <Link href={item.href} onClick={(e) => handleNavClick(e, item.href)}>{item.label}</Link>
                 </Button>
               ))}
             </nav>
@@ -103,7 +130,7 @@ export default function AppHeader({ currentTheme, toggleTheme }: AppHeaderProps)
               style={{ transitionDelay: isMenuOpen ? `${100 + index * 50}ms` : '0ms' }}
               onClick={(e) => {
                 e.stopPropagation();
-                setIsMenuOpen(false);
+                handleNavClick(e, item.href);
               }}
             >
               {item.label}
