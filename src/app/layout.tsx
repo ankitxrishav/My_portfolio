@@ -44,64 +44,164 @@ export default function RootLayout({
     gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 
     const preloader = document.getElementById('preloader');
-    if (preloader) {
-      document.body.style.overflow = 'hidden';
-      const letters = document.querySelectorAll('.preloader-letter');
-      
-      gsap.set(letters, {
-        x: () => gsap.utils.random(-window.innerWidth / 2, window.innerWidth / 2),
-        y: () => gsap.utils.random(-window.innerHeight / 2, window.innerHeight / 2),
-        rotation: () => gsap.utils.random(-360, 360),
-        scale: () => gsap.utils.random(0.5, 1.5),
-        opacity: 0,
-      });
+    const textElement = document.getElementById('preloader-text') as HTMLElement;
+    const canvas = document.getElementById('particle-canvas') as HTMLCanvasElement;
 
-      const finishLoading = () => {
-        const tl = gsap.timeline();
-        tl.to(letters, {
-          x: 0,
-          y: 0,
-          rotation: 0,
-          scale: 1,
-          opacity: 1,
-          duration: 1.5,
-          ease: 'power3.inOut',
-          stagger: {
-            each: 0.05,
-            from: 'random'
-          }
-        })
-        .to(letters, { 
-          scale: 1.1,
-          duration: 0.3,
-          yoyo: true,
-          repeat: 1,
-          ease: 'power2.out',
-          stagger: {
-            each: 0.03,
-          }
-        }, "-=0.5")
-        .to(preloader, {
-          opacity: 0,
-          duration: 1,
-          ease: 'power2.inOut',
-          onComplete: () => {
-            preloader.style.display = 'none';
-            document.body.style.overflow = 'auto';
-          }
-        }, '+=0.2');
-      };
-      
-      window.addEventListener('load', finishLoading);
-      
-      const fallbackTimeout = setTimeout(finishLoading, 5000);
+    if (!preloader || !textElement || !canvas) return;
 
-      return () => {
-        window.removeEventListener('load', finishLoading);
-        clearTimeout(fallbackTimeout);
-        document.body.style.overflow = 'auto';
-      };
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    if (!ctx) return;
+
+    let particles: Particle[] = [];
+    document.body.style.overflow = 'hidden';
+
+    class Particle {
+      x: number;
+      y: number;
+      originX: number;
+      originY: number;
+      size: number;
+      color: string;
+      vx: number;
+      vy: number;
+      life: number;
+
+      constructor(x: number, y: number, color: string) {
+        this.originX = x;
+        this.originY = y;
+        this.x = x;
+        this.y = y;
+        this.size = Math.random() * 2 + 1;
+        this.color = color;
+        this.vx = 0;
+        this.vy = 0;
+        this.life = 1;
+      }
+
+      draw() {
+        if (!ctx) return;
+        ctx.globalAlpha = this.life;
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.vx *= 0.99;
+        this.vy *= 0.99;
+        this.vy += 0.05; // gravity
+        this.life -= 0.01;
+        if (this.life < 0) this.life = 0;
+      }
+
+      explode() {
+        this.vx = (Math.random() - 0.5) * 15;
+        this.vy = (Math.random() - 0.5) * 15;
+      }
     }
+
+    function initParticles() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      
+      const computedStyle = window.getComputedStyle(textElement!);
+      const font = `${computedStyle.fontWeight} ${computedStyle.fontSize} ${computedStyle.fontFamily}`;
+      ctx!.font = font;
+      ctx!.textAlign = 'center';
+      ctx!.textBaseline = 'middle';
+      
+      const text = textElement!.innerText;
+      
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      
+      ctx!.clearRect(0, 0, canvas.width, canvas.height);
+      ctx!.fillStyle = '#fff';
+      ctx!.fillText(text, centerX, centerY);
+
+      const imageData = ctx!.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imageData.data;
+      
+      particles = [];
+      const density = 4;
+
+      for (let y = 0; y < canvas.height; y += density) {
+        for (let x = 0; x < canvas.width; x += density) {
+          const index = (y * canvas.width + x) * 4;
+          if (data[index + 3] > 128) {
+            const red = data[index];
+            const green = data[index + 1];
+            const blue = data[index + 2];
+            const color = `rgb(${red},${green},${blue})`;
+            particles.push(new Particle(x, y, color));
+          }
+        }
+      }
+      ctx!.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (let i = 0; i < particles.length; i++) {
+        particles[i].draw();
+      }
+    }
+    
+    let animationFrameId: number;
+    function animate() {
+      if (!ctx) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      let stillAlive = false;
+      for (let i = 0; i < particles.length; i++) {
+        particles[i].update();
+        particles[i].draw();
+        if (particles[i].life > 0) {
+          stillAlive = true;
+        }
+      }
+      if (stillAlive) {
+        animationFrameId = requestAnimationFrame(animate);
+      }
+    }
+
+    const finishLoading = () => {
+      textElement.style.display = 'none';
+      particles.forEach(p => p.explode());
+      animate();
+
+      gsap.to(preloader, {
+        opacity: 0,
+        duration: 1,
+        delay: 1.5,
+        ease: 'power2.inOut',
+        onComplete: () => {
+          preloader.style.display = 'none';
+          document.body.style.overflow = 'auto';
+          if (animationFrameId) {
+            cancelAnimationFrame(animationFrameId);
+          }
+        }
+      });
+    };
+
+    initParticles();
+    window.addEventListener('load', finishLoading);
+    const fallbackTimeout = setTimeout(finishLoading, 5000);
+
+    const handleResize = () => {
+      initParticles();
+    };
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('load', finishLoading);
+      window.removeEventListener('resize', handleResize);
+      clearTimeout(fallbackTimeout);
+      document.body.style.overflow = 'auto';
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
+    };
   }, []);
 
   useLayoutEffect(() => {
