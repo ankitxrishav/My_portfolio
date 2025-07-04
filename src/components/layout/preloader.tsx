@@ -9,7 +9,7 @@ export default function Preloader() {
     >
       <h1 id="preloader-text" className="font-headline tracking-wider text-white text-center p-4">
         {'Ankit\'s Portfolio'.split('').map((char, index) => (
-          <span key={index} style={{ opacity: 0 }}>
+          <span key={index} className="preloader-letter">
             {char === ' ' ? '\u00A0' : char}
           </span>
         ))}

@@ -44,19 +44,11 @@ export default function RootLayout({
     gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 
     const preloader = document.getElementById('preloader');
-    const preloaderText = document.getElementById('preloader-text');
-    const letters = document.querySelectorAll('#preloader-text span');
+    const letters = document.querySelectorAll('.preloader-letter');
 
-    if (!preloader || !preloaderText || letters.length === 0) return;
+    if (!preloader || letters.length === 0) return;
 
     document.body.style.overflow = 'hidden';
-    
-    gsap.set(letters, {
-      x: () => Math.random() * window.innerWidth - window.innerWidth / 2,
-      y: () => Math.random() * window.innerHeight - window.innerHeight / 2,
-      rotation: () => Math.random() * 360 - 180,
-      opacity: 1,
-    });
 
     let isFinished = false;
     const finishLoading = () => {
@@ -66,38 +58,23 @@ export default function RootLayout({
       const tl = gsap.timeline();
 
       tl.to(letters, {
-        x: 0,
-        y: 0,
-        rotation: 0,
-        ease: 'power3.inOut',
-        duration: 1.2,
-        stagger: {
-          amount: 0.8,
-          from: "random",
-        }
-      })
-      .to(letters, {
-        scale: 1.1,
-        duration: 0.3,
-        yoyo: true,
-        repeat: 1,
-        ease: 'power1.inOut',
+        color: 'white',
         stagger: 0.1,
-      }, "-=0.5")
-      .to(preloaderText, {
-        scale: 1.5,
-        opacity: 0,
-        duration: 0.8,
-        ease: 'power2.in'
-      }, "+=0.3")
+        ease: 'power1.inOut',
+        duration: 0.5,
+      })
+      .to(preloader, {
+        duration: 0.5
+      })
       .to(preloader, {
         opacity: 0,
         duration: 1.0,
+        ease: 'power2.inOut',
         onComplete: () => {
           preloader.style.display = 'none';
           document.body.style.overflow = 'auto';
         }
-      }, "-=0.5");
+      });
     };
 
     window.addEventListener('load', finishLoading);

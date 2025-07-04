@@ -158,16 +158,18 @@
 
 #preloader-text {
   font-weight: 700;
-  font-size: 3rem;
+  font-size: clamp(2rem, 10vw, 6rem);
   text-align: center;
   position: relative;
   transform-origin: center;
-  color: white;
+  color: transparent;
+  -webkit-text-stroke: 1px white;
+  letter-spacing: 0.1em;
 }
 
-#preloader-text span {
-  position: relative;
+.preloader-letter {
   display: inline-block;
+  position: relative;
 }
 
 #particle-canvas {
