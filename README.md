@@ -1,3 +1,4 @@
+
 <p align="center">
   <img src="https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge" alt="MIT License" />
   <img src="https://img.shields.io/badge/Next.js-14-blue?style=for-the-badge&logo=next.js" alt="Next.js" />
@@ -38,13 +39,15 @@
 ## ✨ Features
 
 - 🎯 Built with **Next.js 14** (App Router) & **React 18**
-- 🎨 **3D Dynamic Background** with Three.js for immersive experience
-- 📱 **Fully Responsive** – Desktop, Tablet, and Mobile ready
-- 🌙 **Light/Dark Mode** with easy CSS variable tweaks
-- 🧩 **Component-Based UI** using ShadCN UI and Tailwind CSS
-- 📊 **Data-Driven Content** – Easy to manage via `src/data/`
-- 🔍 **SEO Optimized** with proper meta tags
-- 🖱️ **Animated Cursor** to enhance interactivity
+- 🚀 **Performance Optimized**: Blazing-fast load times thanks to Next.js font optimization, dynamic component loading, and asynchronous asset handling.
+- 🎭 **Dual Dynamic Preloaders**: Two unique, randomly selected animations ("stroke-to-fill" and "shimmer") for a memorable first impression.
+- 🎨 **3D Dynamic Background**: Immersive visuals powered by Three.js.
+- 📱 **Fully Responsive**: A seamless experience on desktop, tablet, and mobile.
+- 🌙 **Light/Dark Mode**: Easy-to-customize theme variables in CSS.
+- 🧩 **Component-Based UI**: Built with ShadCN UI and Tailwind CSS.
+- 📊 **Data-Driven Content**: Manage projects, skills, and journey easily in `src/data/`.
+- 🔍 **SEO Optimized**: Includes proper meta tags for better search visibility.
+- 🖱️ **Animated Cursor**: A custom cursor trail enhances interactivity.
 
 ---
 
@@ -136,6 +139,7 @@ To update your skills:
 -   **Framework**: [Next.js](https://nextjs.org/)
 -   **Styling**: [Tailwind CSS](https://tailwindcss.com/)
 -   **UI Components**: [ShadCN UI](https://ui.shadcn.com/)
+-   **Animation**: [GSAP](https://gsap.com/)
 -   **3D Graphics**: [Three.js](https://threejs.org/)
 -   **Icons**: [Lucide React](https://lucide.dev/)
 -   **Language**: [TypeScript](https://www.typescriptlang.org/)
