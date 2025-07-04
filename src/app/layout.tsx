@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useLayoutEffect } from 'react';
@@ -70,15 +69,18 @@ export default function RootLayout({
     if (!preloaderVariant) return;
 
     const preloader = document.getElementById('preloader');
-    if (!preloader) return;
+    const header = document.getElementById('app-header');
+    if (!preloader || !header) return;
     
     document.body.style.overflow = 'hidden';
+    gsap.set(header, { y: '-100%', opacity: 0 });
 
     let tl: gsap.core.Timeline;
 
     const onComplete = () => {
       if (preloader) {
-        gsap.to(preloader, {
+        const outroTl = gsap.timeline();
+        outroTl.to(preloader, {
           opacity: 0,
           duration: 0.5,
           onComplete: () => {
@@ -86,8 +88,20 @@ export default function RootLayout({
             document.body.style.overflow = 'auto';
           }
         });
+        outroTl.to(header, {
+            y: '0%',
+            opacity: 1,
+            duration: 0.8,
+            ease: 'power2.out'
+        }, "-=0.3");
       } else {
         document.body.style.overflow = 'auto';
+        gsap.to(header, {
+            y: '0%',
+            opacity: 1,
+            duration: 0.8,
+            ease: 'power2.out'
+        });
       }
     };
 
