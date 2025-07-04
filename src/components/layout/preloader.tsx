@@ -7,10 +7,13 @@ export default function Preloader() {
       id="preloader"
       className="fixed inset-0 z-[99999] flex items-center justify-center bg-black overflow-hidden"
     >
-      <h1 id="preloader-text" className="font-headline">
-        Ankit's Portfolio
+      <h1 id="preloader-text" className="font-headline tracking-wider text-white text-4xl md:text-6xl text-center p-4">
+        {'Ankit\'s Portfolio'.split('').map((char, index) => (
+          <span key={index} style={{ opacity: 0 }}>
+            {char === ' ' ? '\u00A0' : char}
+          </span>
+        ))}
       </h1>
-      <canvas id="particle-canvas" className="absolute inset-0 w-full h-full"></canvas>
     </div>
   );
 }
