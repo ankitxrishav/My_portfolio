@@ -13,6 +13,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ScrollSmoother } from 'gsap/ScrollSmoother';
 import Preloader from '@/components/layout/preloader';
 import PreloaderShimmer from '@/components/layout/preloader-shimmer';
+import PreloaderTypewriter from '@/components/layout/preloader-typewriter';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -35,10 +36,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const [theme, setTheme] = useState('dark');
-  const [preloaderVariant, setPreloaderVariant] = useState<'stroke' | 'shimmer' | null>(null);
+  const [preloaderVariant, setPreloaderVariant] = useState<'stroke' | 'shimmer' | 'typewriter' | null>(null);
 
   useEffect(() => {
-    setPreloaderVariant(Math.random() < 0.5 ? 'stroke' : 'shimmer');
+    const variants: Array<'stroke' | 'shimmer' | 'typewriter'> = ['stroke', 'shimmer', 'typewriter'];
+    const lastIndexStr = localStorage.getItem('preloaderIndex');
+    const lastIndex = lastIndexStr ? parseInt(lastIndexStr, 10) : -1;
+    const nextIndex = (lastIndex + 1) % variants.length;
+    localStorage.setItem('preloaderIndex', nextIndex.toString());
+    setPreloaderVariant(variants[nextIndex]);
 
     const storedTheme = localStorage.getItem('theme');
     if (storedTheme === 'light') {
@@ -112,6 +118,28 @@ export default function RootLayout({
         textElement.classList.add('shimmer-effect');
         tl = gsap.timeline();
         tl.to({}, {delay: 6, onComplete}); // Wait for CSS animation (2s * 3 iterations)
+    } else if (preloaderVariant === 'typewriter') {
+        const letters = document.querySelectorAll<HTMLElement>('.preloader-letter');
+        const cursor = document.getElementById('cursor');
+        if (letters.length === 0 || !cursor) {
+            onComplete();
+            return;
+        }
+
+        tl = gsap.timeline({ onComplete });
+        
+        tl.to(letters, {
+            opacity: 1,
+            stagger: 0.1,
+            ease: 'none',
+            duration: 0.1,
+        })
+        .to(cursor, {
+            opacity: 0,
+            ease: 'power1.inOut',
+            duration: 0.5
+        }, '+=0.5')
+        .to({}, {duration: 0.5});
     }
 
     return () => {
@@ -177,6 +205,7 @@ export default function RootLayout({
             <>
               {preloaderVariant === 'stroke' && <Preloader />}
               {preloaderVariant === 'shimmer' && <PreloaderShimmer />}
+              {preloaderVariant === 'typewriter' && <PreloaderTypewriter />}
             </>
         )}
         {!preloaderVariant && <div id="preloader" className="fixed inset-0 z-[99999] bg-black"></div>}
