@@ -44,8 +44,11 @@ export default function RootLayout({
     gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 
     const preloader = document.getElementById('preloader');
+    const preloaderText = document.getElementById('preloader-text');
     const letters = document.querySelectorAll('#preloader-text span');
-    if (!preloader || letters.length === 0) return;
+    const percentageEl = document.getElementById('preloader-percentage');
+
+    if (!preloader || !preloaderText || letters.length === 0 || !percentageEl) return;
 
     document.body.style.overflow = 'hidden';
     
@@ -56,24 +59,25 @@ export default function RootLayout({
       opacity: 1,
     });
 
+    const loadingProgress = { value: 0 };
+    const loadingTween = gsap.to(loadingProgress, {
+      value: 99,
+      duration: 4,
+      ease: 'power1.in',
+      onUpdate: () => {
+        percentageEl.textContent = `${Math.floor(loadingProgress.value)}%`;
+      }
+    });
+
     let isFinished = false;
     const finishLoading = () => {
       if (isFinished) return;
       isFinished = true;
 
-      const tl = gsap.timeline({
-        onComplete: () => {
-          gsap.to(preloader, {
-            opacity: 0,
-            duration: 0.8,
-            ease: 'power2.inOut',
-            onComplete: () => {
-              preloader.style.display = 'none';
-              document.body.style.overflow = 'auto';
-            }
-          });
-        }
-      });
+      loadingTween.kill();
+      percentageEl.textContent = '100%';
+
+      const tl = gsap.timeline();
 
       tl.to(letters, {
         x: 0,
@@ -93,6 +97,25 @@ export default function RootLayout({
         repeat: 1,
         ease: 'power1.inOut',
         stagger: 0.1,
+      }, "-=0.5")
+      .to(percentageEl, {
+        opacity: 0,
+        duration: 0.5,
+        ease: 'power2.in'
+      }, "+=0.3")
+      .to(preloaderText, {
+        scale: 1.5,
+        opacity: 0,
+        duration: 0.8,
+        ease: 'power2.in'
+      }, "<")
+      .to(preloader, {
+        opacity: 0,
+        duration: 1.0,
+        onComplete: () => {
+          preloader.style.display = 'none';
+          document.body.style.overflow = 'auto';
+        }
       }, "-=0.5");
     };
 
