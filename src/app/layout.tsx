@@ -45,29 +45,39 @@ export default function RootLayout({
 
     const preloader = document.getElementById('preloader');
     const preloaderText = document.getElementById('preloader-text');
+    const fluidBg = document.querySelector('.bg-preloader-fluid');
 
-    if (preloader && preloaderText) {
-      const tl = gsap.timeline();
+    if (preloader && preloaderText && fluidBg) {
+      gsap.to(preloaderText, {
+        opacity: 1,
+        scale: 1,
+        duration: 1.5,
+        ease: 'power3.out',
+        delay: 0.2
+      });
 
       const finishLoading = () => {
+        const tl = gsap.timeline();
         tl.to(preloaderText, {
           opacity: 0,
-          y: -40,
+          y: -50,
+          scale: 0.8,
           ease: 'power2.in',
           duration: 0.8,
-        }).to(preloader, {
-          yPercent: -100,
-          ease: 'power2.inOut',
-          duration: 1,
-          onComplete: () => {
-            gsap.set(preloader, { display: 'none' });
-          }
+        })
+        .to([preloader, fluidBg], {
+          opacity: 0,
+          duration: 1.2,
+          ease: 'power3.inOut',
+        }, '-=0.5')
+        .to(preloader, {
+          display: 'none',
         });
       };
       
       window.addEventListener('load', finishLoading);
       
-      const fallbackTimeout = setTimeout(finishLoading, 3000);
+      const fallbackTimeout = setTimeout(finishLoading, 4000);
 
       return () => {
         window.removeEventListener('load', finishLoading);
