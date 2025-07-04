@@ -11,6 +11,7 @@ import CustomCursor from '@/components/ui/custom-cursor';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ScrollSmoother } from 'gsap/ScrollSmoother';
+import Preloader from '@/components/layout/preloader';
 
 
 export default function RootLayout({
@@ -42,6 +43,40 @@ export default function RootLayout({
   useLayoutEffect(() => {
     gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 
+    const preloader = document.getElementById('preloader');
+    const preloaderText = document.getElementById('preloader-text');
+
+    if (preloader && preloaderText) {
+      const tl = gsap.timeline();
+
+      const finishLoading = () => {
+        tl.to(preloaderText, {
+          opacity: 0,
+          y: -40,
+          ease: 'power2.in',
+          duration: 0.8,
+        }).to(preloader, {
+          yPercent: -100,
+          ease: 'power2.inOut',
+          duration: 1,
+          onComplete: () => {
+            gsap.set(preloader, { display: 'none' });
+          }
+        });
+      };
+      
+      window.addEventListener('load', finishLoading);
+      
+      const fallbackTimeout = setTimeout(finishLoading, 3000);
+
+      return () => {
+        window.removeEventListener('load', finishLoading);
+        clearTimeout(fallbackTimeout);
+      };
+    }
+  }, []);
+
+  useLayoutEffect(() => {
     const smoother = ScrollSmoother.create({
       wrapper: '#smooth-wrapper',
       content: '#smooth-content',
@@ -98,6 +133,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased bg-background text-foreground">
+        <Preloader />
         <CustomCursor />
         <ThreeCanvas /> 
         <AppHeader currentTheme={theme} toggleTheme={toggleTheme} />
