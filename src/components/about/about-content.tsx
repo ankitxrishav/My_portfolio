@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -21,6 +22,7 @@ export default function AboutContent() {
               alt="Ankit Kumar"
               layout="fill"
               objectFit="cover"
+              priority
             />
           </div>
           <CardTitle className="font-headline text-2xl text-foreground">Ankit Kumar</CardTitle>

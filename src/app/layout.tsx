@@ -2,18 +2,32 @@
 "use client";
 
 import { useState, useEffect, useLayoutEffect } from 'react';
+import { Inter, Space_Grotesk } from 'next/font/google';
+import dynamic from 'next/dynamic';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import AppHeader from '@/components/layout/app-header';
 import AppFooter from '@/components/layout/app-footer';
-import ThreeCanvas from '@/components/three-canvas';
-import CustomCursor from '@/components/ui/custom-cursor';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ScrollSmoother } from 'gsap/ScrollSmoother';
 import Preloader from '@/components/layout/preloader';
 import PreloaderShimmer from '@/components/layout/preloader-shimmer';
 
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+});
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ['latin'],
+  variable: '--font-space-grotesk',
+  display: 'swap',
+});
+
+const ThreeCanvas = dynamic(() => import('@/components/three-canvas'), { ssr: false });
+const CustomCursor = dynamic(() => import('@/components/ui/custom-cursor'), { ssr: false });
 
 export default function RootLayout({
   children,
@@ -24,7 +38,6 @@ export default function RootLayout({
   const [preloaderVariant, setPreloaderVariant] = useState<'stroke' | 'shimmer' | null>(null);
 
   useEffect(() => {
-    // Randomly select preloader on client mount to avoid hydration errors
     setPreloaderVariant(Math.random() < 0.5 ? 'stroke' : 'shimmer');
 
     const storedTheme = localStorage.getItem('theme');
@@ -59,9 +72,17 @@ export default function RootLayout({
 
     const onComplete = () => {
       if (preloader) {
-        preloader.style.display = 'none';
+        gsap.to(preloader, {
+          opacity: 0,
+          duration: 0.5,
+          onComplete: () => {
+            preloader.style.display = 'none';
+            document.body.style.overflow = 'auto';
+          }
+        });
+      } else {
+        document.body.style.overflow = 'auto';
       }
-      document.body.style.overflow = 'auto';
     };
 
     if (preloaderVariant === 'stroke') {
@@ -79,11 +100,7 @@ export default function RootLayout({
             ease: 'power1.inOut',
             duration: 0.5,
         })
-        .to(preloader, {
-            opacity: 0,
-            duration: 0.5,
-            ease: 'power2.inOut',
-        }, '+=0.5');
+        .to({}, {duration: 0.5});
 
     } else if (preloaderVariant === 'shimmer') {
         const textElement = document.getElementById('preloader-text');
@@ -93,15 +110,8 @@ export default function RootLayout({
         }
 
         textElement.classList.add('shimmer-effect');
-
-        tl = gsap.timeline({ onComplete });
-
-        tl.to(preloader, {
-            opacity: 0,
-            duration: 0.5,
-            ease: 'power2.inOut',
-            delay: 6 // Wait for 3 shimmer cycles (2s each)
-        });
+        tl = gsap.timeline();
+        tl.to({}, {delay: 6, onComplete}); // Wait for CSS animation (2s * 3 iterations)
     }
 
     return () => {
@@ -154,17 +164,13 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en"> 
+    <html lang="en" className={`${inter.variable} ${spaceGrotesk.variable}`}> 
       <head>
         <title>Ankit Kumar Portfolio</title>
         <meta name="description" content="Portfolio of Ankit Kumar, an AIML Enthusiast & Builder." />
         <link rel="icon" href="data:image/x-icon;base64,=" />
         <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
         <meta name="theme-color" content="#222222" media="(prefers-color-scheme: dark)" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased bg-background text-foreground">
         {preloaderVariant && (
