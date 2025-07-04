@@ -44,45 +44,35 @@ export default function RootLayout({
     gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 
     const preloader = document.getElementById('preloader');
-    const letters = document.querySelectorAll('.preloader-letter');
+    const letters = document.querySelectorAll<HTMLElement>('.preloader-letter');
 
     if (!preloader || letters.length === 0) return;
 
     document.body.style.overflow = 'hidden';
 
-    let isFinished = false;
-    const finishLoading = () => {
-      if (isFinished) return;
-      isFinished = true;
-
-      const tl = gsap.timeline();
-
-      tl.to(letters, {
-        color: 'white',
-        stagger: 0.1,
-        ease: 'power1.inOut',
-        duration: 0.5,
-      })
-      .to(preloader, {
-        duration: 0.5
-      })
-      .to(preloader, {
-        opacity: 0,
-        duration: 1.0,
-        ease: 'power2.inOut',
-        onComplete: () => {
+    const tl = gsap.timeline({
+      onComplete: () => {
+        if (preloader) {
           preloader.style.display = 'none';
-          document.body.style.overflow = 'auto';
         }
-      });
-    };
+        document.body.style.overflow = 'auto';
+      }
+    });
 
-    window.addEventListener('load', finishLoading);
-    const fallbackTimeout = setTimeout(finishLoading, 5000); 
+    tl.to(letters, {
+      color: 'white',
+      stagger: 0.05,
+      ease: 'power1.inOut',
+      duration: 0.4,
+    })
+    .to(preloader, {
+      opacity: 0,
+      duration: 0.5,
+      ease: 'power2.inOut',
+    }, '+=0.3');
 
     return () => {
-      window.removeEventListener('load', finishLoading);
-      clearTimeout(fallbackTimeout);
+      tl.kill();
       document.body.style.overflow = 'auto';
     };
   }, []);
