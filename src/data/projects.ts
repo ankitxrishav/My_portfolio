@@ -48,6 +48,16 @@ export const projectsData: Project[] = [
     year: new Date().getFullYear(),
   },
   {
+    id: 'proj-fenrirpdf',
+    name: 'FenrirPDF',
+    description: 'A lightweight, fast, and privacy-focused web application that provides essential PDF utilities right in your browser. Merge multiple PDFs into a single file or extract and reorder pages from an existing document with a simple drag-and-drop interface. No sign-ups, no wait times, and absolutely no file uploads to any server.',
+    technologies: ['React', 'TypeScript', 'TailwindCSS', 'JavaScript'],
+    imageUrl: 'https://placehold.co/600x400.png',
+    sourceCodeUrl: 'https://github.com/ankitxrishav/FenrirPDF',
+    liveDemoUrl: 'https://fenrirpdf.netlify.app',
+    year: 2024,
+  },
+  {
     id: 'proj-3',
     name: 'Hand Gesture–Controlled Music Generator',
     description: 'A creative computer vision project that converts real-time hand gestures into sitar-like musical sounds. Used OpenCV to detect hand positions using webcam input. Mapped gestures to MIDI sounds to generate musical notes. Created a real-time performance experience.',
