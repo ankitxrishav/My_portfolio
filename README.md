@@ -12,7 +12,18 @@
   A sleek, modern, and highly interactive personal portfolio built with <strong>Next.js</strong>, <strong>React</strong>, <strong>Tailwind CSS</strong>, and <strong>Three.js</strong>. Designed to visually showcase your work, journey, and digital identity with a developer-first approach.
 </p>
 
+<h2 align="center">🚀 Live Demo 🚀</h2>
+
 <p align="center">
+  <a href="https://ankitxk.vercel.app" target="_blank">
+    <img src="https://img.shields.io/badge/Vercel-Live-000?style=for-the-badge&logo=vercel&logoColor=white" alt="Live on Vercel">
+  </a>
+  <br><br>
+  <a href="https://ankitxk.netlify.app/" target="_blank">
+    <img src="https://img.shields.io/badge/Netlify-Live-00C7B7?style=for-the-badge&logo=netlify&logoColor=white" alt="Live on Netlify">
+  </a>
+</p>
+<!-- <p align="center">
   🔗 <strong>Live Demo:</strong> 
   <p align = "center">
   <p>
@@ -22,7 +33,7 @@
   <a href="https://ankitxk.netlify.app/" target="_blank">ankitxk.netlify.app</a>
   </p>
   </p>
-</p>
+</p> -->
 
 ---
 
