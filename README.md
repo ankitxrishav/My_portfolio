@@ -13,9 +13,16 @@
 </p>
 
 <p align="center">
-  🔗 <strong>Live Demo:</strong> <p><a href="https://ankitxk.vercel.app" target="_blank">ankitxk.vercel.app</a></p>
-<p>  <a href="https://ankitxk.netlify.app/" target="_blank">ankitxk.vercel.app</a>
-</p></p>
+  🔗 <strong>Live Demo:</strong> 
+  <p align = "center">
+  <p>
+  <a href="https://ankitxk.vercel.app" target="_blank">ankitxk.vercel.app</a>
+  </p>
+  <p>
+  <a href="https://ankitxk.netlify.app/" target="_blank">ankitxk.netlify.app</a>
+  </p>
+  </p>
+</p>
 
 ---
 
